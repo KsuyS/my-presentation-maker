@@ -1,0 +1,14 @@
+* {
+  font-family: "Calibri", serif;
+  color: black;
+  font-size: 11px;
+  font-weight: 400;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  width: 100%;
+  margin: 0 auto;
+}
