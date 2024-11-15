@@ -18,6 +18,7 @@ function useDragAndDropSlide<T>(initialItems: T[]) {
         }
     };
 
+
     const handleDropping = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
     };
@@ -25,4 +26,4 @@ function useDragAndDropSlide<T>(initialItems: T[]) {
     return { items, setItems, handleDragStart, handleDrop, handleDropping };
 }
 
-export { useDragAndDropSlide };
+export { useDragAndDropSlide }

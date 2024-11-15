@@ -50,7 +50,7 @@ function SlidesList({ slides, selection }: SlidesListProps) {
                             isSelected={slide.id === selection.selectedSlideId}
                             className={styles.item}
                             selectedObjId={null}
-                        />
+                        ></CurrentSlide>
                     </div>
                 );
             })}
