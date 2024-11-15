@@ -47,7 +47,7 @@ function CurrentSlide({ slide, scale = 1, isSelected, className, selectedObjId }
         position: 'relative',
         width: `${SLIDE_WIDTH * scale}px`,
         height: `${SLIDE_HEIGHT * scale}px`,
-        overflow: 'hidden', // Предотвращаем выход объектов за пределы слайда
+        overflow: 'hidden',
     };
 
     if (isSelected) {
@@ -61,14 +61,14 @@ function CurrentSlide({ slide, scale = 1, isSelected, className, selectedObjId }
                     {slideObject.type === "text" ? (
                         <TextObject
                             textObject={slideObject}
-                            scale={scale} // Передаем масштаб
+                            scale={scale}
                             isSelected={slideObject.id === selectedObjId}
                             onDragEnd={(newPosition) => handleDragEnd(slideObject.id, newPosition)}
                         />
                     ) : (
                         <ImageObject
                             imageObject={slideObject}
-                            scale={scale} // Передаем масштаб
+                            scale={scale}
                             isSelected={slideObject.id === selectedObjId}
                             onDragEnd={(newPosition) => handleDragEnd(slideObject.id, newPosition)}
                         />
