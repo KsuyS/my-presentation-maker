@@ -12,8 +12,11 @@ function removeSlide(editor: EditorType): EditorType {
 
     let newSelectedSlideId = null;
     if (newSlides.length > 0) { 
-        const index = Math.min(removeSlideIndex, newSlides.length - 1);
-        newSelectedSlideId = newSlides[index].id;
+        if (removeSlideIndex < newSlides.length) {
+            newSelectedSlideId = newSlides[removeSlideIndex].id;
+        } else {
+            newSelectedSlideId = newSlides[Math.max(removeSlideIndex - 1, 0)].id;
+        }
     } 
 
     return { 
@@ -27,7 +30,7 @@ function removeSlide(editor: EditorType): EditorType {
             selectedObjectId: editor.selection.selectedObjectId
         }, 
     }; 
-} 
+}
 
 export { 
     removeSlide, 

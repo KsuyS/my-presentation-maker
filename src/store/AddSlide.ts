@@ -1,5 +1,6 @@
 import { EditorType } from "./EditorType.ts";
 import { Slide } from "./PresentationType.ts"
+import { generateRandomId } from "./generateRandomId.ts"
 
 function addSlide(editor: EditorType): EditorType {
     const newSlide: Slide = {
@@ -8,31 +9,24 @@ function addSlide(editor: EditorType): EditorType {
         background: { type: 'solid', color: '#ffffff' },
     };
 
-    const selectedSlideIndex = editor.presentation.slides.findIndex(slide => slide.id == editor.selection.selectedSlideId);
+    const selectedSlideIndex = editor.presentation.slides.findIndex(slide => slide.id === editor.selection.selectedSlideId);
+    
+    const updatedSlides = [
+        ...editor.presentation.slides.slice(0, selectedSlideIndex + 1),
+        newSlide,
+        ...editor.presentation.slides.slice(selectedSlideIndex + 1)
+    ];
 
     return {
         presentation: {
             ...editor.presentation,
-            slides: [
-                ...editor.presentation.slides.slice(0, selectedSlideIndex + 1),
-                newSlide,
-                ...editor.presentation.slides.slice(selectedSlideIndex + 1)
-            ]
+            slides: updatedSlides
         },
-        selection: editor.selection
+        selection: {
+            ...editor.selection,
+            selectedSlideId: newSlide.id
+        }
     };
-}
-
-function generateRandomId(length: number = 10): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        result += characters[randomIndex];
-    }
-
-    return result;
 }
 
 export {
