@@ -16,7 +16,7 @@ function TopPanel({ title }: TitlePresentationProps) {
 
     return (
         <div className={styles.topPanel}>
-            <img className={styles.logo} src={logo}></img>
+            <img className={styles.logo} src={logo}/>
             <input className={styles.title} type="text" defaultValue={title} onChange={onTitleChange}/>
         </div>
     )

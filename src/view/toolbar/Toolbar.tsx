@@ -5,11 +5,7 @@ import { removeSlide } from "../../store/RemoveSlide.ts";
 import { addText } from "../../store/AddTextOnSlide.ts";
 import { addImage } from "../../store/AddImageOnSlide.ts";
 import { removeObject } from "../../store/RemoveObjectOnSlide.ts";
-import { changeColorBackground } from "../../store/ChangeColorBackground.ts";
-
-import { changeImgBackground } from "../../store/ChangeImgBackground.ts";
-
-
+import { changeBackground } from "../../store/ChangeBackground.ts";
 
 import addSlideIcon from '../../assets/add-slide.png';
 import removeSlideIcon from '../../assets/delete-slide.png';
@@ -17,7 +13,11 @@ import addTextIcon from '../../assets/add-slide.png';
 import removeTextIcon from '../../assets/delete-slide.png';
 import addImageIcon from '../../assets/add-slide.png';
 
+import { useState } from 'react';
+
 function Toolbar() {
+    const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
+
     function onAddSlide() {
         dispatch(addSlide);
     }
@@ -38,14 +38,21 @@ function Toolbar() {
         dispatch(addImage);
     }
 
-    function onChangeColorBackground() {
-        dispatch(changeColorBackground);
+    const onChangeColorBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        const color = (event.target as HTMLInputElement).value;
+        dispatch(changeBackground, { type: 'solid', value: color });
     }
 
-    function onChangeImgBackground() {
-        dispatch(changeImgBackground);
+    const onChangeImgBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                dispatch(changeBackground, { type: 'image', value: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
     }
-    
 
     return (
         <div className={styles.toolbar}>
@@ -71,18 +78,44 @@ function Toolbar() {
             </button>
 
             <div className={styles.changeBackground}>
-                <button className={styles.button} onClick={onChangeColorBackground}>
-                    Изменить цвет фона
-                </button>
+                <select
+                    id="backgroundSelector"
+                    value={backgroundOption}
+                    onChange={(e) => setBackgroundOption(e.target.value as 'color' | 'image')}
+                    className={`${styles.dropdown} ${styles.button}`}
+                >
+                    <option value="color">Цвет фона</option>
+                    <option value="image">Фоновое изображение</option>
+                </select>
             </div>
 
-            <div className={styles.changeBackground}>
-                <button className={styles.button} onClick={onChangeImgBackground}>
-                    Изменить изображение фона
-                </button>
-            </div>
+            {backgroundOption === 'color' && (
+                <div className={styles.changeColor}>
+                    <input 
+                        type="color" 
+                        id="colorPicker" 
+                        onChange={onChangeColorBackground}
+                        className={`${styles.colorPicker}`}
+                    />
+                </div>
+            )}
+
+            {backgroundOption === 'image' && (
+                <div className={styles.changeImage}>
+                    <input 
+                        type="file" 
+                        id="imageUploader" 
+                        accept="image/*"
+                        onChange={onChangeImgBackground}
+                        className={styles.imageUploader}
+                    />
+                    <label htmlFor="imageUploader" className={`${styles.button} ${styles.fileLabel}`}>
+                        Выберите изображение
+                    </label>
+                </div>
+            )}
         </div>
     );
 }
 
-export { Toolbar }
+export { Toolbar };
