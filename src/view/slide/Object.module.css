@@ -1,0 +1,53 @@
+.resizeHandle {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    border: 1px solid #0b57d0;
+    position: absolute;
+    cursor: nw-resize; /* Измените курсор в зависимости от направления */
+ }
+ 
+ .topLeft {
+    top: -5px;
+    left: -5px;
+ }
+ 
+ .topRight {
+    top: -5px;
+    right: -5px;
+ }
+ 
+ .bottomLeft {
+    bottom: -5px;
+    left: -5px;
+ }
+ 
+ .bottomRight {
+    bottom: -5px;
+    right: -5px;
+ }
+ 
+ .top {
+    top:-5px;
+    left :50%;
+    transform : translateX(-50%);
+ }
+ 
+ .bottom {
+    bottom:-5px;
+    left :50%;
+    transform : translateX(-50%);
+ }
+ 
+ .left {
+    left:-5px;
+    top :50%;
+    transform : translateY(-50%);
+ }
+ 
+ .right {
+    right:-5px;
+    top :50%;
+    transform : translateY(-50%);
+ }
