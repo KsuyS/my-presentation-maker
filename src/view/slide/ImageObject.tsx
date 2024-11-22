@@ -3,6 +3,8 @@ import { CSSProperties } from "react";
 import { useDragAndDropObject } from '../../store/useDragAndDropForObject.ts';
 import { SLIDE_WIDTH, SLIDE_HEIGHT } from '../slide/currentSlide';
 import styles from './Object.module.css';
+import { ChangeObjectPosition } from "../../store/ChangeObjectPosition.ts";
+import { dispatch } from "../../store/editor.ts";
 
 type ImageObjectProps = {
     imageObject: ImageContent,
@@ -11,9 +13,15 @@ type ImageObjectProps = {
     onDragEnd: (newPosition: { x: number; y: number }) => void;
 }
 
-function ImageObject({ imageObject, scale = 1, isSelected, onDragEnd }: ImageObjectProps) {
+function ImageObject({ imageObject, scale = 1, isSelected }: ImageObjectProps) {
+    
     const { position, onMouseDown } = useDragAndDropObject(
-        onDragEnd,
+        (newPosition) => {
+            console.log('Dispatching ChangeObjectPosition with id:', imageObject.id);
+            console.log('Dragging ended with position:', newPosition);
+            
+            dispatch(ChangeObjectPosition, { id: imageObject.id, newPosition});
+        },
         SLIDE_WIDTH * scale,
         SLIDE_HEIGHT * scale,
         imageObject.position,

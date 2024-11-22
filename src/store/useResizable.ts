@@ -1,96 +1,100 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
-export type ResizeDirection = 
-    'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 
-    'top' | 'bottom' | 'left' | 'right';
+type ResizeDirection = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top' | 'bottom' | 'left' | 'right';
 
-interface UseResizableProps {
-    initialWidth: number;
-    initialHeight: number;
-    onResize: (width: number, height: number) => void;
-}
-
-export const useResizable = ({ initialWidth, initialHeight, onResize }: UseResizableProps) => {
-    const [size, setSize] = useState({ width: initialWidth, height: initialHeight });
-    const [direction, setDirection] = useState<ResizeDirection | null>(null);
-    const [startPosition, setStartPosition] = useState<{ x: number; y: number } | null>(null);
+export function useResizeObject(
+    onResizeEnd: (newSize: { width: number; height: number }) => void,
+    initialSize: { width: number; height: number },
+    initialPosition: { x: number; y: number },
+    minSize: { width: number; height: number }
+) {
+    const [size, setSize] = useState(initialSize);
+    const [position, setPosition] = useState(initialPosition);
     const [isResizing, setIsResizing] = useState(false);
+    const [startMousePos, setStartMousePos] = useState<{ x: number; y: number } | null>(null);
+    const [resizeDirection, setResizeDirection] = useState<ResizeDirection | null>(null);
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
-        if (!isResizing || !direction || !startPosition) return;
+    const startResizing = useCallback((event: React.MouseEvent<HTMLDivElement>, direction: ResizeDirection) => {
+        event.stopPropagation();
+        setIsResizing(true);
+        setStartMousePos({ x: event.clientX, y: event.clientY });
+        setResizeDirection(direction);
+    }, []);
+
+    const onMouseMove = useCallback((event: MouseEvent) => {
+        if (!isResizing || !startMousePos || !resizeDirection) return;
+
+        const dx = event.clientX - startMousePos.x;
+        const dy = event.clientY - startMousePos.y;
 
         let newWidth = size.width;
         let newHeight = size.height;
+        let newPosition = { ...position };
 
-        const deltaX = e.clientX - startPosition.x;
-        const deltaY = e.clientY - startPosition.y;
-
-        switch (direction) {
+        switch (resizeDirection) {
             case 'top-left':
-                newWidth -= deltaX;
-                newHeight -= deltaY;
+                newWidth = Math.max(minSize.width, size.width - dx);
+                newHeight = Math.max(minSize.height, size.height - dy);
+                newPosition.x += dx;
+                newPosition.y += dy;
                 break;
             case 'top-right':
-                newWidth += deltaX;
-                newHeight -= deltaY;
+                newWidth = Math.max(minSize.width, size.width + dx);
+                newHeight = Math.max(minSize.height, size.height - dy);
+                newPosition.y += dy; // Move down if height decreases
                 break;
             case 'bottom-left':
-                newWidth -= deltaX;
-                newHeight += deltaY;
+                newWidth = Math.max(minSize.width, size.width - dx);
+                newHeight = Math.max(minSize.height, size.height + dy);
+                newPosition.x += dx; // Move right if width decreases
                 break;
             case 'bottom-right':
-                newWidth += deltaX;
-                newHeight += deltaY;
+                newWidth = Math.max(minSize.width, size.width + dx);
+                newHeight = Math.max(minSize.height, size.height + dy);
                 break;
             case 'top':
-                newHeight -= deltaY;
+                newHeight = Math.max(minSize.height, size.height - dy);
+                newPosition.y += dy; // Move down if height decreases
                 break;
             case 'bottom':
-                newHeight += deltaY;
+                newHeight = Math.max(minSize.height, size.height + dy);
                 break;
             case 'left':
-                newWidth -= deltaX;
+                newWidth = Math.max(minSize.width, size.width - dx);
+                newPosition.x += dx; // Move right if width decreases
                 break;
             case 'right':
-                newWidth += deltaX;
+                newWidth = Math.max(minSize.width, size.width + dx);
                 break;
         }
 
-        // Limit minimum sizes
-        if (newWidth > 20 && newHeight > 20) {
+        // Update state only if there is a change
+        if (newWidth !== size.width || newHeight !== size.height || 
+            newPosition.x !== position.x || newPosition.y !== position.y) {
             setSize({ width: newWidth, height: newHeight });
-            onResize(newWidth, newHeight);
+            setPosition(newPosition);
         }
-    }, [size, direction, startPosition, isResizing, onResize]);
+    }, [isResizing, startMousePos, resizeDirection, size, position, minSize]);
 
-    const startResize = useCallback((resizeDirection: ResizeDirection) => {
-        setDirection(resizeDirection);
-        setStartPosition(null);
-        setIsResizing(true);
-
-        const mouseMoveHandler = (e: MouseEvent) => {
-            if (!startPosition) {
-                setStartPosition({ x: e.clientX, y: e.clientY });
-            }
-            handleMouseMove(e);
-        };
-
-        const mouseUpHandler = () => {
-            setDirection(null);
-            setStartPosition(null);
+    const stopResizing = useCallback(() => {
+        if (isResizing) {
+            onResizeEnd(size);
             setIsResizing(false);
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            document.removeEventListener('mouseup', mouseUpHandler);
-        };
+            setStartMousePos(null);
+            setResizeDirection(null);
+        }
+    }, [isResizing, size, onResizeEnd]);
 
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-
+    useEffect(() => {
+        if (isResizing) {
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', stopResizing);
+        }
         return () => {
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            document.removeEventListener('mouseup', mouseUpHandler);
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', stopResizing);
         };
-    }, [handleMouseMove]);
+    }, [isResizing, onMouseMove, stopResizing]);
 
-    return { size, startResize };
-};
+    return { size, position, startResizing };
+}
