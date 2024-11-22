@@ -1,5 +1,5 @@
 import styles from './TopPanel.module.css';
-import {renamePresentationTitle} from "../../store/renamePresentationTitle.ts";
+import {renamePresentationTitle} from "../../store/RenamePresentationTitle.ts";
 import {dispatch} from "../../store/editor.ts";
 
 import logo from '../../assets/logo.png'
