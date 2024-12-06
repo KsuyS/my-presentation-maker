@@ -1,9 +1,10 @@
 import { ImageContent } from "../../store/PresentationType.ts";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect } from "react";
 import { useDragAndDropObject } from '../../store/useDragAndDropForObject.ts';
 import { SLIDE_WIDTH, SLIDE_HEIGHT } from '../slide/currentSlide';
 import styles from './Object.module.css';
-import { ChangeObjectPosition } from "../../store/ChangeObjectPosition.ts";
+import { useResizeObject } from '../../store/useResizeObject';
+import { ChangeObjectSize } from '../../store/ChangeObjectSize';
 import { dispatch } from "../../store/editor.ts";
 
 type ImageObjectProps = {
@@ -13,26 +14,40 @@ type ImageObjectProps = {
     onDragEnd: (newPosition: { x: number; y: number }) => void;
 }
 
-function ImageObject({ imageObject, scale = 1, isSelected }: ImageObjectProps) {
-    
+const MIN_SIZE = { width: 20, height: 20 };
+
+function ImageObject({ imageObject, scale = 1, isSelected, onDragEnd }: ImageObjectProps) {
+    console.log('ImageObject', imageObject.id, 'x', imageObject.position.x, 'y', imageObject.position.y, 'scale:', scale, imageObject.size.height, imageObject.size.width);
+
     const { position, onMouseDown } = useDragAndDropObject(
-        (newPosition) => {
-            console.log('Dispatching ChangeObjectPosition with id:', imageObject.id);
-            console.log('Dragging ended with position:', newPosition);
-            
-            dispatch(ChangeObjectPosition, { id: imageObject.id, newPosition});
-        },
+        onDragEnd,
         SLIDE_WIDTH * scale,
         SLIDE_HEIGHT * scale,
         imageObject.position,
+        scale,
         imageObject.size.width * scale,
         imageObject.size.height * scale
     );
 
-    const width = imageObject.size.width * scale;
-    const height = imageObject.size.height * scale;
+    const { size, startResize, stopResize, resize } = useResizeObject(
+        position,
+        {
+            width: imageObject.size.width * scale,
+            height: imageObject.size.height * scale
+        },
+        (newPosition, newSize) => {
+            console.log('Resized to:', newPosition, newSize);
+            dispatch(ChangeObjectSize, newSize);
+        },
+        scale,
+        MIN_SIZE,
+        
+    );
 
-    const imageObjectStyles: CSSProperties = {
+    const width = size.width;
+    const height = size.height;
+
+    const imageStyles: CSSProperties = {
         position: 'absolute',
         top: `${position.y * scale}px`,
         left: `${position.x * scale}px`,
@@ -41,27 +56,54 @@ function ImageObject({ imageObject, scale = 1, isSelected }: ImageObjectProps) {
     };
 
     if (isSelected) {
-        imageObjectStyles.border = '3px solid #0b57d0';
+        imageStyles.border = '3px solid #0b57d0';
     }
+
+    useEffect(() => {
+        if (isSelected && resize) {
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+            return () => {
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+            };
+        }
+    }, [isSelected, resize]);
 
     return (
         <div style={{ position: 'relative' }}>
-            <img 
-                style={imageObjectStyles} 
-                src={imageObject.src} 
+            <img
+                style={imageStyles}
+                src={imageObject.src}
                 onMouseDown={onMouseDown}
                 alt="Draggable"
             />
             {isSelected && (
                 <>
-                    <div className={`${styles.resizeHandle} ${styles.topLeft}`} style={{ top: `${position.y * scale - 5}px`, left: `${position.x * scale - 5}px` }}></div>
-                    <div className={`${styles.resizeHandle} ${styles.topRight}`} style={{ top: `${position.y * scale - 5}px`, left: `${position.x * scale + width - 5}px` }}></div>
-                    <div className={`${styles.resizeHandle} ${styles.bottomLeft}`} style={{ top: `${position.y * scale + height - 5}px`, left: `${position.x * scale - 5}px` }}></div>
-                    <div className={`${styles.resizeHandle} ${styles.bottomRight}`} style={{ top: `${position.y * scale + height - 5}px`, left: `${position.x * scale + width - 5}px` }}></div>
-                    <div className={`${styles.resizeHandle} ${styles.top}`} style={{ top: `${position.y * scale - 5}px`, left: `${position.x * scale + width / 2}px`, transform: 'translateX(-50%)' }}></div>
-                    <div className={`${styles.resizeHandle} ${styles.bottom}`} style={{ top: `${position.y * scale + height - 5}px`, left: `${position.x * scale + width / 2}px`, transform: 'translateX(-50%)' }}></div>
-                    <div className={`${styles.resizeHandle} ${styles.left}`} style={{ top: `${position.y * scale + height / 2}px`, left: `${position.x * scale - 5}px`, transform: 'translateY(-50%)' }}></div>
-                    <div className={`${styles.resizeHandle} ${styles.right}`} style={{ top: `${position.y * scale + height / 2}px`, left: `${position.x * scale + width - 5}px`, transform: 'translateY(-50%)' }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.topLeft}`}
+                        style={{ top: `${position.y * scale - 5}px`, left: `${position.x * scale - 5}px` }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('topLeft'); }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.topRight}`}
+                        style={{ top: `${position.y * scale - 5}px`, left: `${position.x * scale + width - 5}px` }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('topRight'); }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.bottomLeft}`}
+                        style={{ top: `${position.y * scale + height - 5}px`, left: `${position.x * scale - 5}px` }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('bottomLeft'); }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.bottomRight}`}
+                        style={{ top: `${position.y * scale + height - 5}px`, left: `${position.x * scale + width - 5}px` }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('bottomRight'); }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.top}`}
+                        style={{ top: `${position.y * scale - 5}px`, left: `${position.x * scale + width / 2}px`, transform: 'translateX(-50%)' }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('top'); }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.bottom}`}
+                        style={{ top: `${position.y * scale + height - 5}px`, left: `${position.x * scale + width / 2}px`, transform: 'translateX(-50%)' }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('bottom'); }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.left}`}
+                        style={{ top: `${position.y * scale + height / 2}px`, left: `${position.x * scale - 5}px`, transform: 'translateY(-50%)' }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('left'); }}></div>
+                    <div className={`${styles.resizeHandle} ${styles.right}`}
+                        style={{ top: `${position.y * scale + height / 2}px`, left: `${position.x * scale + width - 5}px`, transform: 'translateY(-50%)' }}
+                        onMouseDown={(e) => { e.stopPropagation(); startResize('right'); }}></div>
                 </>
             )}
         </div>
@@ -70,4 +112,4 @@ function ImageObject({ imageObject, scale = 1, isSelected }: ImageObjectProps) {
 
 export {
     ImageObject,
-}
+};

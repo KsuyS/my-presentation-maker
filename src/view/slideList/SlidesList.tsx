@@ -3,7 +3,7 @@ import { SlidesCollection } from "../../store/PresentationType.ts";
 import { CurrentSlide } from '../slide/currentSlide.tsx';
 import { SelectionType } from "../../store/EditorType.ts";
 import { dispatch } from "../../store/editor.ts";
-import { setSelection } from "../../store/setSelection.ts";
+import { setSelection } from "../../store/SetSelection.ts";
 import { changeSlidePosition } from '../../store/ChangeSlidePosition';
 import { useDragAndDrop } from '../../store/useDragAndDropForSlide';
 

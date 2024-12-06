@@ -4,7 +4,8 @@ import { ImageObject } from "./ImageObject.tsx";
 import styles from './Slide.module.css';
 import { CSSProperties } from "react";
 import { dispatch } from "../../store/editor.ts";
-import { setSelection } from "../../store/setSelection.ts";
+import { setSelection } from "../../store/SetSelection.ts";
+import { ChangeObjectPosition } from "../../store/ChangeObjectPosition.ts";
 
 export const SLIDE_WIDTH = 935;
 export const SLIDE_HEIGHT = 525;
@@ -34,6 +35,7 @@ function CurrentSlide({ slide, scale = 1, isSelected, className, selectedObjId }
 
     const handleDragEnd = (objectId: string, newPosition: { x: number; y: number }) => {
         console.log(`Объект ${objectId} перемещен на новую позицию`, newPosition);
+        dispatch(ChangeObjectPosition, newPosition);
     };
 
     if (slide == null) {
@@ -54,13 +56,23 @@ function CurrentSlide({ slide, scale = 1, isSelected, className, selectedObjId }
         slideStyles.border = '3px solid #0b57d0';
     }
 
+    // const t = slide.content.find(v => v.id === 'text1')
+    // if (t) {
+    //     console.log('text', t.position, t.size)
+    // }
+
+    // const i = slide.content.find(v => v.id === 'image1')
+    // if (i) {
+    //     console.log('image', i.position, i.size)
+    // }
+
     return (
         <div style={slideStyles} className={`${styles.slide} ${className}`} onClick={onSlideClick}>
             {slide.content.map(slideObject => (
                 <div key={slideObject.id} onClick={(e) => { e.stopPropagation(); onObjClick(slideObject.id); }}>
                     {slideObject.type === "text" ? (
                         <TextObject
-                            textObject={slideObject}
+                            textObject={{ ...slideObject }}
                             scale={scale}
                             isSelected={slideObject.id === selectedObjId}
                             onDragEnd={(newPosition) => handleDragEnd(slideObject.id, newPosition)}

@@ -1,27 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function useDragAndDropObject(
     onDragEnd: (newPosition: { x: number; y: number }) => void,
     slideWidth: number,
     slideHeight: number,
     initialPosition: { x: number; y: number },
-    objectWidth: number = 100, // Ширина объекта по умолчанию
-    objectHeight: number = 100 // Высота объекта по умолчанию
+    scale: number,
+    objectWidth: number = 100,
+    objectHeight: number = 100
 ) {
     const [position, setPosition] = useState<{ x: number; y: number }>(initialPosition);
+    const aaaRef = useRef(initialPosition);
+    
+    if (JSON.stringify(initialPosition) !== JSON.stringify(aaaRef.current)) {
+        aaaRef.current = initialPosition;
+        setPosition({ ...initialPosition });
+    }
+
     const [initialMousePosition, setInitialMousePosition] = useState<{ x: number; y: number } | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [offset, setOffset] = useState<{ x: number; y: number } | null>(null);
 
+    console.log(position.x * scale, position.y * scale);
+
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => {
             if (isDragging && initialMousePosition && offset) {
-                const newX = event.clientX - offset.x;
-                const newY = event.clientY - offset.y;
-
+                const newX = (event.clientX - offset.x) / scale;
+                const newY = (event.clientY - offset.y) / scale;
+        
                 if (
-                    newX >= 0 && newX <= slideWidth - objectWidth &&
-                    newY >= 0 && newY <= slideHeight - objectHeight
+                    newX >= 0 && newX <= slideWidth / scale - objectWidth &&
+                    newY >= 0 && newY <= slideHeight / scale - objectHeight
                 ) {
                     setPosition({ x: newX, y: newY });
                 }
@@ -30,10 +40,11 @@ function useDragAndDropObject(
 
         const handleMouseUp = () => {
             if (isDragging) {
-                onDragEnd(position);
                 setIsDragging(false);
                 setInitialMousePosition(null);
                 setOffset(null);
+                
+                onDragEnd(position);
             }
         };
 
@@ -44,12 +55,15 @@ function useDragAndDropObject(
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDragging, initialMousePosition, position, onDragEnd, slideWidth, slideHeight, offset]);
+    }, [isDragging, initialMousePosition, offset, position, onDragEnd, slideWidth, slideHeight, scale]);
 
     const onMouseDown = (event: React.MouseEvent) => {
         event.preventDefault();
         setInitialMousePosition({ x: event.clientX, y: event.clientY });
-        setOffset({ x: event.clientX - position.x, y: event.clientY - position.y });
+        setOffset({ 
+            x: event.clientX - position.x * scale,
+            y: event.clientY - position.y * scale,
+        });
         setIsDragging(true);
     };
 
