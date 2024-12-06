@@ -6,6 +6,7 @@ import { addText } from "../../store/AddTextOnSlide.ts";
 import { addImage } from "../../store/AddImageOnSlide.ts";
 import { removeObject } from "../../store/RemoveObjectOnSlide.ts";
 import { changeBackground } from "../../store/ChangeBackground.ts";
+import { exportToJson, importFromJson } from "../../store/JSONUtils.ts";
 
 import addSlideIcon from '../../assets/add-slide.png';
 import removeSlideIcon from '../../assets/delete-slide.png';
@@ -14,6 +15,7 @@ import removeTextIcon from '../../assets/delete-slide.png';
 import addImageIcon from '../../assets/add-slide.png';
 
 import { useState } from 'react';
+import { editor } from '../../store/data.ts';
 
 function Toolbar() {
     const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
@@ -54,6 +56,17 @@ function Toolbar() {
         }
     }
 
+    const handleExport = () => {
+        exportToJson(editor);
+    };
+
+    const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            importFromJson(file);
+        }
+    };
+
     return (
         <div className={styles.toolbar}>
             <button className={styles.button} onClick={onAddSlide}>
@@ -91,9 +104,9 @@ function Toolbar() {
 
             {backgroundOption === 'color' && (
                 <div className={styles.changeColor}>
-                    <input 
-                        type="color" 
-                        id="colorPicker" 
+                    <input
+                        type="color"
+                        id="colorPicker"
                         onChange={onChangeColorBackground}
                         className={`${styles.colorPicker}`}
                     />
@@ -102,9 +115,9 @@ function Toolbar() {
 
             {backgroundOption === 'image' && (
                 <div className={styles.changeImage}>
-                    <input 
-                        type="file" 
-                        id="imageUploader" 
+                    <input
+                        type="file"
+                        id="imageUploader"
                         accept="image/*"
                         onChange={onChangeImgBackground}
                         className={styles.imageUploader}
@@ -114,6 +127,22 @@ function Toolbar() {
                     </label>
                 </div>
             )}
+
+            <button className={styles.button} onClick={handleExport}>
+                Экспортировать в JSON
+            </button>
+
+            <input
+                type="file"
+                accept=".json"
+                onChange={handleImport}
+                style={{ display: 'none' }}
+                id="jsonFileInput"
+            />
+            <label htmlFor="jsonFileInput" className={`${styles.button}`}>
+                Импортировать из JSON
+            </label>
+
         </div>
     );
 }
