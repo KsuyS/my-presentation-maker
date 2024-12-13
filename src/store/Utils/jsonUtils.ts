@@ -1,6 +1,7 @@
-import { loadFromLocalStorage, saveToLocalStorage } from '../store/storage';
-import { EditorType } from '../store/EditorType';
-import { setEditor } from './editor';
+import { loadFromLocalStorage, saveToLocalStorage } from './storage';
+import { EditorType } from '../Editor/EditorType';
+import { setEditor } from '../Editor/editor';
+import { validate } from './PresentationSchema';
 
 const exportToJson = (editor: EditorType) => {
     const jsonString = JSON.stringify(editor, null, 2);
@@ -25,8 +26,8 @@ const importFromJson = (file: File) => {
             try {
                 const importedEditor: EditorType = JSON.parse(jsonString);
 
-                if (!isValidEditor(importedEditor)) {
-                    console.error("Импортированные данные не соответствуют ожидаемому формату.");
+                if (!validate(importedEditor.presentation)) {
+                    console.error("Импортированные данные не соответствуют ожидаемому формату:", validate.errors);
                     return;
                 }
 
@@ -36,10 +37,10 @@ const importFromJson = (file: File) => {
                     saveToLocalStorage(importedEditor);
                     const loadedEditor = loadFromLocalStorage();
                     if (loadedEditor) {
-                        console.log('Loaded editor state from localStorage:', loadedEditor);
+                        console.log('Загруженный editor из localStorage:', loadedEditor);
                         setEditor(loadedEditor);
                     } else {
-                        console.log('Нет редактора');
+                        console.log('Нет editor');
                     }
                 }
             } catch (error) {
@@ -47,11 +48,8 @@ const importFromJson = (file: File) => {
             }
         }
     };
+
     reader.readAsText(file);
 };
 
-const isValidEditor = (data: any): data is EditorType => {
-    return data && typeof data.presentation === 'object' && Array.isArray(data.presentation.slides);
-};
-
-export { exportToJson, importFromJson }
+export { exportToJson, importFromJson };

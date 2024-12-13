@@ -1,6 +1,6 @@
-import { EditorType } from "./EditorType.ts";
-import { Slide } from "./PresentationType.ts"
-import { generateRandomId } from "./GenerateRandomId.ts"
+import { EditorType } from "./Editor/EditorType";
+import { Slide } from "./Editor/PresentationType"
+import { generateRandomId } from "./GenerateRandomId"
 
 function addSlide(editor: EditorType): EditorType {
     const newSlide: Slide = {

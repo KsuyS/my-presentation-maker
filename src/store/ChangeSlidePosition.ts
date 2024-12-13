@@ -1,5 +1,5 @@
-import { EditorType } from "./EditorType.ts";
-import { Slide } from "./PresentationType.ts";
+import { EditorType } from "./Editor/EditorType";
+import { Slide } from "./Editor/PresentationType";
 
 function changeSlidePosition(editor: EditorType, updatedSlides: Array<Slide>): EditorType {
     const { presentation, selection } = editor;

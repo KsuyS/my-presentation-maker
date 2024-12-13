@@ -1,32 +1,16 @@
-import { useEffect } from 'react';
 import styles from './App.module.css';
-import { SlidesList } from "./view/slideList/SlidesList.tsx";
-import { TopPanel } from "./view/topPanel/TopPanel.tsx";
-import { Workspace } from "./view/workspace/Workspace.tsx";
-import { Toolbar } from "./view/toolbar/Toolbar.tsx";
-import { EditorType } from "./store/EditorType.ts";
-import { saveToLocalStorage, loadFromLocalStorage } from './store/storage';
+import { SlidesList } from "./view/slideList/SlidesList";
+import { TopPanel } from "./view/topPanel/TopPanel";
+import { Workspace } from "./view/workspace/Workspace";
+import { Toolbar } from "./view/toolbar/Toolbar";
+import { EditorType } from "./store/Editor/EditorType";
 
 type AppProps = {
     editor: EditorType,
     setEditor: (editor: EditorType) => void;
 }
 
-function App({ editor, setEditor }: AppProps) {
-    useEffect(() => {
-        saveToLocalStorage(editor);
-    }, [editor]);
-
-    useEffect(() => {
-        const loadedEditor = loadFromLocalStorage();
-        if (loadedEditor) {
-            //console.log('Loaded editor state from localStorage:', loadedEditor);
-            setEditor(loadedEditor);
-        } else {
-            //console.log('No editor state');
-        }
-    }, [setEditor]);
-
+function App({ editor }: AppProps) {
     return (
         <div className='App'>
             <TopPanel title={editor.presentation.title}></TopPanel>

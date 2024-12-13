@@ -1,4 +1,4 @@
-import { EditorType } from "./EditorType.ts"; 
+import { EditorType } from "./Editor/EditorType"; 
 
 function removeSlide(editor: EditorType): EditorType { 
     if (!editor.selection) { 

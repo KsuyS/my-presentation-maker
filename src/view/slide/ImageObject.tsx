@@ -1,11 +1,11 @@
-import { ImageContent } from "../../store/PresentationType.ts";
+import { ImageContent } from "../../store/Editor/PresentationType";
 import { CSSProperties, useEffect } from "react";
-import { useDragAndDropObject } from '../../store/useDragAndDropForObject.ts';
+import { useDragAndDropObject } from '../../store/СustomРooks/useDragAndDropForObject';
 import { SLIDE_WIDTH, SLIDE_HEIGHT } from '../slide/currentSlide';
 import styles from './Object.module.css';
-import { useResizeObject } from '../../store/useResizeObject';
+import { useResizeObject } from '../../store/СustomРooks/useResizeObject';
 import { ChangeObjectSize } from '../../store/ChangeObjectSize';
-import { dispatch } from "../../store/editor.ts";
+import { dispatch } from "../../store/Editor/editor";
 
 type ImageObjectProps = {
     imageObject: ImageContent,
@@ -26,7 +26,8 @@ function ImageObject({ imageObject, scale = 1, isSelected, onDragEnd }: ImageObj
         imageObject.position,
         scale,
         imageObject.size.width * scale,
-        imageObject.size.height * scale
+        imageObject.size.height * scale,
+        isSelected,
     );
 
     const { size, startResize, stopResize, resize } = useResizeObject(
@@ -41,7 +42,7 @@ function ImageObject({ imageObject, scale = 1, isSelected, onDragEnd }: ImageObj
         },
         scale,
         MIN_SIZE,
-        
+
     );
 
     const width = size.width;
@@ -76,7 +77,6 @@ function ImageObject({ imageObject, scale = 1, isSelected, onDragEnd }: ImageObj
                 style={imageStyles}
                 src={imageObject.src}
                 onMouseDown={onMouseDown}
-                alt="Draggable"
             />
             {isSelected && (
                 <>

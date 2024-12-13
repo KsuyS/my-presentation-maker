@@ -1,8 +1,8 @@
-import { EditorType } from "./EditorType.ts";
-import { ImageContent } from "./PresentationType.ts";
+import { EditorType } from "./Editor/EditorType";
+import { ImageContent } from "./Editor/PresentationType";
+import { generateRandomId } from "./GenerateRandomId";
 
-function addImage(editor: EditorType): EditorType {
-    const image = "cat.png";
+function addImage(editor: EditorType, { src }: { src: string }): EditorType {
     if (!editor.selection || !editor.selection.selectedSlideId) {
         return editor;
     }
@@ -12,7 +12,7 @@ function addImage(editor: EditorType): EditorType {
         position: { x: 400, y: 300 },
         size: { width: 200, height: 150 },
         type: 'image',
-        src: image,
+        src,
     };
 
     const updatedSlides = editor.presentation.slides.map(slide => {
@@ -34,16 +34,5 @@ function addImage(editor: EditorType): EditorType {
     };
 }
 
-function generateRandomId(length: number = 10): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        result += characters[randomIndex];
-    }
-
-    return result;
-}
 
 export { addImage };

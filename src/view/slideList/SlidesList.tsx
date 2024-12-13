@@ -1,11 +1,11 @@
 import styles from './SlidesList.module.css';
-import { SlidesCollection } from "../../store/PresentationType.ts";
-import { CurrentSlide } from '../slide/currentSlide.tsx';
-import { SelectionType } from "../../store/EditorType.ts";
-import { dispatch } from "../../store/editor.ts";
-import { setSelection } from "../../store/SetSelection.ts";
+import { SlidesCollection } from "../../store/Editor/PresentationType";
+import { CurrentSlide } from '../slide/currentSlide';
+import { SelectionType } from "../../store/Editor/EditorType";
+import { dispatch } from "../../store/Editor/editor";
+import { setSelection } from "../../store/Editor/SetSelection";
 import { changeSlidePosition } from '../../store/ChangeSlidePosition';
-import { useDragAndDrop } from '../../store/useDragAndDropForSlide';
+import { useDragAndDrop } from '../../store/СustomРooks/useDragAndDropForSlide';
 
 const SLIDE_PREVIEW_SCALE = 0.2;
 
@@ -28,27 +28,32 @@ function SlidesList({ slides, selection }: SlidesListProps) {
 
     return (
         <div className={styles.slideList}>
-            {slides.map((slide) => (
-                <div
-                    key={slide.id}
-                    className={styles.slideContainer}
-                    draggable
-                    onClick={() => onSlideClick(slide.id)}
-                    onDragStart={(event) => onDragStart(event, slide.id)}
-                    onDragOver={onDragOver}
-                    onDrop={(event) => onDrop(event, slide.id)}
-                    onDragEnd={onDragEnd}
-                >
-                    <div className={styles.slideNumber}>{slides.findIndex(s => s.id === slide.id) + 1}</div>
-                    <CurrentSlide
-                        slide={slide}
-                        scale={SLIDE_PREVIEW_SCALE}
-                        isSelected={slide.id === selection.selectedSlideId}
-                        className={styles.item}
-                        selectedObjId={null}
-                    />
+            {slides.length === 0 ? (
+                <div className={styles.emptySlidesMessage}>
                 </div>
-            ))}
+            ) : (
+                slides.map((slide) => (
+                    <div
+                        key={slide.id}
+                        className={styles.slideContainer}
+                        draggable
+                        onClick={() => onSlideClick(slide.id)}
+                        onDragStart={(event) => onDragStart(event, slide.id)}
+                        onDragOver={onDragOver}
+                        onDrop={(event) => onDrop(event, slide.id)}
+                        onDragEnd={onDragEnd}
+                    >
+                        <div className={styles.slideNumber}>{slides.findIndex(s => s.id === slide.id) + 1}</div>
+                        <CurrentSlide
+                            slide={slide}
+                            scale={SLIDE_PREVIEW_SCALE}
+                            isSelected={slide.id === selection.selectedSlideId}
+                            className={styles.item}
+                            selectedObjId={null}
+                        />
+                    </div>
+                ))
+            )}
         </div>
     );
 }

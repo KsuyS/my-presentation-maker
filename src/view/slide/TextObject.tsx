@@ -1,12 +1,12 @@
-import { TextContent } from "../../store/PresentationType.ts";
+import { TextContent } from "../../store/Editor/PresentationType";
 import { CSSProperties } from "react";
-import { useDragAndDropObject } from '../../store/useDragAndDropForObject.ts';
+import { useDragAndDropObject } from '../../store/СustomРooks/useDragAndDropForObject';
 import { SLIDE_WIDTH, SLIDE_HEIGHT } from '../slide/currentSlide';
 import styles from './Object.module.css';
-import { useResizeObject } from '../../store/useResizeObject';
+import { useResizeObject } from '../../store/СustomРooks/useResizeObject';
 import { useEffect } from "react";
 import { ChangeObjectSize } from '../../store/ChangeObjectSize';
-import { dispatch } from "../../store/editor.ts";
+import { dispatch } from "../../store/Editor/editor";
 
 
 type TextObjectProps = {
@@ -27,7 +27,8 @@ function TextObject({ textObject, scale = 1, isSelected, onDragEnd }: TextObject
         textObject.position,
         scale,
         textObject.size.width * scale,
-        textObject.size.height * scale
+        textObject.size.height * scale,
+        isSelected
     );
 
     const { size, startResize, stopResize, resize } = useResizeObject(

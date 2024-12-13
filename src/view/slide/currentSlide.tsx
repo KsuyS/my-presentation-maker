@@ -1,11 +1,11 @@
-import { Slide } from "../../store/PresentationType.ts";
-import { TextObject } from "./TextObject.tsx";
-import { ImageObject } from "./ImageObject.tsx";
+import { Slide } from "../../store/Editor/PresentationType";
+import { TextObject } from "./TextObject";
+import { ImageObject } from "./ImageObject";
 import styles from './Slide.module.css';
 import { CSSProperties } from "react";
-import { dispatch } from "../../store/editor.ts";
-import { setSelection } from "../../store/SetSelection.ts";
-import { ChangeObjectPosition } from "../../store/ChangeObjectPosition.ts";
+import { dispatch } from "../../store/Editor/editor";
+import { setSelection } from "../../store/Editor/SetSelection";
+import { ChangeObjectPosition } from "../../store/ChangeObjectPosition";
 
 export const SLIDE_WIDTH = 935;
 export const SLIDE_HEIGHT = 525;
@@ -38,13 +38,9 @@ function CurrentSlide({ slide, scale = 1, isSelected, className, selectedObjId }
         dispatch(ChangeObjectPosition, newPosition);
     };
 
-    if (slide == null) {
-        return (<></>);
-    }
-
     const slideStyles: CSSProperties = {
-        backgroundColor: slide.background.type === 'solid' ? slide.background.color : 'transparent',
-        backgroundImage: slide.background.type === 'image' ? `url(${slide.background.src})` : 'none',
+        backgroundColor: slide?.background.type === 'solid' ? slide.background.color : 'transparent',
+        backgroundImage: slide?.background.type === 'image' ? `url(${slide.background.src})` : 'none',
         backgroundSize: 'cover',
         position: 'relative',
         width: `${SLIDE_WIDTH * scale}px`,
@@ -56,37 +52,33 @@ function CurrentSlide({ slide, scale = 1, isSelected, className, selectedObjId }
         slideStyles.border = '3px solid #0b57d0';
     }
 
-    // const t = slide.content.find(v => v.id === 'text1')
-    // if (t) {
-    //     console.log('text', t.position, t.size)
-    // }
-
-    // const i = slide.content.find(v => v.id === 'image1')
-    // if (i) {
-    //     console.log('image', i.position, i.size)
-    // }
-
     return (
         <div style={slideStyles} className={`${styles.slide} ${className}`} onClick={onSlideClick}>
-            {slide.content.map(slideObject => (
-                <div key={slideObject.id} onClick={(e) => { e.stopPropagation(); onObjClick(slideObject.id); }}>
-                    {slideObject.type === "text" ? (
-                        <TextObject
-                            textObject={{ ...slideObject }}
-                            scale={scale}
-                            isSelected={slideObject.id === selectedObjId}
-                            onDragEnd={(newPosition) => handleDragEnd(slideObject.id, newPosition)}
-                        />
-                    ) : (
-                        <ImageObject
-                            imageObject={slideObject}
-                            scale={scale}
-                            isSelected={slideObject.id === selectedObjId}
-                            onDragEnd={(newPosition) => handleDragEnd(slideObject.id, newPosition)}
-                        />
-                    )}
+            {slide && slide.content.length === 0 ? (
+                <div className={styles.emptySlideMessage}>
                 </div>
-            ))}
+            ) : (
+                slide?.content.map(slideObject => (
+                    <div key={slideObject.id} onClick={(e) => { e.stopPropagation(); onObjClick(slideObject.id); }}>
+                        {slideObject.type === "text" ? (
+                            <TextObject
+                                textObject={{ ...slideObject }}
+                                scale={scale}
+                                isSelected={slideObject.id === selectedObjId}
+                                onDragEnd={(newPosition) => handleDragEnd(slideObject.id, newPosition)}
+                            />
+                        ) : (
+                            <ImageObject
+                                imageObject={slideObject}
+                                scale={scale}
+                                isSelected={slideObject.id === selectedObjId}
+                                onDragEnd={(newPosition) => handleDragEnd(slideObject.id, newPosition)}
+                                slideId={slide.id}
+                            />
+                        )}
+                    </div>
+                ))
+            )}
         </div>
     );
 }

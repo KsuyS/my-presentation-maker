@@ -1,5 +1,5 @@
-import {Presentation} from "./PresentationType.ts";
-import {EditorType} from "./EditorType.ts";
+import {Presentation} from "./PresentationType";
+import {EditorType} from "./EditorType";
 
 const presentation: Presentation = {
     title: "Новая презентация",

@@ -7,6 +7,10 @@
     display: flex;
 }
 
+.emptySlidesMessage {
+    margin-left: 261px;
+}
+
 .item {
     margin: 10px;
     border-radius: 10px;

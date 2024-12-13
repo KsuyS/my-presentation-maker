@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { addEditorChangeHandler, getEditor, setEditor } from "./store/editor.ts";
+import { addEditorChangeHandler, getEditor, setEditor } from "./store/Editor/editor.ts";
 
 const root = createRoot(document.getElementById('root')!);
 

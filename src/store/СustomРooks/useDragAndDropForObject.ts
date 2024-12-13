@@ -7,7 +7,8 @@ function useDragAndDropObject(
     initialPosition: { x: number; y: number },
     scale: number,
     objectWidth: number = 100,
-    objectHeight: number = 100
+    objectHeight: number = 100,
+    isSelected: boolean,
 ) {
     const [position, setPosition] = useState<{ x: number; y: number }>(initialPosition);
     const aaaRef = useRef(initialPosition);
@@ -20,8 +21,6 @@ function useDragAndDropObject(
     const [initialMousePosition, setInitialMousePosition] = useState<{ x: number; y: number } | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [offset, setOffset] = useState<{ x: number; y: number } | null>(null);
-
-    console.log(position.x * scale, position.y * scale);
 
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => {
@@ -59,6 +58,8 @@ function useDragAndDropObject(
 
     const onMouseDown = (event: React.MouseEvent) => {
         event.preventDefault();
+        if (!isSelected) return;
+
         setInitialMousePosition({ x: event.clientX, y: event.clientY });
         setOffset({ 
             x: event.clientX - position.x * scale,

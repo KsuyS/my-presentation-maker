@@ -1,5 +1,5 @@
-import { EditorType } from "./EditorType.ts";
-import { TextContent } from "./PresentationType.ts"
+import { EditorType } from "./Editor/EditorType";
+import { TextContent } from "./Editor/PresentationType"
 
 
 function addText(editor: EditorType): EditorType {

@@ -1,5 +1,5 @@
-import {Slide} from "../../store/PresentationType.ts";
-import { CurrentSlide } from '../slide/currentSlide.tsx'
+import {Slide} from "../../store/Editor/PresentationType";
+import { CurrentSlide } from '../slide/currentSlide'
 
 import styles from './Workspace.module.css'
 

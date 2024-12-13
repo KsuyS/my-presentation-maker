@@ -1,5 +1,5 @@
-import { EditorType } from "./EditorType.ts";
-import { SolidBackground, ImageBackground } from "./PresentationType.ts";
+import { EditorType } from "./Editor/EditorType";
+import { SolidBackground, ImageBackground } from "./Editor/PresentationType";
 
 type BackgroundType = SolidBackground | ImageBackground;
 

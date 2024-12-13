@@ -1,6 +1,6 @@
 import styles from './TopPanel.module.css';
-import {renamePresentationTitle} from "../../store/RenamePresentationTitle.ts";
-import {dispatch} from "../../store/editor.ts";
+import {renamePresentationTitle} from "../../store/RenamePresentationTitle";
+import {dispatch} from "../../store/Editor/editor";
 
 import logo from '../../assets/logo.png'
 

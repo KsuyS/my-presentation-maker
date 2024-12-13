@@ -1,5 +1,5 @@
-import { EditorType } from "./EditorType.ts";
-import { Slide, SlideObject, TextContent, ImageContent } from "./PresentationType.ts";
+import { EditorType } from "./Editor/EditorType";
+import { Slide, SlideObject, TextContent, ImageContent } from "./Editor/PresentationType";
 
 function ChangeObjectSize(editor: EditorType, newSize: { width: number; height: number }): EditorType {
     console.log('newSize: ', newSize);

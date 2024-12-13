@@ -1,6 +1,6 @@
 import { Presentation } from "./PresentationType.ts";
 import { EditorType } from "./EditorType.ts";
-import { loadFromLocalStorage } from './storage';
+import { loadFromLocalStorage, saveToLocalStorage } from '../Utils/storage.ts';
 
 const initialPresentation: Presentation = {
     title: "Новая презентация",
@@ -12,8 +12,6 @@ const initialPresentation: Presentation = {
         },
     ]
 };
-
-//localStorage.clear();
 
 let _editor = loadFromLocalStorage() || {
     presentation: initialPresentation,
@@ -31,19 +29,16 @@ function getEditor() {
 
 function setEditor(newEditor: EditorType): void {
     _editor = newEditor;
+    
+    saveToLocalStorage(_editor);
     if (_handler) {
         _handler();
     }
-    
 }
 
 function dispatch(modifyFn: Function, payload?: Object): void {
     const newEditor = modifyFn(_editor, payload);
     setEditor(newEditor);
-
-    if (_handler) {
-        _handler();
-    }
 }
 
 function addEditorChangeHandler(handler: Function): void {
@@ -55,4 +50,4 @@ export {
     setEditor,
     dispatch,
     addEditorChangeHandler,
-};
+}

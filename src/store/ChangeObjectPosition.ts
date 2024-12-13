@@ -1,5 +1,5 @@
-import { EditorType } from "./EditorType.ts";
-import { Slide, SlideObject, ImageContent, TextContent } from "./PresentationType.ts";
+import { EditorType } from "./Editor/EditorType";
+import { Slide, SlideObject, ImageContent, TextContent } from "./Editor/PresentationType";
 
 function ChangeObjectPosition(editor: EditorType, newPosition: { x: number; y: number }): EditorType {
     console.log('newPosition: ', newPosition);

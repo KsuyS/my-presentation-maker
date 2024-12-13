@@ -39,35 +39,21 @@ function useResizeObject(
 
         switch (resizeHandle) {
             case 'topLeft':
-                newWidth = Math.max(minSize.width, size.width - scaledMovementX);
-                newHeight = Math.max(minSize.height, size.height - scaledMovementY);
-                newPosition.x += size.width - newWidth; // Adjust position to the left
-                newPosition.y += size.height - newHeight; // Adjust position upwards
                 break;
             case 'topRight':
-                newWidth = Math.max(minSize.width, size.width + scaledMovementX);
-                newHeight = Math.max(minSize.height, size.height - scaledMovementY);
-                newPosition.y += size.height - newHeight; // Adjust position upwards
                 break;
             case 'bottomLeft':
-                newWidth = Math.max(minSize.width, size.width - scaledMovementX);
-                newHeight = Math.max(minSize.height, size.height + scaledMovementY);
-                newPosition.x += size.width - newWidth; // Adjust position to the left
                 break;
             case 'bottomRight':
                 newWidth = Math.max(minSize.width, size.width + scaledMovementX);
                 newHeight = Math.max(minSize.height, size.height + scaledMovementY);
                 break;
             case 'top':
-                newHeight = Math.max(minSize.height, size.height - scaledMovementY);
-                newPosition.y += size.height - newHeight; // Adjust position upwards
                 break;
             case 'bottom':
                 newHeight = Math.max(minSize.height, size.height + scaledMovementY);
                 break;
             case 'left':
-                newWidth = Math.max(minSize.width, size.width - scaledMovementX);
-                newPosition.x += size.width - newWidth; // Adjust position to the left
                 break;
             case 'right':
                 newWidth = Math.max(minSize.width, size.width + scaledMovementX);

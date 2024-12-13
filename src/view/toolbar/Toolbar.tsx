@@ -1,12 +1,13 @@
 import styles from './Toolbar.module.css';
-import { dispatch } from "../../store/editor.ts";
-import { addSlide } from "../../store/AddSlide.ts";
-import { removeSlide } from "../../store/RemoveSlide.ts";
-import { addText } from "../../store/AddTextOnSlide.ts";
-import { addImage } from "../../store/AddImageOnSlide.ts";
-import { removeObject } from "../../store/RemoveObjectOnSlide.ts";
-import { changeBackground } from "../../store/ChangeBackground.ts";
-import { exportToJson, importFromJson } from "../../store/JSONUtils.ts";
+import { dispatch } from "../../store/Editor/editor";
+import { addSlide } from "../../store/AddSlide";
+import { removeSlide } from "../../store/RemoveSlide";
+import { addText } from "../../store/AddTextOnSlide";
+import { addImage } from "../../store/AddImageOnSlide";
+import { removeObject } from "../../store/RemoveObjectOnSlide";
+import { changeBackground } from "../../store/ChangeBackground";
+import { exportToJson, importFromJson } from "../../store/Utils/jsonUtils";
+import { getEditor } from '../../store/Editor/editor';
 
 import addSlideIcon from '../../assets/add-slide.png';
 import removeSlideIcon from '../../assets/delete-slide.png';
@@ -15,7 +16,6 @@ import removeTextIcon from '../../assets/delete-slide.png';
 import addImageIcon from '../../assets/add-slide.png';
 
 import { useState } from 'react';
-import { editor } from '../../store/data.ts';
 
 function Toolbar() {
     const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
@@ -36,14 +36,21 @@ function Toolbar() {
         dispatch(removeObject);
     }
 
-    function onAddImage() {
-        dispatch(addImage);
-    }
+    const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                dispatch(addImage, { src: reader.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const onChangeColorBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const color = (event.target as HTMLInputElement).value;
         dispatch(changeBackground, { type: 'solid', value: color });
-    }
+    };
 
     const onChangeImgBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -54,10 +61,12 @@ function Toolbar() {
             };
             reader.readAsDataURL(file);
         }
-    }
+    };
 
     const handleExport = () => {
-        exportToJson(editor);
+        const currentEditor = getEditor();
+        exportToJson(currentEditor);
+        console.log("Экспортируемые данные:", getEditor());
     };
 
     const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,15 +90,23 @@ function Toolbar() {
                 <img className={styles.imageButton} src={addTextIcon} alt="Добавить текст" />
                 Добавить текст
             </button>
+            <div className={styles.changeImage}>
+                <input
+                    type="file"
+                    id="imageUploader"
+                    accept="image/*"
+                    onChange={onChangeImgUpload}
+                    className={styles.imageUploader}
+                />
+                <label htmlFor="imageUploader" className={`${styles.button} ${styles.fileLabel}`}>
+                    <img className={styles.imageButton} src={addImageIcon} alt="Добавить изображение" />
+                    Добавить изображение
+                </label>
+            </div>
             <button className={styles.button} onClick={onRemoveObject}>
                 <img className={styles.imageButton} src={removeTextIcon} alt="Удалить объект" />
                 Удалить объект
             </button>
-            <button className={styles.button} onClick={onAddImage}>
-                <img className={styles.imageButton} src={addImageIcon} alt="Добавить изображение" />
-                Добавить изображение
-            </button>
-
             <div className={styles.changeBackground}>
                 <select
                     id="backgroundSelector"
@@ -117,19 +134,19 @@ function Toolbar() {
                 <div className={styles.changeImage}>
                     <input
                         type="file"
-                        id="imageUploader"
+                        id="bgImageUploader"
                         accept="image/*"
                         onChange={onChangeImgBackground}
                         className={styles.imageUploader}
                     />
-                    <label htmlFor="imageUploader" className={`${styles.button} ${styles.fileLabel}`}>
-                        Выберите изображение
+                    <label htmlFor="bgImageUploader" className={`${styles.button} ${styles.fileLabel}`}>
+                        Выберите изображение для фона
                     </label>
                 </div>
             )}
 
             <button className={styles.button} onClick={handleExport}>
-                Экспортировать в JSON
+                Экспорт
             </button>
 
             <input
@@ -140,9 +157,8 @@ function Toolbar() {
                 id="jsonFileInput"
             />
             <label htmlFor="jsonFileInput" className={`${styles.button}`}>
-                Импортировать из JSON
+                Импорт
             </label>
-
         </div>
     );
 }
