@@ -1,6 +1,6 @@
 import { loadFromLocalStorage, saveToLocalStorage } from './storage';
-import { EditorType } from '../Editor/EditorType';
-import { setEditor } from '../Editor/editor';
+import { EditorType } from '../store/EditorType';
+import { setEditor } from '../store/redux/editorActionCreators';
 import { validate } from './PresentationSchema';
 
 const exportToJson = (editor: EditorType) => {

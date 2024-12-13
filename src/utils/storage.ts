@@ -1,4 +1,4 @@
-import { EditorType } from "../Editor/EditorType";
+import { EditorType } from "../store/EditorType";
 import { validate } from './PresentationSchema';
 
 const saveToLocalStorage = (editor: EditorType) => {

@@ -1,8 +1,9 @@
-import { EditorType } from "./Editor/EditorType";
-import { TextContent } from "./Editor/PresentationType"
+import { EditorType } from "../EditorType";
+import { TextContent } from "../PresentationType"
 
 
 function addText(editor: EditorType): EditorType {
+    console.log('текст добавлен')
     const newText = "Введите текст";
     if (!editor.selection || !editor.selection.selectedSlideId) {
         return editor;

@@ -1,5 +1,5 @@
-import { EditorType } from "./Editor/EditorType";
-import { ImageContent } from "./Editor/PresentationType";
+import { EditorType } from "../EditorType";
+import { ImageContent } from "../PresentationType";
 import { generateRandomId } from "./GenerateRandomId";
 
 function addImage(editor: EditorType, { src }: { src: string }): EditorType {
@@ -33,6 +33,5 @@ function addImage(editor: EditorType, { src }: { src: string }): EditorType {
         },
     };
 }
-
 
 export { addImage };

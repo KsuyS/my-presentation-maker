@@ -1,23 +1,22 @@
 import styles from './TopPanel.module.css';
-import {renamePresentationTitle} from "../../store/RenamePresentationTitle";
-import {dispatch} from "../../store/Editor/editor";
+import { renamePresentationTitle } from "../../store/function/RenamePresentationTitle";
+import { dispatch } from "../../store/editor"
+import * as React from "react";
+import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
+import logo from '../../assets/logo.png';
 
-import logo from '../../assets/logo.png'
+function TopPanel() {
+    const editor = useAppSelector((editor => editor))
+    const title = editor.presentation.title
 
-type TitlePresentationProps = {
-    title: string,
-}
-
-function TopPanel({ title }: TitlePresentationProps) {
-    
     const onTitleChange: React.ChangeEventHandler = (event) => {
         dispatch(renamePresentationTitle, (event.target as HTMLInputElement).value)
     }
 
     return (
         <div className={styles.topPanel}>
-            <img className={styles.logo} src={logo}/>
-            <input className={styles.title} type="text" defaultValue={title} onChange={onTitleChange}/>
+            <img className={styles.logo} src={logo} />
+            <input className={styles.title} type="text" defaultValue={title} onChange={onTitleChange} />
         </div>
     )
 }

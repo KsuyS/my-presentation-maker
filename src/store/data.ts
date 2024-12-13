@@ -17,13 +17,6 @@ const presentation: Presentation = {
             fontSize: 20,
             fontColor: "black",
           },
-          {
-            type: 'image',
-            id: "image1",
-            position: { x: 150, y: 200 },
-            size: { width: 150, height: 150 },
-            src: './cat.png',
-          }
         ],
         background: { type: 'solid', color: '#e6e8e6' },
       },
@@ -32,22 +25,17 @@ const presentation: Presentation = {
         content: [],
         background: { type: 'solid', color: '#bdbfb2' },
       },
-      {
-        id: "slide3",
-        content: [],
-        background: { type: 'image', src: './background.png' },
-      },
     ]
   }
 
-  const editor: EditorType = {
+  const data: EditorType = {
     presentation,
     selection: {
         selectedSlideId: presentation.slides[0].id,
-        selectedObjectId: null
+        selectedObjectId: 'text1'
     }
 }
 
 export {
-    editor,
+  data,
 }

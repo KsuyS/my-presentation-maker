@@ -1,4 +1,4 @@
-import { EditorType } from '../store/Editor/EditorType';
+import { EditorType } from '../EditorType';
 
 function MoveElementOnSlide(editor: EditorType, slideId: string, elementId: string, newX: number, newY: number): EditorType {
   return {

@@ -1,8 +1,8 @@
-import { EditorType } from "./Editor/EditorType";
-import { Slide, SlideObject, ImageContent, TextContent } from "./Editor/PresentationType";
+import { EditorType } from "../EditorType";
+import { Slide, SlideObject, TextContent, ImageContent } from "../PresentationType";
 
-function ChangeObjectPosition(editor: EditorType, newPosition: { x: number; y: number }): EditorType {
-    console.log('newPosition: ', newPosition);
+function ChangeObjectSize(editor: EditorType, newSize: { width: number; height: number }): EditorType {
+    console.log('newSize: ', newSize);
 
     const { presentation, selection } = editor;
 
@@ -17,10 +17,17 @@ function ChangeObjectPosition(editor: EditorType, newPosition: { x: number; y: n
         if (slide.id === slideId) {
             const updatedContent = slide.content.map((object: SlideObject) => {
                 if (object.id === objectId) {
-                    return {
-                        ...object,
-                        position: newPosition,
-                    } as ImageContent | TextContent;
+                    if (object.type === 'text') {
+                        return {
+                            ...object,
+                            size: newSize,
+                        } as TextContent;
+                    } else if (object.type === 'image') {
+                        return {
+                            ...object,
+                            size: newSize,
+                        } as ImageContent;
+                    }
                 }
                 return object;
             });
@@ -46,4 +53,4 @@ function ChangeObjectPosition(editor: EditorType, newPosition: { x: number; y: n
     };
 }
 
-export { ChangeObjectPosition };
+export { ChangeObjectSize };

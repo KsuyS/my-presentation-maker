@@ -1,4 +1,4 @@
-import { EditorType } from "./Editor/EditorType"; 
+import { EditorType } from "../EditorType"; 
 
 function removeSlide(editor: EditorType): EditorType { 
     if (!editor.selection) { 

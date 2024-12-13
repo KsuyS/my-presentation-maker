@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
-import { dispatch } from '../Editor/editor';
-import { EditorType } from '../Editor/EditorType';
-import { MoveElementOnSlide } from '../MoveElementOnSlide';
+import { dispatch } from '../editor';
+import { EditorType } from '../EditorType';
+import { MoveElementOnSlide } from '../function/MoveElementOnSlide';
 
 type UseDragAndDropElementProps = {
     slideId: string;

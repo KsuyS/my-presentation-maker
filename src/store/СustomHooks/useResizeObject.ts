@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
-import { dispatch } from '../Editor/editor';
-import { EditorType } from '../Editor/EditorType';
-import { resizeObject } from '../ResizeObject';
+import { dispatch } from '../editor';
+import { EditorType } from '../EditorType';
+import { resizeObject } from '../function/ResizeObject';
 
 type UseResizeElementProps = {
   slideId: string;

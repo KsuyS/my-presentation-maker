@@ -1,6 +1,7 @@
-import {EditorType} from "./Editor/EditorType";
+import {EditorType} from "../EditorType";
 
 function renamePresentationTitle(editor: EditorType, newTitle: string): EditorType {
+    console.log('Новое название презентации')
     return {
         ...editor,
         presentation: {
@@ -8,6 +9,7 @@ function renamePresentationTitle(editor: EditorType, newTitle: string): EditorTy
             title: newTitle,
         }
     }
+    
 }
 
 export {

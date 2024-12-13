@@ -1,10 +1,12 @@
-import { Slide } from "../../store/Editor/PresentationType";
+import { Slide } from "../../store/PresentationType";
 import { TextObject } from "./TextObject";
 import { ImageObject } from "./ImageObject";
 import styles from './Slide.module.css';
 import { CSSProperties } from "react";
-import { dispatch } from "../../store/Editor/editor";
-import { setSelection } from "../../store/Editor/SetSelection";
+import { dispatch } from "../../store/editor.ts";
+import { setSelection } from "../../store/SetSelection.ts";
+import type { SelectionType } from "../../store/EditorType.ts";
+import { useAppSelector } from "../../store/Hooks/useAppSelector.ts";
 import { useDragAndDropObject } from "../../store/СustomHooks/useDragAndDropForObject";
 import { useResizeObject } from "../../store/СustomHooks/useResizeObject";
 
@@ -12,36 +14,44 @@ const SLIDE_WIDTH = 935;
 const SLIDE_HEIGHT = 525;
 
 type SlideProps = {
-    slide: Slide | null;
-    scale?: number;
-    isSelected: boolean;
+    slide: Slide | null,
+    scale: number,
+    selection: SelectionType,
     className: string;
-    selectedObjId: string | null;
     showResizeHandles?: boolean;
 };
 
 function CurrentSlide({
     slide,
     scale = 1,
-    isSelected,
     className,
-    selectedObjId,
     showResizeHandles = true,
 }: SlideProps) {
-    const { isDragging, handleElementMouseDown, handleElementMouseMove, handleElementMouseUp } = useDragAndDropObject({ slideId: slide?.id ?? '' });
+    const selection = useAppSelector((editor => editor.selection))
+
+    const { handleElementMouseDown, handleElementMouseMove, handleElementMouseUp } = useDragAndDropObject({ slideId: slide?.id ?? '' });
     const { isResizing, handleResizeMouseDown, handleResizeMouseMove, handleResizeMouseUp } = useResizeObject({ slideId: slide?.id ?? '' });
 
-    function onObjClick(objectId: string): void {
+    // const onObjClick = () => {
+    //     dispatch(setSelection, {
+    //         selectedSlideId: selection.selectedSlideId,
+    //         selectedObjectId: selection.selectedObjectId,
+    //     })
+    // }
+    const onObjClick = (objectId: string) => {
         dispatch(setSelection, {
-            selectedSlideId: slide?.id,
+            selectedSlideId: selection.selectedSlideId,
             selectedObjectId: objectId,
         });
-    }
+    };
+    
 
-    function onSlideClick(): void {
+    const selectedObjId = selection.selectedObjectId;
+
+    const onSlideClick = () => {
         if (selectedObjId) {
             dispatch(setSelection, {
-                selectedSlideId: slide?.id,
+                selectedSlideId: selection.selectedSlideId,
                 selectedObjectId: null,
             });
         }
@@ -52,8 +62,8 @@ function CurrentSlide({
     }
 
     const slideStyles: CSSProperties = {
-        backgroundColor: slide.background?.type === 'solid' ? slide.background.color : 'transparent',
-        backgroundImage: slide.background?.type === 'image' ? `url(${slide.background.src})` : 'none',
+        backgroundColor: slide?.background?.type === 'solid' ? slide.background.color : 'transparent',
+        backgroundImage: slide?.background?.type === 'image' ? `url(${slide.background.src})` : 'none',
         backgroundSize: 'cover',
         position: 'relative',
         width: `${SLIDE_WIDTH * scale}px`,
@@ -61,7 +71,7 @@ function CurrentSlide({
         zIndex: 1,
     };
 
-    if (isSelected) {
+    if (selection?.selectedObjectId === slide?.id) {
         slideStyles.border = '3px solid #545557';
     }
 
@@ -83,11 +93,11 @@ function CurrentSlide({
             onMouseLeave={handleResizeMouseUp}
             onClick={onSlideClick}
         >
-            {slide.content.length === 0 ? (
+            {slide?.content.length === 0 ? (
                 <div className={styles.emptySlideMessage}>
                 </div>
             ) : (
-                slide.content.map(slideObject => {
+                slide?.content.map(slideObject => {
                     const isSelectedObject = slideObject.id === selectedObjId;
 
                     return (
@@ -99,43 +109,45 @@ function CurrentSlide({
                         >
                             {slideObject.type === "text" ? (
                                 <TextObject
-                                    textObject={{ ...slideObject }}
+                                    key={slideObject.id} 
+                                    textObject={slideObject} 
                                     scale={scale}
-                                    isSelected={isSelectedObject}
+                                    selection={selection}
                                 />
                             ) : (
                                 <ImageObject
-                                    imageObject={slideObject}
-                                    scale={scale}
-                                    isSelected={isSelectedObject}
+                                key={slideObject.id} 
+                                imageObject={slideObject} 
+                                scale={scale} 
+                                selection={selection}
                                 />
                             )}
                             {isSelectedObject && showResizeHandles && (
                                 <>
                                     <div className={`${styles.resizeHandle} ${styles.topLeft}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'top-left')}
-                                        style={{ position: 'absolute', top: slideObject.position.y -5, left: slideObject.position.x -5 }} />
+                                        style={{ position: 'absolute', top: slideObject.position.y - 5, left: slideObject.position.x - 5 }} />
                                     <div className={`${styles.resizeHandle} ${styles.topRight}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'top-right')}
-                                        style={{ position: 'absolute', top: slideObject.position.y -5, left: slideObject.position.x + slideObject.size.width -5}} />
+                                        style={{ position: 'absolute', top: slideObject.position.y - 5, left: slideObject.position.x + slideObject.size.width - 5 }} />
                                     <div className={`${styles.resizeHandle} ${styles.bottomLeft}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'bottom-left')}
-                                        style={{ position: 'absolute', top: slideObject.position.y + slideObject.size.height -5, left: slideObject.position.x -5 }} />
+                                        style={{ position: 'absolute', top: slideObject.position.y + slideObject.size.height - 5, left: slideObject.position.x - 5 }} />
                                     <div className={`${styles.resizeHandle} ${styles.bottomRight}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'bottom-right')}
                                         style={{ position: 'absolute', top: slideObject.position.y + slideObject.size.height - 5, left: slideObject.position.x + slideObject.size.width - 5 }} />
                                     <div className={`${styles.resizeHandle} ${styles.middleLeft}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'middle-left')}
-                                        style={{ position: 'absolute', top: slideObject.position.y + slideObject.size.height / 2 -5, left: slideObject.position.x -5}} />
+                                        style={{ position: 'absolute', top: slideObject.position.y + (slideObject.size.height / 2) - 5, left: slideObject.position.x - 5 }} />
                                     <div className={`${styles.resizeHandle} ${styles.middleRight}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'middle-right')}
-                                        style={{ position: 'absolute', top: slideObject.position.y + slideObject.size.height / 2 -5, left: slideObject.position.x + slideObject.size.width -5 }} />
+                                        style={{ position: 'absolute', top: slideObject.position.y + (slideObject.size.height / 2) - 5, left: slideObject.position.x + slideObject.size.width - 5 }} />
                                     <div className={`${styles.resizeHandle} ${styles.topMiddle}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'top-middle')}
-                                        style={{ position: 'absolute', top: slideObject.position.y -5, left: slideObject.position.x + slideObject.size.width / 2 -5}} />
+                                        style={{ position: 'absolute', top: slideObject.position.y - 5, left: slideObject.position.x + (slideObject.size.width / 2) - 5 }} />
                                     <div className={`${styles.resizeHandle} ${styles.bottomMiddle}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'bottom-middle')}
-                                        style={{ position: 'absolute', top: slideObject.position.y + slideObject.size.height -5, left: slideObject.position.x + slideObject.size.width / 2 -5}} />
+                                        style={{ position: 'absolute', top: slideObject.position.y + slideObject.size.height - 5, left: slideObject.position.x + (slideObject.size.width / 2) - 5 }} />
                                 </>
                             )}
                         </div>
