@@ -5,7 +5,7 @@ import { SelectionType } from "../../store/Editor/EditorType";
 import { dispatch } from "../../store/Editor/editor";
 import { setSelection } from "../../store/Editor/SetSelection";
 import { changeSlidePosition } from '../../store/ChangeSlidePosition';
-import { useDragAndDrop } from '../../store/СustomРooks/useDragAndDropForSlide';
+import { useDragAndDrop } from '../../store/СustomHooks/useDragAndDropForSlide';
 
 const SLIDE_PREVIEW_SCALE = 0.2;
 
@@ -18,7 +18,6 @@ function SlidesList({ slides, selection }: SlidesListProps) {
     function onSlideClick(slideId: string) {
         dispatch(setSelection, {
             selectedSlideId: slideId,
-            selectedObjectId: null
         });
     }
 
@@ -49,7 +48,9 @@ function SlidesList({ slides, selection }: SlidesListProps) {
                             scale={SLIDE_PREVIEW_SCALE}
                             isSelected={slide.id === selection.selectedSlideId}
                             className={styles.item}
+                            //selectedObjId={selection?.selectedObjectId}
                             selectedObjId={null}
+                            showResizeHandles={false}
                         />
                     </div>
                 ))

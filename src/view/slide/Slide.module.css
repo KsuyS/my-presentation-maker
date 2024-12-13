@@ -1,4 +1,14 @@
 .slide {
     position: relative;
-    border: 1px solid #dadce0;
+    border: 1px solid #545557;
+}
+
+.resizeHandle {
+    width: 13px;
+    height: 13px;
+    background-color: #545557;
+    border-radius: 50%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 10;
 }
