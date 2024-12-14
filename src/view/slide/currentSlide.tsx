@@ -15,8 +15,8 @@ const SLIDE_HEIGHT = 525;
 
 type SlideProps = {
     slide: Slide | null,
-    scale: number,
-    selection: SelectionType,
+    scale?: number,
+    selection?: SelectionType,
     className: string;
     showResizeHandles?: boolean;
 };
@@ -39,6 +39,7 @@ function CurrentSlide({
     //     })
     // }
     const onObjClick = (objectId: string) => {
+        console.log('click', objectId)
         dispatch(setSelection, {
             selectedSlideId: selection.selectedSlideId,
             selectedObjectId: objectId,

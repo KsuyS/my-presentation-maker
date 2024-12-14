@@ -32,7 +32,7 @@ const presentation: Presentation = {
     presentation,
     selection: {
         selectedSlideId: presentation.slides[0].id,
-        selectedObjectId: 'text1'
+        selectedObjectId: null
     }
 }
 

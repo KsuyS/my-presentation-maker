@@ -11,7 +11,7 @@ function Workspace() {
 
     return (
         <div className={styles.workspace}>
-            <CurrentSlide slide={selectedSlide} className={styles.currentSlide}></CurrentSlide>
+            <CurrentSlide slide={selectedSlide} className="{styles.currentSlide}"></CurrentSlide>
         </div>
     )
 }
