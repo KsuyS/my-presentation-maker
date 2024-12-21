@@ -13,12 +13,13 @@ import addImageIcon from '../../assets/add-slide.png';
 import undoIcon from '../../assets/undo.png';
 import redoIcon from '../../assets/redo.png';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 function Toolbar() {
     const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
-    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground } = useAppActions()
+    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground } = useAppActions();
     const history = React.useContext(HistoryContext);
+    const editor = useAppSelector((editor => editor));
 
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -55,8 +56,6 @@ function Toolbar() {
         }
     };
 
-    const editor = useAppSelector((editor => editor));
-
     const handleExport = () => {
         exportToJson(editor);
     };
@@ -68,19 +67,19 @@ function Toolbar() {
         }
     };
 
-    function onUndo() {
-        const newEditor = history.undo()
+    const onUndo = useCallback(() => {
+        const newEditor = history.undo();
         if (newEditor) {
-            setEditor(newEditor)
+            setEditor(newEditor);
         }
-    }
+    }, [history, setEditor]);
 
-    function onRedo() {
-        const newEditor = history.redo()
+    const onRedo = useCallback(() => {
+        const newEditor = history.redo();
         if (newEditor) {
-            setEditor(newEditor)
+            setEditor(newEditor);
         }
-    }
+    }, [history, setEditor]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
