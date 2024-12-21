@@ -1,18 +1,24 @@
 import styles from './Toolbar.module.css';
-import { EditorType } from '../../store/EditorType.ts';
+import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
 import { useAppActions } from '../../store/Hooks/useAppActions.ts';
+import { exportToJson, importFromJson } from "../../utils/jsonUtils";
+import * as React from "react";
+import { HistoryContext } from '../../store/Hooks/historyContext.ts';
 
 import addSlideIcon from '../../assets/add-slide.png';
 import removeSlideIcon from '../../assets/delete-slide.png';
 import addTextIcon from '../../assets/add-slide.png';
 import removeTextIcon from '../../assets/delete-slide.png';
 import addImageIcon from '../../assets/add-slide.png';
+import undoIcon from '../../assets/undo.png';
+import redoIcon from '../../assets/redo.png';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function Toolbar() {
     const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
-    const { addSlide, removeSlide, addText, addImage, removeObject, changeBackground, importFromJson, exportToJson } = useAppActions()
+    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground } = useAppActions()
+    const history = React.useContext(HistoryContext);
 
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -28,7 +34,6 @@ function Toolbar() {
             reader.readAsDataURL(file);
         }
     };
-
 
     const onChangeColorBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const color = (event.target as HTMLInputElement).value;
@@ -50,32 +55,52 @@ function Toolbar() {
         }
     };
 
+    const editor = useAppSelector((editor => editor));
+
     const handleExport = () => {
-        //const currentEditor = getEditor();
-        //exportToJson(currentEditor);
-        //console.log("Экспортируемые данные:", getEditor());
+        exportToJson(editor);
     };
 
     const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            
-            reader.onload = (event) => {
-                const jsonString = event.target?.result;
-                if (typeof jsonString === 'string') {
-                    try {
-                        const importedEditor: EditorType = JSON.parse(jsonString)
-                        importFromJson(importedEditor);
-                    } catch (error) {
-                        console.error("Error importing JSON:", error);
-                    }
-                }
-            };
-    
-            reader.readAsText(file);
+            importFromJson(file, setEditor);
         }
     };
+
+    function onUndo() {
+        const newEditor = history.undo()
+        if (newEditor) {
+            setEditor(newEditor)
+        }
+    }
+
+    function onRedo() {
+        const newEditor = history.redo()
+        if (newEditor) {
+            setEditor(newEditor)
+        }
+    }
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            const isMac = navigator.platform.toUpperCase().includes('MAC');
+            const ctrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+
+            if (ctrlOrCmd && event.key === 'z') {
+                event.preventDefault();
+                onUndo();
+            }
+            if (ctrlOrCmd && event.key === 'y') {
+                event.preventDefault();
+                onRedo();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onUndo, onRedo]);
 
     return (
         <div className={styles.toolbar}>
@@ -149,7 +174,6 @@ function Toolbar() {
             <button className={styles.button} onClick={handleExport}>
                 Экспорт
             </button>
-
             <input
                 type="file"
                 accept=".json"
@@ -160,6 +184,16 @@ function Toolbar() {
             <label htmlFor="jsonFileInput" className={`${styles.button}`}>
                 Импорт
             </label>
+
+            <button className={styles.button} onClick={onUndo}>
+                <img className={styles.imageButton} src={undoIcon} alt="Undo" />
+                Undo
+            </button>
+
+            <button className={styles.button} onClick={onRedo}>
+                <img className={styles.imageButton} src={redoIcon} alt="Redo" />
+                Redo
+            </button>
         </div>
     );
 }

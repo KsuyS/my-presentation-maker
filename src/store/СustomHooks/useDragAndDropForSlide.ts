@@ -1,40 +1,40 @@
-import { useState } from "react";
+import { useState } from 'react';
+import { useAppActions } from '../Hooks/useAppActions';
+import { useAppSelector } from '../Hooks/useAppSelector';
 
-export function useDragAndDrop(slides: Array<{ id: string }>, onSlidesChange: (updatedSlides: Array<{ id: string }>) => void) {
-    const [draggedSlideId, setDraggedSlideId] = useState<string | null>(null);
+function useDragAndDropSlide() {
+    const [draggingSlide, setDraggingSlide] = useState<string | null>(null);
+    const [dragOverSlide, setDragOverSlide] = useState<string | null>(null);
 
-    function onDragStart(event: React.DragEvent<HTMLDivElement>, slideId: string) {
-        setDraggedSlideId(slideId);
-        event.dataTransfer.effectAllowed = "move";
+    const { changeSlidePosition } = useAppActions();
+    const editor = useAppSelector((state) => state);
+
+    function handleDragStart(slideId: string) {
+        setDraggingSlide(slideId);
     }
 
-    function onDragOver(event: React.DragEvent<HTMLDivElement>) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "move";
-    }
-
-    function onDrop(event: React.DragEvent<HTMLDivElement>, targetSlideId: string) {
-        event.preventDefault();
-
-        if (draggedSlideId && draggedSlideId !== targetSlideId) {
-            const draggedIndex = slides.findIndex(slide => slide.id === draggedSlideId);
-            const targetIndex = slides.findIndex(slide => slide.id === targetSlideId);
-
-            if (draggedIndex === -1 || targetIndex === -1 || draggedIndex === targetIndex) return;
-
-            const updatedSlides = [...slides];
-            const [movedSlide] = updatedSlides.splice(draggedIndex, 1);
-            updatedSlides.splice(targetIndex, 0, movedSlide);
-
-            onSlidesChange(updatedSlides);
+    function handleDragOver(e: React.DragEvent, slideId: string) {
+        e.preventDefault();
+        if (slideId !== dragOverSlide) {
+            setDragOverSlide(slideId);
         }
-
-        setDraggedSlideId(null);
     }
 
-    function onDragEnd() {
-        setDraggedSlideId(null);
+    function handleDragEnd() {
+        if (draggingSlide && dragOverSlide && draggingSlide !== dragOverSlide) {
+            changeSlidePosition(editor, draggingSlide, dragOverSlide);
+        }
+        setDraggingSlide(null);
+        setDragOverSlide(null);
     }
 
-    return { onDragStart, onDragOver, onDrop, onDragEnd };
+    return {
+        draggingSlide,
+        dragOverSlide,
+        handleDragStart,
+        handleDragOver,
+        handleDragEnd,
+    };
 }
+
+export { useDragAndDropSlide }

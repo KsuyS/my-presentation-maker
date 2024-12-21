@@ -3,12 +3,11 @@ import { TextObject } from "./TextObject";
 import { ImageObject } from "./ImageObject";
 import styles from './Slide.module.css';
 import { CSSProperties } from "react";
-import { dispatch } from "../../store/editor.ts";
-import { setSelection } from "../../store/SetSelection.ts";
 import type { SelectionType } from "../../store/EditorType.ts";
 import { useAppSelector } from "../../store/Hooks/useAppSelector.ts";
-import { useDragAndDropObject } from "../../store/СustomHooks/useDragAndDropForObject";
-import { useResizeObject } from "../../store/СustomHooks/useResizeObject";
+import { useDragAndDropObject } from "../../store/СustomHooks/useDragAndDropForObject.ts";
+import { useResizeObject } from "../../store/СustomHooks/useResizeObject.ts";
+import { useAppActions } from "../../store/Hooks/useAppActions.ts";
 
 const SLIDE_WIDTH = 935;
 const SLIDE_HEIGHT = 525;
@@ -32,18 +31,14 @@ function CurrentSlide({
     const { handleElementMouseDown, handleElementMouseMove, handleElementMouseUp } = useDragAndDropObject({ slideId: slide?.id ?? '' });
     const { isResizing, handleResizeMouseDown, handleResizeMouseMove, handleResizeMouseUp } = useResizeObject({ slideId: slide?.id ?? '' });
 
-    // const onObjClick = () => {
-    //     dispatch(setSelection, {
-    //         selectedSlideId: selection.selectedSlideId,
-    //         selectedObjectId: selection.selectedObjectId,
-    //     })
-    // }
+    const {setSelection} = useAppActions()
+
     const onObjClick = (objectId: string) => {
         console.log('click', objectId)
-        dispatch(setSelection, {
+        setSelection({
             selectedSlideId: selection.selectedSlideId,
             selectedObjectId: objectId,
-        });
+        })
     };
     
 
@@ -51,7 +46,7 @@ function CurrentSlide({
 
     const onSlideClick = () => {
         if (selectedObjId) {
-            dispatch(setSelection, {
+            setSelection({
                 selectedSlideId: selection.selectedSlideId,
                 selectedObjectId: null,
             });
@@ -72,7 +67,12 @@ function CurrentSlide({
         zIndex: 1,
     };
 
-    if (selection?.selectedObjectId === slide?.id) {
+
+    if (selection.selectedObjectId === slide?.id) {
+        slideStyles.border = '3px solid #545557';
+    }
+
+    if (selection.selectedSlideId === slide?.id) {
         slideStyles.border = '3px solid #545557';
     }
 

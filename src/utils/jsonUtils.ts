@@ -1,7 +1,6 @@
-import { loadFromLocalStorage, saveToLocalStorage } from './storage';
-import { EditorType } from '../store/EditorType';
-import { setEditor } from '../store/redux/editorActionCreators';
+import { EditorType } from "../store/EditorType";
 import { validate } from './PresentationSchema';
+import { saveToLocalStorage } from "./storage";
 
 const exportToJson = (editor: EditorType) => {
     const jsonString = JSON.stringify(editor, null, 2);
@@ -17,7 +16,7 @@ const exportToJson = (editor: EditorType) => {
     URL.revokeObjectURL(url);
 };
 
-const importFromJson = (file: File) => {
+const importFromJson = (file: File, setEditor: (editor: EditorType) => void) => {
     const reader = new FileReader();
 
     reader.onload = (event) => {
@@ -32,17 +31,9 @@ const importFromJson = (file: File) => {
                 }
 
                 console.log("Импорт успешен:", importedEditor);
+                setEditor(importedEditor);
+                saveToLocalStorage(importedEditor);
 
-                if (importedEditor) {
-                    saveToLocalStorage(importedEditor);
-                    const loadedEditor = loadFromLocalStorage();
-                    if (loadedEditor) {
-                        console.log('Загруженный editor из localStorage:', loadedEditor);
-                        setEditor(loadedEditor);
-                    } else {
-                        console.log('Нет editor');
-                    }
-                }
             } catch (error) {
                 console.error("Ошибка при импорте JSON:", error);
             }

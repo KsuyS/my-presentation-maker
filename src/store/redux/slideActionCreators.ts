@@ -36,13 +36,53 @@ const changeBackground = (payload: { type: 'solid' | 'image'; value: string }) =
 });
 
 const importFromJson = (payload: EditorType) => ({
-    type: ActionType.IMPORTFROMJSON,
+    type: ActionType.IMPORT_FROM_JSON,
     payload,
 });
 
 const exportToJson = (payload: EditorType) => ({
-    type: ActionType.EXPORTTOJSON,
+    type: ActionType.EXPORT_TO_JSON,
     payload,
+});
+
+const renamePresentationTitle = (payload: string) => ({
+    type: ActionType.RENAME_PRESENTATION,
+    payload,
+});
+
+const changeSlidePosition = (editor: EditorType, slideId: string, targetSlideId: string) => ({
+    type: ActionType.CHANGE_SLIDE_POSITION,
+    payload: {
+        editor,
+        slideId,
+        targetSlideId,
+    },
+});
+
+const changeObjectPosition = (editor: EditorType, slideId: string, objectId: string, newX: number, newY: number) => ({
+    type: ActionType.CHANGE_POSITION_OBJECT,
+    payload: {
+        editor,
+        slideId,
+        objectId,
+        x: newX,
+        y: newY,
+    },
+});
+
+const changeObjectSize = (
+    editor: EditorType, slideId: string, objectId: string, newWidth: number, newHeight: number, newX: number, newY: number,
+) => ({
+    type: ActionType.CHANGE_OBJECT_SIZE,
+    payload: {
+        editor,
+        slideId,
+        objectId,
+        width: newWidth,
+        height: newHeight,
+        x: newX,
+        y: newY,
+    },
 });
 
 export {
@@ -54,4 +94,8 @@ export {
     changeBackground,
     importFromJson,
     exportToJson,
+    renamePresentationTitle,
+    changeSlidePosition,
+    changeObjectPosition,
+    changeObjectSize
 }

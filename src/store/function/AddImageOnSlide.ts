@@ -34,4 +34,5 @@ function addImage(editor: EditorType, { src }: { src: string }): EditorType {
     };
 }
 
+
 export { addImage };

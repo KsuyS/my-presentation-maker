@@ -1,7 +1,6 @@
 import { SelectionType } from "../../store/EditorType";
 import { TextContent } from "../../store/PresentationType";
-import { dispatch } from "../../store/editor.ts";
-import { setSelection } from "../../store/SetSelection.ts";
+import { useAppActions } from "../../store/Hooks/useAppActions.ts";
 import { CSSProperties } from "react";
 
 
@@ -12,6 +11,9 @@ type TextObjectProps = {
 }
 
 function TextObject({ textObject, scale = 1, selection }: TextObjectProps) {
+
+    const { setSelection } = useAppActions()
+
     const textObjectStyles: CSSProperties = {
         position: 'absolute',
         top: `${textObject.position.y * scale}px`,
@@ -25,14 +27,15 @@ function TextObject({ textObject, scale = 1, selection }: TextObjectProps) {
     if (selection.selectedObjectId === textObject.id) {
         textObjectStyles.border = '3px solid #545557';
     }
-    const onTextClick = () => {
-        dispatch(setSelection, {
+
+    function onTextClick(textObject: string) {
+        setSelection({
             selectedSlideId: selection.selectedSlideId,
-            selectedObjectId: textObject.id,
+            selectedObjectId: textObject,
         })
     }
 
-    return <p onClick={onTextClick} style={textObjectStyles}>{textObject.value}</p>;
+    return <p onClick={() => onTextClick(textObject.id)} style={textObjectStyles}>{textObject.value}</p>;
 }
 
 export {

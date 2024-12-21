@@ -1,6 +1,7 @@
 import { EditorType, SelectionType } from "../EditorType"
 
 enum ActionType {
+    RENAME_PRESENTATION = 'renamePresentation',
     ADD_SLIDE = 'addSlide',
     REMOVE_SLIDE = 'removeSlide',
     SET_SELECTION = 'setSelection',
@@ -9,8 +10,16 @@ enum ActionType {
     ADD_IMAGE = 'addImage',
     REMOVE_OBJECT = 'removeObject',
     CHANGE_BACKGROUND = 'changeBackground',
-    IMPORTFROMJSON = 'importFromJson',
-    EXPORTTOJSON = 'exportFromJson',
+    IMPORT_FROM_JSON = 'importFromJson',
+    EXPORT_TO_JSON = 'exportFromJson',
+    CHANGE_SLIDE_POSITION = 'changeSlidePosition',
+    CHANGE_POSITION_OBJECT = 'changeObjectPosition',
+    CHANGE_OBJECT_SIZE = 'changeObjectSize',
+}
+
+type RenamePresentationTitleAction = {
+    type: ActionType.RENAME_PRESENTATION,
+    payload: string;
 }
 
 type AddSlideAction = {
@@ -46,25 +55,56 @@ type RemoveObjectAction = {
 
 type ChangeBackgroundAction = {
     type: ActionType.CHANGE_BACKGROUND,
-    payload: { 
+    payload: {
         type: 'solid' | 'image';
         value: string;
     };
 }
 
 type ImportFromJsonAction = {
-    type: ActionType.IMPORTFROMJSON,
+    type: ActionType.IMPORT_FROM_JSON,
     payload: EditorType;
 }
 
 type ExportToJsonAction = {
-    type: ActionType.EXPORTTOJSON,
+    type: ActionType.EXPORT_TO_JSON,
     payload: EditorType;
+}
+
+type ChangeSlidePositionAction = {
+    type: ActionType.CHANGE_SLIDE_POSITION;
+    payload: {
+        slideId: string;
+        targetSlideId: string;
+    };
+};
+
+type ChangeObjectPositionAction = {
+    type: ActionType.CHANGE_POSITION_OBJECT;
+    payload: {
+        slideId: string;
+        objectId: string;
+        x: number;
+        y: number;
+    };
+}
+
+type ChangeObjectSizeAction = {
+    type: ActionType.CHANGE_OBJECT_SIZE;
+    payload: {
+        slideId: string;
+        objectId: string;
+        width: number;
+        height: number;
+        x: number;
+        y: number;
+    };
 }
 
 
 type EditorAction = AddSlideAction | RemoveSlideAction | SetSelectionAction | SetEditorAction | AddTextAction | AddImageAction |
-    RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction
+    RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction | RenamePresentationTitleAction |
+    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction
 
 export {
     ActionType,

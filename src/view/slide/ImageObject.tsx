@@ -1,7 +1,6 @@
 import { ImageContent } from "../../store/PresentationType";
 import { CSSProperties } from "react";
-import {dispatch} from "../../store/editor.ts";
-import { setSelection } from "../../store/SetSelection.ts";
+import { useAppActions } from "../../store/Hooks/useAppActions.ts";
 import { SelectionType } from "../../store/EditorType.ts";
 
 type ImageObjectProps = {
@@ -11,6 +10,9 @@ type ImageObjectProps = {
 }
 
 function ImageObject({ imageObject, scale = 1, selection }: ImageObjectProps) {
+
+    const {setSelection} = useAppActions()
+
     const imageObjectStyles: CSSProperties = {
         position: 'absolute',
         top: `${imageObject.position.y * scale}px`,
@@ -23,16 +25,17 @@ function ImageObject({ imageObject, scale = 1, selection }: ImageObjectProps) {
     if (selection.selectedObjectId === imageObject.id) {
         imageObjectStyles.border = '3px solid #545557';
     }
-    const onImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
-        dispatch(setSelection, {
+
+    function onImageClick(imageObjectId: string) {
+        setSelection({
             selectedSlideId: selection.selectedSlideId,
-            selectedObjectId: imageObject.id,
-        });
-    };
+            selectedObjectId: imageObjectId,
+        })
+    }
     
 
     return (
-        <img onClick={onImageClick} style={imageObjectStyles} src={`data:image/jpeg;base64, ${imageObject.src}`}/>
+        <img onClick={() => onImageClick(imageObject.id)} style={imageObjectStyles} src={`${imageObject.src}`}/>
     )
 }
 

@@ -3,21 +3,26 @@ import { SlidesList } from "./view/slideList/SlidesList";
 import { TopPanel } from "./view/topPanel/TopPanel";
 import { Workspace } from "./view/workspace/Workspace";
 import { Toolbar } from "./view/toolbar/Toolbar";
+import { HistoryType } from './utils/history';
+import { HistoryContext } from './store/Hooks/historyContext';
 
-type AppProps = {}
+type AppProps = {
+    history: HistoryType,
+}
 
-function App({ }: AppProps) {
+function App({ history }: AppProps) {
 
     return (
         <div className='App'>
-            <TopPanel></TopPanel>
-            <Toolbar></Toolbar>
-            <div className={styles.container}>
-                <SlidesList></SlidesList>
-                <Workspace></Workspace>
-            </div>
-        </div>
+            <HistoryContext.Provider value={history}>
+                <TopPanel></TopPanel>
+                <Toolbar></Toolbar>
+                <div className={styles.container}>
+                    <SlidesList></SlidesList>
+                    <Workspace></Workspace>
+                </div>
+            </HistoryContext.Provider>
+        </div >
     );
 }
-
-export default App;
+export default App

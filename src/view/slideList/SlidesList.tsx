@@ -1,8 +1,6 @@
 import styles from './SlidesList.module.css';
 import { CurrentSlide } from '../slide/currentSlide';
-import { dispatch } from '../../store/editor';
-import { changeSlidePosition } from '../../store/function/ChangeSlidePosition';
-import { useDragAndDrop } from '../../store/СustomHooks/useDragAndDropForSlide';
+import { useDragAndDropSlide } from '../../store/СustomHooks/useDragAndDropForSlide';
 import { useAppSelector } from '../../store/Hooks/useAppSelector';
 import { useAppActions } from '../../store/Hooks/useAppActions';
 
@@ -12,18 +10,23 @@ function SlidesList() {
     const editor = useAppSelector((editor => editor))
     const slides = editor.presentation.slides
     const selection = editor.selection
-    const {setSelection} = useAppActions()
+
+    const { setSelection } = useAppActions()
 
     function onSlideClick(slideId: string) {
         setSelection({
             selectedSlideId: slideId,
-            selectedObjectId:null,
+            selectedObjectId: null,
         })
     }
 
-    const { onDragStart, onDragOver, onDrop, onDragEnd } = useDragAndDrop(slides, (updatedSlides) => {
-        dispatch(changeSlidePosition, updatedSlides);
-    });
+    const {
+        draggingSlide,
+        dragOverSlide,
+        handleDragStart,
+        handleDragOver,
+        handleDragEnd,
+    } = useDragAndDropSlide();
 
     return (
         <div className={styles.slideList}>
@@ -32,26 +35,25 @@ function SlidesList() {
                 </div>
             ) : (
                 slides.map((slide) => (
-                    <div
-                        key={slide.id}
-                        draggable
-                        onClick={() => onSlideClick(slide.id)}
-                        onDragStart={(event) => onDragStart(event, slide.id)}
-                        onDragOver={onDragOver}
-                        onDrop={(event) => onDrop(event, slide.id)}
-                        onDragEnd={onDragEnd}
-                        className={styles.slideContainer}
-                    >
-                        <div className={styles.slideNumber}>{slides.findIndex(s => s.id === slide.id) + 1}</div>
-                        <CurrentSlide
-                            slide={slide}
-                            scale={SLIDE_PREVIEW_SCALE}
-                            selection={selection}
-                            className={styles.item}
-                            showResizeHandles={false}
-                        />
-                    </div>
-                ))
+            <div
+                key={slide.id}
+                draggable
+                onClick={() => onSlideClick(slide.id)}
+                onDragStart = {() => handleDragStart(slide.id)}
+                onDragOver={(e) => handleDragOver(e, slide.id)}
+                onDragEnd={handleDragEnd}
+                className={`${styles.slideContainer} ${draggingSlide === slide.id ? styles.dragging : ''} ${dragOverSlide === slide.id ? styles.dragover : ''}`}
+            >
+                <div className={styles.slideNumber}>{slides.findIndex(s => s.id === slide.id) + 1}</div>
+                <CurrentSlide
+                    slide={slide}
+                    scale={SLIDE_PREVIEW_SCALE}
+                    selection={selection}
+                    className={styles.item}
+                    showResizeHandles={false}
+                />
+            </div>
+            ))
             )}
         </div>
     );

@@ -1,56 +1,50 @@
 import { EditorType } from "../EditorType";
-import { Slide, SlideObject, TextContent, ImageContent } from "../PresentationType";
+import { SlideObject } from '../PresentationType';
 
-function ChangeObjectSize(editor: EditorType, newSize: { width: number; height: number }): EditorType {
-    console.log('newSize: ', newSize);
+function changeObjectSize(
+    currentEditor: EditorType,
+    slideId: string,
+    objectId: string,
+    newWidth: number,
+    newHeight: number,
+    newX: number,
+    newY: number
+): EditorType {
+    const slide = currentEditor.presentation.slides.find(s => s.id === slideId);
 
-    const { presentation, selection } = editor;
+    if (!slide) return currentEditor;
 
-    if (!selection || !selection.selectedSlideId || !selection.selectedObjectId) {
-        return editor;
-    }
+    const content = slide.content.find(ob => ob.id === objectId);
 
-    const slideId = selection.selectedSlideId;
-    const objectId = selection.selectedObjectId;
+    if (!content) return currentEditor;
 
-    const updatedSlides = presentation.slides.map((slide: Slide) => {
-        if (slide.id === slideId) {
-            const updatedContent = slide.content.map((object: SlideObject) => {
-                if (object.id === objectId) {
-                    if (object.type === 'text') {
-                        return {
-                            ...object,
-                            size: newSize,
-                        } as TextContent;
-                    } else if (object.type === 'image') {
-                        return {
-                            ...object,
-                            size: newSize,
-                        } as ImageContent;
-                    }
-                }
-                return object;
-            });
-
-            return {
-                ...slide,
-                content: updatedContent,
-            };
+    const updatedObject: SlideObject = {
+        ...content,
+        position:
+        {
+            x: newX,
+            y: newY
+        },
+        size: {
+            width: newWidth,
+            height: newHeight,
         }
-        return slide;
-    });
+    };
+
+    const updatedObjects = slide.content.map(ob => ob.id === objectId ? updatedObject : ob);
+    objectId
+    const updatedSlide = {
+        ...slide,
+        content: updatedObjects,
+    };
 
     return {
-        ...editor,
+        ...currentEditor,
         presentation: {
-            ...presentation,
-            slides: updatedSlides,
-        },
-        selection: {
-            ...selection,
-            selectedSlideId: slideId,
+            ...currentEditor.presentation,
+            slides: currentEditor.presentation.slides.map(s => s.id === slideId ? updatedSlide : s),
         },
     };
 }
 
-export { ChangeObjectSize };
+export { changeObjectSize }

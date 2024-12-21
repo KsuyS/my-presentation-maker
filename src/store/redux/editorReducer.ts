@@ -8,32 +8,79 @@ import { addText } from "../function/AddTextOnSlide";
 import { addImage } from "../function/AddImageOnSlide";
 import { removeObject } from "../function/RemoveObjectOnSlide";
 import { changeBackground } from "../function/ChangeBackground";
+import { renamePresentationTitle } from "../function/RenamePresentationTitle";
+import { changeSlidePosition } from "../function/ChangeSlidePosition";
+import { changeObjectPosition } from "../function/ChangeObjectPosition";
+import { changeObjectSize } from "../function/ChangeObjectSize";
+import { saveToLocalStorage, loadFromLocalStorage } from "../../utils/storage";
 
-function editorReducer(editor: EditorType = data, action: EditorAction): EditorType {
+const initialState: EditorType = loadFromLocalStorage() || data;
+
+function editorReducer(editor: EditorType = initialState, action: EditorAction): EditorType {
+    let newState: EditorType;
+
     switch (action.type) {
         case ActionType.ADD_SLIDE:
-            return addSlide(editor)
+            newState = addSlide(editor);
+            break;
         case ActionType.REMOVE_SLIDE:
-            return removeSlide(editor)
+            newState = removeSlide(editor);
+            break;
         case ActionType.SET_SELECTION:
-            return setSelection(editor, action)
+            newState = setSelection(editor, action);
+            break;
         case ActionType.SET_EDITOR:
-            return action.payload
+            newState = action.payload;
+            break;
         case ActionType.ADD_TEXT:
-            return addText(editor)
+            newState = addText(editor);
+            break;
         case ActionType.ADD_IMAGE:
-            return addImage(editor, action.payload)
+            newState = addImage(editor, action.payload);
+            break;
         case ActionType.REMOVE_OBJECT:
-            return removeObject(editor)
+            newState = removeObject(editor);
+            break;
         case ActionType.CHANGE_BACKGROUND:
-            return changeBackground(editor, action.payload)
-        case ActionType.IMPORTFROMJSON:
-            return { ...action.payload };
-        case ActionType.EXPORTTOJSON:
-            return { ...action.payload };
+            newState = changeBackground(editor, action.payload);
+            break;
+        case ActionType.IMPORT_FROM_JSON:
+            newState = action.payload;
+            break;
+        case ActionType.EXPORT_TO_JSON:
+            return editor;
+        case ActionType.RENAME_PRESENTATION:
+            newState = renamePresentationTitle(editor, action.payload);
+            break;
+        case ActionType.CHANGE_SLIDE_POSITION:
+            newState = changeSlidePosition(editor, action.payload.slideId, action.payload.targetSlideId);
+            break;
+        case ActionType.CHANGE_POSITION_OBJECT:
+            newState = changeObjectPosition(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.x,
+                action.payload.y
+            );
+            break;
+        case ActionType.CHANGE_OBJECT_SIZE:
+            newState = changeObjectSize(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.width,
+                action.payload.height,
+                action.payload.x,
+                action.payload.y
+            );
+            break;
         default:
-            return editor
+            return editor;
     }
+
+    saveToLocalStorage(newState);
+    return newState;
 }
 
 export {
