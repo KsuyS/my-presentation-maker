@@ -16,8 +16,9 @@ type SlideProps = {
     slide: Slide | null,
     scale?: number,
     selection?: SelectionType,
-    className: string;
-    showResizeHandles?: boolean;
+    className: string,
+    showResizeHandles?: boolean,
+    readOnly?: boolean,
 };
 
 function CurrentSlide({
@@ -25,6 +26,7 @@ function CurrentSlide({
     scale = 1,
     className,
     showResizeHandles = true,
+    readOnly = false,
 }: SlideProps) {
     const selection = useAppSelector((editor => editor.selection))
 
@@ -34,18 +36,25 @@ function CurrentSlide({
     const { setSelection } = useAppActions()
 
     const onObjClick = (objectId: string) => {
-        console.log('click', objectId)
-        setSelection({
-            selectedSlideId: selection.selectedSlideId,
-            selectedObjectId: objectId,
-        })
+        if (!readOnly) {
+            setSelection({
+                selectedSlideId: selection.selectedSlideId,
+                selectedObjectId: objectId,
+            })
+        }
+        else {
+            setSelection({
+                selectedSlideId: selection.selectedSlideId,
+                selectedObjectId: null,
+            })
+        }
     };
 
 
     const selectedObjId = selection.selectedObjectId;
 
     const onSlideClick = () => {
-        if (selectedObjId) {
+        if (selectedObjId && !readOnly) {
             setSelection({
                 selectedSlideId: selection.selectedSlideId,
                 selectedObjectId: null,
@@ -68,7 +77,7 @@ function CurrentSlide({
     };
 
 
-    if (selection.selectedObjectId === slide?.id) {
+    if (selection.selectedObjectId === slide?.id && !readOnly) {
         slideStyles.border = '3px solid #545557';
     }
 
@@ -83,7 +92,7 @@ function CurrentSlide({
             onMouseMove={(event) => {
                 if (isResizing) {
                     handleResizeMouseMove(event);
-                } else {
+                } else if (!readOnly) {
                     handleElementMouseMove(event);
                 }
             }}
@@ -123,7 +132,7 @@ function CurrentSlide({
                                     selection={selection}
                                 />
                             )}
-                            {isSelectedObject && showResizeHandles && (
+                            {isSelectedObject && showResizeHandles && !readOnly && (
                                 <>
                                     <div className={`${styles.resizeHandle} ${styles.topLeft}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'top-left')}

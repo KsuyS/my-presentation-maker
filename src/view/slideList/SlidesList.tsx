@@ -51,6 +51,7 @@ function SlidesList() {
                     selection={selection}
                     className={styles.item}
                     showResizeHandles={false}
+                    readOnly={true}
                 />
             </div>
             ))

@@ -5,24 +5,39 @@ import { Workspace } from "./view/workspace/Workspace";
 import { Toolbar } from "./view/toolbar/Toolbar";
 import { HistoryType } from './utils/history';
 import { HistoryContext } from './store/Hooks/historyContext';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import Player from './view/player/player';
 
 type AppProps = {
     history: HistoryType,
-}
+};
 
-function App({ history }: AppProps) {
+function EditorPage({ history }: AppProps) {
+    const navigate = useNavigate();
 
     return (
         <div className='App'>
             <HistoryContext.Provider value={history}>
-                <TopPanel></TopPanel>
-                <Toolbar></Toolbar>
+                <TopPanel navigate={navigate} />
+                <Toolbar />
                 <div className={styles.container}>
-                    <SlidesList></SlidesList>
-                    <Workspace></Workspace>
+                    <SlidesList />
+                    <Workspace />
                 </div>
             </HistoryContext.Provider>
-        </div >
+        </div>
     );
 }
-export default App
+
+function App({ history }: AppProps) {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<EditorPage history={history} />} />
+                <Route path="/player" element={<Player />} />
+            </Routes>
+        </Router>
+    );
+}
+
+export default App;
