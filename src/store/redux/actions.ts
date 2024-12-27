@@ -15,6 +15,7 @@ enum ActionType {
     CHANGE_SLIDE_POSITION = 'changeSlidePosition',
     CHANGE_POSITION_OBJECT = 'changeObjectPosition',
     CHANGE_OBJECT_SIZE = 'changeObjectSize',
+    UPDATE_TEXT_CONTENT = 'updateTextContent'
 }
 
 type RenamePresentationTitleAction = {
@@ -101,10 +102,18 @@ type ChangeObjectSizeAction = {
     };
 }
 
+type UpdateTextContentAction = {
+    type: ActionType.UPDATE_TEXT_CONTENT;
+    payload: {
+        slideId: string;
+        objectId: string;
+        value: string;
+    };
+};
 
 type EditorAction = AddSlideAction | RemoveSlideAction | SetSelectionAction | SetEditorAction | AddTextAction | AddImageAction |
     RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction | RenamePresentationTitleAction |
-    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction
+    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction
 
 export {
     ActionType,

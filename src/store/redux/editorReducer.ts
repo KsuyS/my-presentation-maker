@@ -13,6 +13,7 @@ import { changeSlidePosition } from "../function/ChangeSlidePosition";
 import { changeObjectPosition } from "../function/ChangeObjectPosition";
 import { changeObjectSize } from "../function/ChangeObjectSize";
 import { saveToLocalStorage, loadFromLocalStorage } from "../../utils/storage";
+import { updateTextContent } from "../function/UpdateTextContent";
 
 const initialState: EditorType = loadFromLocalStorage() || data;
 
@@ -75,6 +76,16 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 action.payload.y
             );
             break;
+
+        case ActionType.UPDATE_TEXT_CONTENT:
+            newState = updateTextContent(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.value
+            );
+            break;
+
         default:
             return editor;
     }

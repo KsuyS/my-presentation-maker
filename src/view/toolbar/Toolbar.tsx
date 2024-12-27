@@ -1,10 +1,8 @@
 import styles from './Toolbar.module.css';
-import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
 import { useAppActions } from '../../store/Hooks/useAppActions.ts';
-import { exportToJson, importFromJson } from "../../utils/jsonUtils";
 import * as React from "react";
 import { HistoryContext } from '../../store/Hooks/historyContext.ts';
-import { generatePdfDataUrl } from '../../utils/ExportToPdf.ts';
+
 import { importImageFromUnsplash } from "../../utils/UnsplashUtils";
 
 import addSlideIcon from '../../assets/add-slide.png';
@@ -19,10 +17,8 @@ import { useState, useEffect, useCallback } from 'react';
 
 function Toolbar() {
     const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
-    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
     const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground } = useAppActions();
     const history = React.useContext(HistoryContext);
-    const editor = useAppSelector((editor => editor));
     const [unsplashImages, setUnsplashImages] = useState<string[]>([]);
     const [isUnsplashModalOpen, setIsUnsplashModalOpen] = useState(false);
     const [unsplashQuery, setUnsplashQuery] = useState('');
@@ -60,30 +56,6 @@ function Toolbar() {
                 }
             };
             reader.readAsDataURL(file);
-        }
-    };
-
-    const handleExport = () => {
-        exportToJson(editor);
-    };
-
-    const handlePreviewPdf = async () => {
-        try {
-            const dataUrl = await generatePdfDataUrl(editor);
-            setPdfPreviewUrl(dataUrl);
-        } catch (error) {
-            console.error("Error generating PDF preview:", error);
-        }
-    };
-
-    const handleClosePreview = () => {
-        setPdfPreviewUrl(null);
-    };
-
-    const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            importFromJson(file, setEditor);
         }
     };
 
@@ -209,35 +181,6 @@ function Toolbar() {
                     </label>
                 </div>
             )}
-
-            <button className={styles.button} onClick={handleExport}>
-                Экспорт JSON
-            </button>
-            <button className={styles.button} onClick={handlePreviewPdf}>
-                Предпросмотр PDF
-            </button>
-
-            {pdfPreviewUrl && (
-                <div className={styles.pdfPreviewOverlay}>
-                    <div className={styles.pdfPreviewContainer}>
-                        <button className={styles.closePreviewButton} onClick={handleClosePreview}>
-                            Закрыть
-                        </button>
-                        <iframe src={pdfPreviewUrl} className={styles.pdfPreviewIframe} title="PDF Preview"></iframe>
-
-                    </div>
-                </div>
-            )}
-            <input
-                type="file"
-                accept=".json"
-                onChange={handleImport}
-                style={{ display: 'none' }}
-                id="jsonFileInput"
-            />
-            <label htmlFor="jsonFileInput" className={`${styles.button}`}>
-                Импорт
-            </label>
 
             <button className={styles.button} onClick={onUndo}>
                 <img className={styles.imageButton} src={undoIcon} alt="Undo" />
