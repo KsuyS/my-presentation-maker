@@ -4,6 +4,8 @@ import { useAppActions } from '../../store/Hooks/useAppActions.ts';
 import { exportToJson, importFromJson } from "../../utils/jsonUtils";
 import * as React from "react";
 import { HistoryContext } from '../../store/Hooks/historyContext.ts';
+import { generatePdfDataUrl } from '../../utils/ExportToPdf.ts';
+import { importImageFromUnsplash } from "../../utils/UnsplashUtils";
 
 import addSlideIcon from '../../assets/add-slide.png';
 import removeSlideIcon from '../../assets/delete-slide.png';
@@ -17,9 +19,14 @@ import { useState, useEffect, useCallback } from 'react';
 
 function Toolbar() {
     const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
+    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
     const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground } = useAppActions();
     const history = React.useContext(HistoryContext);
     const editor = useAppSelector((editor => editor));
+    const [unsplashImages, setUnsplashImages] = useState<string[]>([]);
+    const [isUnsplashModalOpen, setIsUnsplashModalOpen] = useState(false);
+    const [unsplashQuery, setUnsplashQuery] = useState('');
+
 
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -58,6 +65,19 @@ function Toolbar() {
 
     const handleExport = () => {
         exportToJson(editor);
+    };
+
+    const handlePreviewPdf = async () => {
+        try {
+            const dataUrl = await generatePdfDataUrl(editor);
+            setPdfPreviewUrl(dataUrl);
+        } catch (error) {
+            console.error("Error generating PDF preview:", error);
+        }
+    };
+
+    const handleClosePreview = () => {
+        setPdfPreviewUrl(null);
     };
 
     const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +120,26 @@ function Toolbar() {
 
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onUndo, onRedo]);
+
+    const handleImportFromUnsplash = async () => {
+        try {
+            const images = await importImageFromUnsplash(unsplashQuery);
+            if (images.length > 0) {
+                setUnsplashImages(images);
+                setIsUnsplashModalOpen(true);
+            } else {
+                console.error("No images found for this query.");
+            }
+        } catch (error) {
+            console.error("Error fetching images from Unsplash:", error);
+        }
+    };
+
+    const handleImageSelection = (src: string) => {
+        addImage({ src });
+        setIsUnsplashModalOpen(false);
+    };
+
 
     return (
         <div className={styles.toolbar}>
@@ -171,8 +211,23 @@ function Toolbar() {
             )}
 
             <button className={styles.button} onClick={handleExport}>
-                Экспорт
+                Экспорт JSON
             </button>
+            <button className={styles.button} onClick={handlePreviewPdf}>
+                Предпросмотр PDF
+            </button>
+
+            {pdfPreviewUrl && (
+                <div className={styles.pdfPreviewOverlay}>
+                    <div className={styles.pdfPreviewContainer}>
+                        <button className={styles.closePreviewButton} onClick={handleClosePreview}>
+                            Закрыть
+                        </button>
+                        <iframe src={pdfPreviewUrl} className={styles.pdfPreviewIframe} title="PDF Preview"></iframe>
+
+                    </div>
+                </div>
+            )}
             <input
                 type="file"
                 accept=".json"
@@ -193,8 +248,64 @@ function Toolbar() {
                 <img className={styles.imageButton} src={redoIcon} alt="Redo" />
                 Redo
             </button>
+            <button
+                className={styles.button}
+                onClick={() => {
+                    setUnsplashQuery('');
+                    setUnsplashImages([]);
+                    setIsUnsplashModalOpen(true);
+                }}
+            >
+                <img className={styles.imageButton} src={addImageIcon} alt="Unsplash" />
+                Unsplash
+            </button>
+
+            {isUnsplashModalOpen && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                        <div className={styles.modalHeader}>
+                            <h2>Выберите изображение из Unsplash</h2>
+                            <button
+                                className={styles.closeButton}
+                                onClick={() => setIsUnsplashModalOpen(false)}
+                            >
+                                Закрыть
+                            </button>
+                        </div>
+
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Введите запрос для поиска..."
+                                value={unsplashQuery}
+                                onChange={(e) => setUnsplashQuery(e.target.value)}
+                                className={styles.unsplashInput}
+                            />
+                            <button
+                                className={styles.button}
+                                onClick={handleImportFromUnsplash}
+                            >
+                                Найти
+                            </button>
+                        </div>
+
+                        <div className={styles.imageGrid}>
+                            {unsplashImages.map((imgSrc, index) => (
+                                <img
+                                    key={index}
+                                    src={imgSrc}
+                                    alt={`Unsplash ${index}`}
+                                    className={styles.imageItem}
+                                    onClick={() => handleImageSelection(imgSrc)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
 
 export { Toolbar };

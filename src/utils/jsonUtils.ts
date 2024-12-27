@@ -33,7 +33,6 @@ const importFromJson = (file: File, setEditor: (editor: EditorType) => void) => 
                 console.log("Импорт успешен:", importedEditor);
                 setEditor(importedEditor);
                 saveToLocalStorage(importedEditor);
-
             } catch (error) {
                 console.error("Ошибка при импорте JSON:", error);
             }
@@ -43,4 +42,7 @@ const importFromJson = (file: File, setEditor: (editor: EditorType) => void) => 
     reader.readAsText(file);
 };
 
-export { exportToJson, importFromJson };
+export {
+    exportToJson,
+    importFromJson
+};

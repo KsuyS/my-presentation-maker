@@ -31,7 +31,7 @@ function CurrentSlide({
     const { handleElementMouseDown, handleElementMouseMove, handleElementMouseUp } = useDragAndDropObject({ slideId: slide?.id ?? '' });
     const { isResizing, handleResizeMouseDown, handleResizeMouseMove, handleResizeMouseUp } = useResizeObject({ slideId: slide?.id ?? '' });
 
-    const {setSelection} = useAppActions()
+    const { setSelection } = useAppActions()
 
     const onObjClick = (objectId: string) => {
         console.log('click', objectId)
@@ -40,7 +40,7 @@ function CurrentSlide({
             selectedObjectId: objectId,
         })
     };
-    
+
 
     const selectedObjId = selection.selectedObjectId;
 
@@ -110,17 +110,17 @@ function CurrentSlide({
                         >
                             {slideObject.type === "text" ? (
                                 <TextObject
-                                    key={slideObject.id} 
-                                    textObject={slideObject} 
+                                    key={slideObject.id}
+                                    textObject={slideObject}
                                     scale={scale}
                                     selection={selection}
                                 />
                             ) : (
                                 <ImageObject
-                                key={slideObject.id} 
-                                imageObject={slideObject} 
-                                scale={scale} 
-                                selection={selection}
+                                    key={slideObject.id}
+                                    imageObject={slideObject}
+                                    scale={scale}
+                                    selection={selection}
                                 />
                             )}
                             {isSelectedObject && showResizeHandles && (

@@ -13,7 +13,7 @@ const presentation: Presentation = {
             position: { x: 100, y: 100 },
             size: { width: 100, height: 50 },
             value: "Welcome!",
-            fontFamily: "Arial",
+            fontFamily: "Times New Roman",
             fontSize: 20,
             fontColor: "black",
           },

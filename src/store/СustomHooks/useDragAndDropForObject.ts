@@ -10,11 +10,10 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
   const dragStartPos = useRef({ x: 0, y: 0 });
-  
+  const initialPosition = useRef<{ x: number; y: number } | null>(null);
+
   const { changeObjectPosition } = useAppActions();
   const editor = useAppSelector((state) => state);
-
-  const elementRef = useRef<{ x: number; y: number } | null>(null);
 
   function handleElementMouseDown(event: React.MouseEvent<HTMLDivElement>, elementId: string): void {
     event.preventDefault();
@@ -24,14 +23,14 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
 
     const slide = editor.presentation.slides.find((s) => s.id === slideId);
     const element = slide?.content.find((e) => e.id === elementId);
+
     if (element) {
-        elementRef.current = { x: element.position.x, y: element.position.y };
+      initialPosition.current = { x: element.position.x, y: element.position.y };
     }
-    
   }
 
   function handleElementMouseMove(event: React.MouseEvent<HTMLDivElement>): void {
-    if (!isDragging || !draggedElementId) return;
+    if (!isDragging || !draggedElementId || !initialPosition.current) return;
 
     const deltaX = event.clientX - dragStartPos.current.x;
     const deltaY = event.clientY - dragStartPos.current.y;
@@ -42,19 +41,20 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
     const element = slide.content.find((el) => el.id === draggedElementId);
     if (!element) return;
 
-    const startX = elementRef.current ? elementRef.current.x : element.position.x;
-    const startY = elementRef.current ? elementRef.current.y : element.position.y;
-
-    const newX = Math.max(0, Math.min(startX + deltaX, 935 - element.size.width));
-    const newY = Math.max(0, Math.min(startY + deltaY, 525 - element.size.height));
+    const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, 935 - element.size.width));
+    const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, 525 - element.size.height));
 
     changeObjectPosition(editor, slideId, draggedElementId, newX, newY);
   }
 
   function handleElementMouseUp(): void {
+    if (initialPosition.current && draggedElementId) {
+      console.log('Initial Position:', initialPosition.current);
+    }
+
     setIsDragging(false);
     setDraggedElementId(null);
-    elementRef.current = null;
+    initialPosition.current = null;
   }
 
   return {

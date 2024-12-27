@@ -4,16 +4,18 @@ import { useAppSelector } from '../Hooks/useAppSelector';
 
 type UseResizeElementProps = {
   slideId: string;
+  minWidth?: number;
+  minHeight?: number;
 };
 
-function useResizeObject({ slideId }: UseResizeElementProps) {
+function useResizeObject({ slideId, minWidth = 20, minHeight = 20 }: UseResizeElementProps) {
   const [isResizing, setIsResizing] = useState(false);
   const [resizedElementId, setResizedElementId] = useState<string | null>(null);
   const startSize = useRef({ width: 0, height: 0 });
   const startMousePos = useRef({ x: 0, y: 0 });
   const initialPosition = useRef({ x: 0, y: 0 });
   const resizeDirection = useRef<string | null>(null);
-  const editor = useAppSelector(state => state)
+  const editor = useAppSelector(state => state);
   const { changeObjectSize } = useAppActions();
 
   function handleResizeMouseDown(event: React.MouseEvent<HTMLDivElement>, elementId: string, direction: string): void {
@@ -22,7 +24,6 @@ function useResizeObject({ slideId }: UseResizeElementProps) {
     setResizedElementId(elementId);
     resizeDirection.current = direction;
     startMousePos.current = { x: event.clientX, y: event.clientY };
-
 
     const slide = editor.presentation.slides.find(s => s.id === slideId);
     const element = slide?.content.find(e => e.id === elementId);
@@ -47,45 +48,45 @@ function useResizeObject({ slideId }: UseResizeElementProps) {
 
     switch (resizeDirection.current) {
       case 'top-left':
-        newX = initialPosition.current.x + deltaX;
-        newY = initialPosition.current.y + deltaY;
-        newWidth = Math.max(10, startSize.current.width - deltaX);
-        newHeight = Math.max(10, startSize.current.height - deltaY);
+        newX += deltaX;
+        newY += deltaY;
+        newWidth = Math.max(minWidth, startSize.current.width - deltaX);
+        newHeight = Math.max(minHeight, startSize.current.height - deltaY);
         break;
 
       case 'top-right':
-        newY = initialPosition.current.y + deltaY;
-        newWidth = Math.max(10, startSize.current.width + deltaX);
-        newHeight = Math.max(10, startSize.current.height - deltaY);
+        newY += deltaY;
+        newWidth = Math.max(minWidth, startSize.current.width + deltaX);
+        newHeight = Math.max(minHeight, startSize.current.height - deltaY);
         break;
 
       case 'bottom-left':
-        newX = initialPosition.current.x + deltaX;
-        newWidth = Math.max(10, startSize.current.width - deltaX);
-        newHeight = Math.max(10, startSize.current.height + deltaY);
+        newX += deltaX;
+        newWidth = Math.max(minWidth, startSize.current.width - deltaX);
+        newHeight = Math.max(minHeight, startSize.current.height + deltaY);
         break;
 
       case 'bottom-right':
-        newWidth = Math.max(10, startSize.current.width + deltaX);
-        newHeight = Math.max(10, startSize.current.height + deltaY);
+        newWidth = Math.max(minWidth, startSize.current.width + deltaX);
+        newHeight = Math.max(minHeight, startSize.current.height + deltaY);
         break;
 
       case 'middle-left':
-        newX = initialPosition.current.x + deltaX;
-        newWidth = Math.max(10, startSize.current.width - deltaX);
+        newX += deltaX;
+        newWidth = Math.max(minWidth, startSize.current.width - deltaX);
         break;
 
       case 'middle-right':
-        newWidth = Math.max(10, startSize.current.width + deltaX);
+        newWidth = Math.max(minWidth, startSize.current.width + deltaX);
         break;
 
       case 'top-middle':
-        newY = initialPosition.current.y + deltaY;
-        newHeight = Math.max(10, startSize.current.height - deltaY);
+        newY += deltaY;
+        newHeight = Math.max(minHeight, startSize.current.height - deltaY);
         break;
 
       case 'bottom-middle':
-        newHeight = Math.max(10, startSize.current.height + deltaY);
+        newHeight = Math.max(minHeight, startSize.current.height + deltaY);
         break;
     }
 
@@ -97,6 +98,7 @@ function useResizeObject({ slideId }: UseResizeElementProps) {
       newHeight += newY;
       newY = 0;
     }
+
     changeObjectSize(editor, slideId, resizedElementId, newWidth, newHeight, newX, newY);
   }
 

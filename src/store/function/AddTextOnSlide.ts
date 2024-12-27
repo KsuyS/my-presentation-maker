@@ -1,9 +1,8 @@
 import { EditorType } from "../EditorType";
 import { TextContent } from "../PresentationType"
-
+import { generateRandomId } from "./GenerateRandomId";
 
 function addText(editor: EditorType): EditorType {
-    console.log('текст добавлен')
     const newText = "Введите текст";
     if (!editor.selection || !editor.selection.selectedSlideId) {
         return editor;
@@ -15,7 +14,7 @@ function addText(editor: EditorType): EditorType {
         size: { width: 100, height: 50 },
         type: 'text',
         value: newText,
-        fontFamily: 'Arial',
+        fontFamily: 'Times New Roman',
         fontSize: 16,
         fontColor: '#000000',
     };
@@ -37,18 +36,6 @@ function addText(editor: EditorType): EditorType {
             slides: updatedSlides,
         },
     };
-}
-
-function generateRandomId(length: number = 10): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        result += characters[randomIndex];
-    }
-
-    return result;
 }
 
 export {
