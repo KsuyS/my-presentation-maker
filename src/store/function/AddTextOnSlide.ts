@@ -10,7 +10,7 @@ function addText(editor: EditorType): EditorType {
 
     const newTextObject: TextContent = {
         id: generateRandomId(6),
-        position: { x: 300, y: 400 },
+        position: { x: 0, y: 0 },
         size: { width: 100, height: 50 },
         type: 'text',
         value: newText,

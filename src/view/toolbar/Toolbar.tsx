@@ -3,6 +3,7 @@ import { useAppActions } from '../../store/Hooks/useAppActions.ts';
 import * as React from "react";
 import { HistoryContext } from '../../store/Hooks/historyContext.ts';
 
+
 import { importImageFromUnsplash } from "../../utils/UnsplashUtils";
 
 import addSlideIcon from '../../assets/add-slide.png';
@@ -12,17 +13,30 @@ import removeTextIcon from '../../assets/delete-slide.png';
 import addImageIcon from '../../assets/add-slide.png';
 import undoIcon from '../../assets/undo.png';
 import redoIcon from '../../assets/redo.png';
+import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
 
 import { useState, useEffect, useCallback } from 'react';
 
 function Toolbar() {
     const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
-    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground } = useAppActions();
+    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground, updateFontSize, 
+        updateFontFamily, updateFontColor } = useAppActions();
     const history = React.useContext(HistoryContext);
     const [unsplashImages, setUnsplashImages] = useState<string[]>([]);
     const [isUnsplashModalOpen, setIsUnsplashModalOpen] = useState(false);
     const [unsplashQuery, setUnsplashQuery] = useState('');
 
+    const selection = useAppSelector((editor) => {
+        const selectedSlide = editor.presentation.slides.find(slide => slide.id === editor.selection.selectedSlideId);
+        const selectedObject = selectedSlide?.content.find(object => object.id === editor.selection.selectedObjectId);
+        return { ...editor.selection, selectedObject };
+    });
+
+    const fontFamilies = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia'];
+    const fontSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40];
+    const [fontFamily, setFontFamily] = useState(fontFamilies[0]);
+    const [fontSize, setFontSize] = useState(12);
+    const [fontColor, setFontColor] = useState('');
 
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -111,7 +125,6 @@ function Toolbar() {
         addImage({ src });
         setIsUnsplashModalOpen(false);
     };
-
 
     return (
         <div className={styles.toolbar}>
@@ -246,9 +259,80 @@ function Toolbar() {
                     </div>
                 </div>
             )}
+
+            {selection.selectedObjectId && selection.selectedObject?.type === 'text' && (
+                <div>
+                    <div className={styles.changeFont}>
+                        <select
+                            value={fontSize}
+                            onChange={(e) => {
+                                const newFontSize = parseInt(e.target.value, 10);
+                                setFontSize(newFontSize);
+                                updateFontSize({
+                                    slideId: selection.selectedSlideId ?? '',
+                                    objectId: selection.selectedObjectId ?? '',
+                                    fontSize: newFontSize,
+                                });
+                            }}
+                            className={styles.dropdown}
+                        >
+                            {fontSizes.map((font, index) => (
+                                <option key={index} value={font}>
+                                    {font}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            )}
+            {selection.selectedObjectId && selection.selectedObject?.type === 'text' && (
+                <div>
+                    <div className={styles.changeFont}>
+                        <select
+                            value={fontFamily}
+                            onChange={(e) => {
+                                const newFontFamily = e.target.value;
+                                setFontFamily(newFontFamily);
+                                updateFontFamily({
+                                    slideId: selection.selectedSlideId ?? '',
+                                    objectId: selection.selectedObjectId ?? '',
+                                    fontFamily: newFontFamily,
+                                });
+                            }}
+                            className={styles.dropdown}
+                        >
+                            {fontFamilies.map((family, index) => (
+                                <option key={index} value={family}>
+                                    {family}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            )}
+            {selection.selectedObjectId && selection.selectedObject?.type === 'text' && (
+                <div>
+                    <div className={styles.changeTextColor}>
+                        <input
+                            type="color"
+                            id="textColorPicker"
+                            value={fontColor}
+                            onChange={(e) => {
+                                const newFontColor = e.target.value;
+                                setFontColor(newFontColor);
+                                updateFontColor({
+                                    slideId: selection.selectedSlideId ?? '',
+                                    objectId: selection.selectedObjectId ?? '',
+                                    fontColor: newFontColor,
+                                });
+                            }}
+                            className={styles.colorPicker}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
-
 
 export { Toolbar };

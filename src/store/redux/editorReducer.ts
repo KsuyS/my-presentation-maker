@@ -14,6 +14,9 @@ import { changeObjectPosition } from "../function/ChangeObjectPosition";
 import { changeObjectSize } from "../function/ChangeObjectSize";
 import { saveToLocalStorage, loadFromLocalStorage } from "../../utils/storage";
 import { updateTextContent } from "../function/UpdateTextContent";
+import { updateFontSize } from "../function/UpdateFontSize";
+import { updateFontFamily } from "../function/UpdateFontFamily";
+import { updateFontColor } from "../function/UpdateFontColor";
 
 const initialState: EditorType = loadFromLocalStorage() || data;
 
@@ -76,7 +79,6 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 action.payload.y
             );
             break;
-
         case ActionType.UPDATE_TEXT_CONTENT:
             newState = updateTextContent(
                 editor,
@@ -84,6 +86,27 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 action.payload.objectId,
                 action.payload.value
             );
+            break;
+        case ActionType.UPDATE_FONT_SIZE:
+            newState = updateFontSize(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.fontSize);
+            break;
+        case ActionType.UPDATE_FONT_FAMILY:
+            newState = updateFontFamily(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.fontFamily);
+            break;
+        case ActionType.UPDATE_FONT_COLOR:
+            newState = updateFontColor(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.fontColor);
             break;
 
         default:

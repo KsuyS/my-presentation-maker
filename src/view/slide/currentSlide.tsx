@@ -76,11 +76,6 @@ function CurrentSlide({
         zIndex: 1,
     };
 
-
-    if (selection.selectedObjectId === slide?.id && !readOnly) {
-        slideStyles.border = '3px solid #545557';
-    }
-
     if (selection.selectedSlideId === slide?.id) {
         slideStyles.border = '3px solid #545557';
     }
@@ -123,6 +118,7 @@ function CurrentSlide({
                                     textObject={slideObject}
                                     scale={scale}
                                     selection={selection}
+                                    readOnly={readOnly}
                                 />
                             ) : (
                                 <ImageObject
@@ -130,6 +126,7 @@ function CurrentSlide({
                                     imageObject={slideObject}
                                     scale={scale}
                                     selection={selection}
+                                    readOnly={readOnly}
                                 />
                             )}
                             {isSelectedObject && showResizeHandles && !readOnly && (

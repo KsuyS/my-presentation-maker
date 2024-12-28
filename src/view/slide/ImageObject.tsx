@@ -7,9 +7,10 @@ type ImageObjectProps = {
     imageObject: ImageContent,
     scale?: number,
     selection: SelectionType,
+    readOnly: boolean,
 }
 
-function ImageObject({ imageObject, scale = 1, selection }: ImageObjectProps) {
+function ImageObject({ imageObject, scale = 1, selection, readOnly }: ImageObjectProps) {
 
     const {setSelection} = useAppActions()
 
@@ -20,11 +21,12 @@ function ImageObject({ imageObject, scale = 1, selection }: ImageObjectProps) {
         width: `${imageObject.size.width * scale}px`,
         height: `${imageObject.size.height * scale}px`,
         zIndex: 3,
+        border: !readOnly && selection.selectedObjectId === imageObject.id
+            ? "3px solid #545557"
+            : "none",
     };
 
-    if (selection.selectedObjectId === imageObject.id) {
-        imageObjectStyles.border = '3px solid #545557';
-    }
+ 
 
     function onImageClick(imageObjectId: string) {
         setSelection({

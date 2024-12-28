@@ -90,10 +90,27 @@ const updateTextContent = (slideId: string, objectId: string, value: string
 ) => ({
     type: ActionType.UPDATE_TEXT_CONTENT,
     payload: {
-        slideId, 
-        objectId, 
-        value },
+        slideId,
+        objectId,
+        value
+    },
 });
+
+const updateFontSize = (payload: { slideId: string; objectId: string; fontSize: number }) => ({
+    type: ActionType.UPDATE_FONT_SIZE,
+    payload,
+});
+
+const updateFontFamily = (payload: { slideId: string; objectId: string; fontFamily: string }) => ({
+    type: ActionType.UPDATE_FONT_FAMILY,
+    payload,
+});
+
+const updateFontColor = (payload: { slideId: string; objectId: string; fontColor: string }) => ({
+    type: ActionType.UPDATE_FONT_COLOR,
+    payload,
+});
+
 
 export {
     addSlide,
@@ -108,5 +125,8 @@ export {
     changeSlidePosition,
     changeObjectPosition,
     changeObjectSize,
-    updateTextContent
+    updateTextContent,
+    updateFontSize,
+    updateFontFamily,
+    updateFontColor
 }

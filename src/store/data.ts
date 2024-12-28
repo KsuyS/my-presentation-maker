@@ -15,7 +15,7 @@ const presentation: Presentation = {
             value: "Welcome!",
             fontFamily: "Times New Roman",
             fontSize: 20,
-            fontColor: "black",
+            fontColor: "#00000",
           },
         ],
         background: { type: 'solid', color: '#e6e8e6' },

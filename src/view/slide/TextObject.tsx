@@ -7,9 +7,10 @@ type TextObjectProps = {
     textObject: TextContent;
     scale?: number;
     selection: SelectionType;
+    readOnly: boolean;
 };
 
-function TextObject({ textObject, scale = 1, selection }: TextObjectProps) {
+function TextObject({ textObject, scale = 1, selection, readOnly }: TextObjectProps) {
     const { updateTextContent } = useAppActions();
     const [isEditing, setIsEditing] = useState(false);
     const [newValue, setNewValue] = useState(textObject.value);
@@ -21,8 +22,12 @@ function TextObject({ textObject, scale = 1, selection }: TextObjectProps) {
         width: `${textObject.size.width * scale}px`,
         height: `${textObject.size.height * scale}px`,
         fontSize: `${textObject.fontSize * scale}px`,
+        fontFamily: textObject.fontFamily,
+        color: textObject.fontColor,
         zIndex: 3,
-        border: selection.selectedObjectId === textObject.id ? "3px solid #545557" : "none",
+        border: !readOnly && selection.selectedObjectId === textObject.id
+            ? "3px solid #545557"
+            : "none",
     };
 
     const handleDoubleClick = () => {
@@ -49,8 +54,8 @@ function TextObject({ textObject, scale = 1, selection }: TextObjectProps) {
                 outline: "none",
                 border: "1px solid #545557",
                 fontSize: `${textObject.fontSize * scale}px`,
+                fontFamily: textObject.fontFamily,
                 backgroundColor: "transparent",
-                color: "inherit",
             }}
             value={newValue}
             onChange={handleChange}

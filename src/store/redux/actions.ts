@@ -15,7 +15,10 @@ enum ActionType {
     CHANGE_SLIDE_POSITION = 'changeSlidePosition',
     CHANGE_POSITION_OBJECT = 'changeObjectPosition',
     CHANGE_OBJECT_SIZE = 'changeObjectSize',
-    UPDATE_TEXT_CONTENT = 'updateTextContent'
+    UPDATE_TEXT_CONTENT = 'updateTextContent',
+    UPDATE_FONT_SIZE = 'updateFontSize',
+    UPDATE_FONT_FAMILY = 'updateFontFamily',
+    UPDATE_FONT_COLOR = 'updateFontColor',
 }
 
 type RenamePresentationTitleAction = {
@@ -111,9 +114,38 @@ type UpdateTextContentAction = {
     };
 };
 
+type UpdateFontSizeAction = {
+    type: ActionType.UPDATE_FONT_SIZE;
+    payload: {
+        slideId: string;
+        objectId: string;
+        fontSize: number;
+    };
+};
+
+type UpdateFontFamilyAction = {
+    type: ActionType.UPDATE_FONT_FAMILY;
+    payload: {
+        slideId: string;
+        objectId: string;
+        fontFamily: string;
+    };
+};
+
+type UpdateFontColorAction = {
+    type: ActionType.UPDATE_FONT_COLOR;
+    payload: {
+        slideId: string;
+        objectId: string;
+        fontColor: string;
+    };
+};
+
+
 type EditorAction = AddSlideAction | RemoveSlideAction | SetSelectionAction | SetEditorAction | AddTextAction | AddImageAction |
     RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction | RenamePresentationTitleAction |
-    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction
+    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction | UpdateFontSizeAction
+    | UpdateFontFamilyAction | UpdateFontColorAction
 
 export {
     ActionType,
