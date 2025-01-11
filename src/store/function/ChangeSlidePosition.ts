@@ -11,29 +11,17 @@ function changeSlidePosition(editor: EditorType, slideIds: string[], targetSlide
     }
 
     const slidesToMove = editor.presentation.slides.filter(slide => slideIds.includes(slide.id));
-    let newSlides = editor.presentation.slides.filter(slide => !slideIds.includes(slide.id));
+    const newSlides = editor.presentation.slides.filter(slide => !slideIds.includes(slide.id));
 
-    // Determine the correct insertion index
     let insertionIndex = targetIndex;
-
-    // Adjust insertion index based on the original positions of the slides being moved
     for (const slideToMove of slidesToMove) {
         const originalIndex = editor.presentation.slides.findIndex(slide => slide.id === slideToMove.id);
         if (originalIndex < targetIndex) {
-            insertionIndex--; // Move up the insertion index for each slide that is before the target
+            insertionIndex--;
         }
     }
-    
-    // Ensure insertion index is within bounds
-    insertionIndex = Math.max(0, insertionIndex);
-    insertionIndex = Math.min(newSlides.length, insertionIndex); // Prevent exceeding newSlides length
 
-    // Create new slides array with moved slides inserted at the correct position
-    newSlides = [
-        ...newSlides.slice(0, insertionIndex),
-        ...slidesToMove,
-        ...newSlides.slice(insertionIndex),
-    ];
+    newSlides.splice(insertionIndex, 0, ...slidesToMove);
 
     return {
         ...editor,
@@ -43,7 +31,7 @@ function changeSlidePosition(editor: EditorType, slideIds: string[], targetSlide
         },
         selection: {
             ...editor.selection,
-            selectedSlideIds: [] // Clear selection after moving; adjust if you want to keep selection
+            selectedSlideIds: slideIds
         }
     };
 }

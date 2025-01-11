@@ -1,4 +1,3 @@
-// ./src/view/slideList/SlidesList.tsx
 import styles from './SlidesList.module.css';
 import { CurrentSlide } from '../slide/currentSlide';
 import { useDragAndDropSlide } from '../../store/СustomHooks/useDragAndDropForSlide';
@@ -86,8 +85,9 @@ function SlidesList() {
                         />
                     </div>
                 ))
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
 

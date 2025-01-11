@@ -50,11 +50,11 @@ const renamePresentationTitle = (payload: string) => ({
     payload,
 });
 
-const changeSlidePosition = (editor: EditorType, slideId: string[], targetSlideId: string) => ({
+const changeSlidePosition = (editor: EditorType, slideIds: string[], targetSlideId: string) => ({
     type: ActionType.CHANGE_SLIDE_POSITION,
     payload: {
         editor,
-        slideId,
+        slideIds,
         targetSlideId,
     },
 });

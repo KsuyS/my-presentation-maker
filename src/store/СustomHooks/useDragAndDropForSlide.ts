@@ -18,14 +18,15 @@ function useDragAndDropSlide() {
         }
     }
 
-    function handleDragOver(e: React.DragEvent, slideId: string) {
+    function handleDragOver(e: React.DragEvent<HTMLDivElement>, slideId: string) {
         e.preventDefault();
         if (slideId !== dragOverSlide) {
             setDragOverSlide(slideId);
         }
     }
 
-    function handleDragEnd() {
+    function handleDragEnd(e: React.DragEvent<HTMLDivElement>) {
+        e.preventDefault();
         if (draggingSlideIds && dragOverSlide && !draggingSlideIds.includes(dragOverSlide)) { 
             changeSlidePosition(editor, draggingSlideIds, dragOverSlide);
         }
