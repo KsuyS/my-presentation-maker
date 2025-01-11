@@ -69,8 +69,10 @@ function TextObject({ textObject, scale = 1, selection, readOnly }: TextObjectPr
 
     const handleBlur = () => {
         setIsEditing(false);
-        if (newValue !== textObject.value && selection.selectedSlideId) {
-            updateTextContent(selection.selectedSlideId, textObject.id, newValue);
+        if (newValue !== textObject.value && selection.selectedSlideIds.length > 0) {
+            selection.selectedSlideIds.forEach(slideId => {
+                updateTextContent(slideId, textObject.id, newValue);
+            });
         }
     };
 

@@ -1,7 +1,7 @@
 import {Presentation} from "./PresentationType.ts";
 
 export type SelectionType = {
-    selectedSlideId: string | null,
+    selectedSlideIds: string[];
     selectedObjectId: string | null,
 }
 

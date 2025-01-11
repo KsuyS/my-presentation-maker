@@ -40,12 +40,12 @@ function CurrentSlide({
     const onObjClick = (objectId: string) => {
         if (!readOnly && !isShow) {
             setSelection({
-                selectedSlideId: selection.selectedSlideId,
+                selectedSlideIds: selection.selectedSlideIds,
                 selectedObjectId: objectId,
             })
         } else {
             setSelection({
-                selectedSlideId: selection.selectedSlideId,
+                selectedSlideIds: selection.selectedSlideIds,
                 selectedObjectId: null,
             })
         }
@@ -56,7 +56,7 @@ function CurrentSlide({
     const onSlideClick = () => {
         if (selectedObjId && !readOnly && !isShow) {
             setSelection({
-                selectedSlideId: selection.selectedSlideId,
+                selectedSlideIds: selection.selectedSlideIds,
                 selectedObjectId: null,
             });
         }
@@ -74,7 +74,9 @@ function CurrentSlide({
             backgroundSize: 'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            border: isShow ? '1px solid #545557' : (selection.selectedSlideId === slide?.id ? '3px solid #545557' : '1px solid #545557'),
+            border: isShow
+                ? '1px solid #545557'
+                : (selection?.selectedSlideIds?.includes(slide.id) ? '3px solid #545557' : '1px solid #545557'),
             zIndex: 1,
         };
 

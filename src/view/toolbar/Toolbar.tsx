@@ -47,9 +47,15 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [unsplashBackgroundImages, setUnsplashBackgroundImages] = useState<string[]>([]);
 
     const selection = useAppSelector((editor) => {
-        const selectedSlide = editor.presentation.slides.find(slide => slide.id === editor.selection.selectedSlideId);
-        const selectedObject = selectedSlide?.content.find(object => object.id === editor.selection.selectedObjectId);
-        return { ...editor.selection, selectedObject };
+        const selectedSlideIds = editor.selection?.selectedSlideIds || [];
+    
+        const selectedSlides = editor.presentation.slides.filter(slide => selectedSlideIds.includes(slide.id));
+        const selectedObject = selectedSlides[0]?.content.find(object => object.id === editor.selection?.selectedObjectId);
+    
+        return {
+            ...editor.selection,
+            selectedObject,
+        };
     });
     const isTextSelected = selection.selectedObject?.type === 'text';
     const isImageSelected = selection.selectedObject?.type === 'image';
@@ -491,7 +497,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                                 const newFontFamily = e.target.value;
                                 setFontFamily(newFontFamily);
                                 updateFontFamily({
-                                    slideId: selection.selectedSlideId ?? '',
+                                    slideId: selection.selectedSlideIds[0] ?? '',
                                     objectId: selection.selectedObjectId ?? '',
                                     fontFamily: newFontFamily,
                                 });
@@ -511,7 +517,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                                 const newFontSize = parseInt(e.target.value, 10);
                                 setFontSize(newFontSize);
                                 updateFontSize({
-                                    slideId: selection.selectedSlideId ?? '',
+                                    slideId: selection.selectedSlideIds[0] ?? '',
                                     objectId: selection.selectedObjectId ?? '',
                                     fontSize: newFontSize,
                                 });
@@ -531,7 +537,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                                     const newFontColor = e.target.value;
                                     setFontColor(newFontColor);
                                     updateFontColor({
-                                        slideId: selection.selectedSlideId ?? '',
+                                        slideId: selection.selectedSlideIds[0] ?? '',
                                         objectId: selection.selectedObjectId ?? '',
                                         fontColor: newFontColor,
                                     });

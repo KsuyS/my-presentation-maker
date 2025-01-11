@@ -5,32 +5,33 @@ function removeObject(editor: EditorType): EditorType {
         return editor;
     }
 
-    const selectedSlideId = editor.selection.selectedSlideId;
+    const selectedSlideIds = editor.selection.selectedSlideIds;
     const removeObjectId = editor.selection.selectedObjectId;
 
-    const targetSlide = editor.presentation.slides.find(slide => slide.id === selectedSlideId);
-
-    if (!targetSlide) {
+    if (!selectedSlideIds || selectedSlideIds.length === 0 || !removeObjectId) {
         return editor;
     }
 
-    const newContent = targetSlide.content.filter(content => content.id !== removeObjectId);
-    let newSelectedObjectId = null;
+    const updatedSlides = editor.presentation.slides.map(slide => {
+        if (selectedSlideIds.includes(slide.id)) {
+            const newContent = slide.content.filter(content => content.id !== removeObjectId);
+            return {
+                ...slide,
+                content: newContent,
+            };
+        }
+        return slide;
+    });
 
     return {
         ...editor,
         presentation: {
             ...editor.presentation,
-            slides: editor.presentation.slides.map(slide =>
-                slide.id === selectedSlideId ? {
-                    ...slide,
-                    content: newContent,
-                } : slide
-            ),
+            slides: updatedSlides,
         },
         selection: {
-            selectedSlideId: selectedSlideId,
-            selectedObjectId: newSelectedObjectId,
+            ...editor.selection,
+            selectedObjectId: null, 
         },
     };
 }

@@ -12,11 +12,11 @@ function addSlide(editor: EditorType): EditorType {
     } else {
         for (const slide of editor.presentation.slides) {
             slides.push(slide);
-            if (selection && slide.id === selection.selectedSlideId) {
+            if (selection && selection.selectedSlideIds.includes(slide.id)) {
                 slides.push(newSlide);
             }
         }
-        if (!selection || !slides.some(slide => slide.id === selection.selectedSlideId)) {
+        if (!selection || selection.selectedSlideIds.length === 0) {
             slides.push(newSlide);
         }
     }
@@ -27,7 +27,7 @@ function addSlide(editor: EditorType): EditorType {
             slides: slides,
         },
         selection: {
-            selectedSlideId: newSlide.id,
+            selectedSlideIds: [newSlide.id],
             selectedObjectId: null
         }
     };

@@ -1,10 +1,12 @@
 import { EditorType } from "../EditorType";
-import { TextContent } from "../PresentationType"
+import { TextContent } from "../PresentationType";
 import { generateRandomId } from "./GenerateRandomId";
 
 function addText(editor: EditorType): EditorType {
     const newText = "Введите текст";
-    if (!editor.selection || !editor.selection.selectedSlideId) {
+    const selectedSlideIds = editor.selection?.selectedSlideIds;
+
+    if (!selectedSlideIds || selectedSlideIds.length === 0) {
         return editor;
     }
 
@@ -20,7 +22,7 @@ function addText(editor: EditorType): EditorType {
     };
 
     const updatedSlides = editor.presentation.slides.map(slide => {
-        if (slide.id === editor.selection.selectedSlideId) {
+        if (selectedSlideIds.includes(slide.id)) {
             return {
                 ...slide,
                 content: [...slide.content, newTextObject],

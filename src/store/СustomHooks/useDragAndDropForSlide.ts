@@ -3,14 +3,19 @@ import { useAppActions } from '../Hooks/useAppActions';
 import { useAppSelector } from '../Hooks/useAppSelector';
 
 function useDragAndDropSlide() {
-    const [draggingSlide, setDraggingSlide] = useState<string | null>(null);
+    const [draggingSlideIds, setDraggingSlideIds] = useState<string[] | null>(null);
     const [dragOverSlide, setDragOverSlide] = useState<string | null>(null);
 
     const { changeSlidePosition } = useAppActions();
     const editor = useAppSelector((state) => state);
 
     function handleDragStart(slideId: string) {
-        setDraggingSlide(slideId);
+        const selectedSlideIds = editor.selection.selectedSlideIds;
+        if (selectedSlideIds && selectedSlideIds.includes(slideId)) {
+            setDraggingSlideIds(selectedSlideIds);
+        } else {
+            setDraggingSlideIds([slideId]);
+        }
     }
 
     function handleDragOver(e: React.DragEvent, slideId: string) {
@@ -21,15 +26,15 @@ function useDragAndDropSlide() {
     }
 
     function handleDragEnd() {
-        if (draggingSlide && dragOverSlide && draggingSlide !== dragOverSlide) {
-            changeSlidePosition(editor, draggingSlide, dragOverSlide);
+        if (draggingSlideIds && dragOverSlide && !draggingSlideIds.includes(dragOverSlide)) { 
+            changeSlidePosition(editor, draggingSlideIds, dragOverSlide);
         }
-        setDraggingSlide(null);
+        setDraggingSlideIds(null);
         setDragOverSlide(null);
     }
 
     return {
-        draggingSlide,
+        draggingSlideIds,
         dragOverSlide,
         handleDragStart,
         handleDragOver,

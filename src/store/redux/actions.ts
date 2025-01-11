@@ -78,10 +78,10 @@ type ExportToJsonAction = {
 type ChangeSlidePositionAction = {
     type: ActionType.CHANGE_SLIDE_POSITION;
     payload: {
-        slideId: string;
+        slideIds: string[];
         targetSlideId: string;
     };
-};
+}
 
 type ChangeObjectPositionAction = {
     type: ActionType.CHANGE_POSITION_OBJECT;

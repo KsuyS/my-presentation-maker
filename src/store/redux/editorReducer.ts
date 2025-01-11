@@ -57,7 +57,7 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
             newState = renamePresentationTitle(editor, action.payload);
             break;
         case ActionType.CHANGE_SLIDE_POSITION:
-            newState = changeSlidePosition(editor, action.payload.slideId, action.payload.targetSlideId);
+            newState = changeSlidePosition(editor, action.payload.slideIds, action.payload.targetSlideId);
             break;
         case ActionType.CHANGE_POSITION_OBJECT:
             newState = changeObjectPosition(

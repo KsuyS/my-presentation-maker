@@ -7,7 +7,7 @@ import { HistoryType } from './utils/history';
 import { HistoryContext } from './store/Hooks/historyContext';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Player from './view/player/Player';
-import MainPage from './view/mainPage/mainPage';
+import MainPage from './view/mainPage/MainPage';
 
 type AppProps = {
     history: HistoryType,

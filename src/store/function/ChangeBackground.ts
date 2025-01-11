@@ -24,17 +24,18 @@ function changeBackground(editor: EditorType, options: ChangeBackgroundOptions):
             type: 'gradient',
             gradient: options.value,
         } as GradientBackground;
-    }
-    else {
+    } else {
         throw new Error("Invalid background type");
     }
 
-    if (!editor.selection || !editor.selection.selectedSlideId) {
+    const selectedSlideIds = editor.selection?.selectedSlideIds;
+
+    if (!selectedSlideIds || selectedSlideIds.length === 0) {
         return editor;
     }
 
     const updatedSlides = editor.presentation.slides.map(slide => {
-        if (slide.id === editor.selection.selectedSlideId) {
+        if (selectedSlideIds.includes(slide.id)) {
             return {
                 ...slide,
                 background: newBackground,
@@ -54,4 +55,4 @@ function changeBackground(editor: EditorType, options: ChangeBackgroundOptions):
 
 export {
     changeBackground,
-}
+};

@@ -3,10 +3,9 @@ import { ImageContent } from "../PresentationType";
 import { generateRandomId } from "./GenerateRandomId";
 
 function addImage(editor: EditorType, { src }: { src: string }): EditorType {
-    if (!editor.selection || !editor.selection.selectedSlideId) {
+    if (!editor.selection || editor.selection.selectedSlideIds.length === 0) {
         return editor;
     }
-
     const newImageObject: ImageContent = {
         id: generateRandomId(6),
         position: { x: 400, y: 300 },
@@ -16,7 +15,7 @@ function addImage(editor: EditorType, { src }: { src: string }): EditorType {
     };
 
     const updatedSlides = editor.presentation.slides.map(slide => {
-        if (slide.id === editor.selection.selectedSlideId) {
+        if (editor.selection.selectedSlideIds.includes(slide.id)) {
             return {
                 ...slide,
                 content: [...slide.content, newImageObject],
@@ -33,6 +32,5 @@ function addImage(editor: EditorType, { src }: { src: string }): EditorType {
         },
     };
 }
-
 
 export { addImage };

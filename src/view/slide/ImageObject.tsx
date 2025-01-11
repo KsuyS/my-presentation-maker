@@ -12,7 +12,7 @@ type ImageObjectProps = {
 
 function ImageObject({ imageObject, scale = 1, selection, readOnly }: ImageObjectProps) {
 
-    const {setSelection} = useAppActions()
+    const { setSelection } = useAppActions();
 
     const imageObjectStyles: CSSProperties = {
         position: 'absolute',
@@ -26,21 +26,21 @@ function ImageObject({ imageObject, scale = 1, selection, readOnly }: ImageObjec
             : "none",
     };
 
- 
-
     function onImageClick(imageObjectId: string) {
         setSelection({
-            selectedSlideId: selection.selectedSlideId,
+            selectedSlideIds: selection.selectedSlideIds,
             selectedObjectId: imageObjectId,
-        })
+        });
     }
-    
 
     return (
-        <img onClick={() => onImageClick(imageObject.id)} style={imageObjectStyles} src={`${imageObject.src}`}/>
-    )
+        <img
+            onClick={() => onImageClick(imageObject.id)}
+            style={imageObjectStyles}
+            src={`${imageObject.src}`}
+            alt=""
+        />
+    );
 }
 
-export {
-    ImageObject,
-};
+export { ImageObject };

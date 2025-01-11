@@ -1,37 +1,42 @@
-import { EditorType } from "../EditorType"; 
+import { EditorType } from "../EditorType";
 
-function removeSlide(editor: EditorType): EditorType { 
-    if (!editor.selection) { 
-        return editor; 
-    } 
+function removeSlide(editor: EditorType): EditorType {
+    const selectedSlideIds = editor.selection.selectedSlideIds;
+    const slides = editor.presentation.slides;
 
-    const removeSlideId = editor.selection.selectedSlideId;
-    const removeSlideIndex = editor.presentation.slides.findIndex(slide => slide.id === removeSlideId);
+    if (!selectedSlideIds || selectedSlideIds.length === 0) {
+        return editor;
+    }
 
-    const newSlides = editor.presentation.slides.filter(slide => slide.id !== removeSlideId); 
+    const newSlides = slides.filter(slide => !selectedSlideIds.includes(slide.id));
 
-    let newSelectedSlideId = null;
-    if (newSlides.length > 0) { 
-        if (removeSlideIndex < newSlides.length) {
-            newSelectedSlideId = newSlides[removeSlideIndex].id;
-        } else {
-            newSelectedSlideId = newSlides[Math.max(removeSlideIndex - 1, 0)].id;
+    const firstSelectedSlideIndex = slides.findIndex(slide => slide.id === selectedSlideIds[0]);
+
+    let newSelectedSlideId: string | null = null;
+    if (newSlides.length > 0) {
+        if (firstSelectedSlideIndex !== -1) {
+            if (firstSelectedSlideIndex < newSlides.length) {
+                newSelectedSlideId = newSlides[firstSelectedSlideIndex].id;
+            }
+            else if (firstSelectedSlideIndex > 0) {
+                newSelectedSlideId = newSlides[firstSelectedSlideIndex - 1].id;
+            }
         }
-    } 
+    }
 
-    return { 
+    return {
         ...editor,
-        presentation: { 
-            ...editor.presentation, 
+        presentation: {
+            ...editor.presentation,
             slides: newSlides,
-        }, 
-        selection: { 
-            selectedSlideId: newSelectedSlideId,
-            selectedObjectId: editor.selection.selectedObjectId
-        }, 
-    }; 
+        },
+        selection: {
+            ...editor.selection,
+            selectedSlideIds: newSelectedSlideId ? [newSelectedSlideId] : []
+        }
+    };
 }
 
-export { 
-    removeSlide, 
-};
+export {
+    removeSlide,
+}
