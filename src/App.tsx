@@ -6,7 +6,8 @@ import { Toolbar } from "./view/toolbar/Toolbar";
 import { HistoryType } from './utils/history';
 import { HistoryContext } from './store/Hooks/historyContext';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
-import Player from './view/player/player';
+import Player from './view/player/Player';
+import MainPage from './view/mainPage/mainPage';
 
 type AppProps = {
     history: HistoryType,
@@ -16,10 +17,10 @@ function EditorPage({ history }: AppProps) {
     const navigate = useNavigate();
 
     return (
-        <div className='App'>
+        <div className={styles.App}>
             <HistoryContext.Provider value={history}>
-                <TopPanel navigate={navigate} />
-                <Toolbar />
+                <TopPanel/>
+                <Toolbar navigate={navigate}/>
                 <div className={styles.container}>
                     <SlidesList />
                     <Workspace />
@@ -33,7 +34,8 @@ function App({ history }: AppProps) {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<EditorPage history={history} />} />
+                <Route path="/" element={<MainPage />} />
+                <Route path="/editor" element={<EditorPage history={history} />} />
                 <Route path="/player" element={<Player />} />
             </Routes>
         </Router>

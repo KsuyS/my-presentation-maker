@@ -5,6 +5,8 @@ import { useAppSelector } from '../../store/Hooks/useAppSelector';
 import { useAppActions } from '../../store/Hooks/useAppActions';
 
 const SLIDE_PREVIEW_SCALE = 0.2;
+const SLIDE_WIDTH = 935;
+const SLIDE_HEIGHT = 525;
 
 function SlidesList() {
     const editor = useAppSelector((editor => editor))
@@ -16,7 +18,7 @@ function SlidesList() {
     function onSlideClick(slideId: string) {
         setSelection({
             selectedSlideId: slideId,
-            selectedObjectId: null,
+            selectedObjectId: editor.selection.selectedObjectId,
         })
     }
 
@@ -31,8 +33,25 @@ function SlidesList() {
     return (
         <div className={styles.slideList}>
             {slides.length === 0 ? (
-                <div className={styles.emptySlidesMessage}>
+                <div className={styles.emptySlideContainer}>
+                    <div style={{
+                        width: `${SLIDE_WIDTH * SLIDE_PREVIEW_SCALE}px`,
+                        height: `${SLIDE_HEIGHT * SLIDE_PREVIEW_SCALE}px`,
+                        backgroundColor: "white",
+                        border: "1px solid #545557",
+                        borderRadius: "10px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        margin: "10px",
+                        marginLeft: "60px",
+                        fontSize: "12px"
+
+                    }}>
+                        Добавьте слайд
+                    </div>
                 </div>
+                
             ) : (
                 slides.map((slide) => (
             <div

@@ -60,7 +60,7 @@ type RemoveObjectAction = {
 type ChangeBackgroundAction = {
     type: ActionType.CHANGE_BACKGROUND,
     payload: {
-        type: 'solid' | 'image';
+        type: 'solid' | 'image' | 'gradient';
         value: string;
     };
 }

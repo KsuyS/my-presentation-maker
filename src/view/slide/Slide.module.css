@@ -12,3 +12,8 @@
     cursor: pointer;
     z-index: 10;
 }
+
+div[contenteditable="true"] {
+    outline: none;
+    cursor: text;
+}

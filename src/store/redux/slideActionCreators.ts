@@ -30,7 +30,7 @@ function removeObject() {
     }
 }
 
-const changeBackground = (payload: { type: 'solid' | 'image'; value: string }) => ({
+const changeBackground = (payload: { type: 'solid' | 'image' | 'gradient'; value: string }) => ({
     type: ActionType.CHANGE_BACKGROUND,
     payload,
 });

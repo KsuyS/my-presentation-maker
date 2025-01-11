@@ -5,7 +5,7 @@ const UNSPLASH_ACCESS_KEY = 'h69XWovSWacwdxvQVcJIksHSf-G3f3bHCsw2ijSexCM';
 export async function importImageFromUnsplash(query: string) {
     try {
         const response = await axios.get(
-            `https://api.unsplash.com/search/photos?query=${query}&client_id=${UNSPLASH_ACCESS_KEY}`
+            `https://api.unsplash.com/search/photos?query=${query}&client_id=${UNSPLASH_ACCESS_KEY}&per_page=18`
         );
         const data = response.data;
 

@@ -2,6 +2,7 @@ import { EditorType } from "../store/EditorType";
 import { jsPDF } from "jspdf";
 import { TextContent, ImageContent } from "../store/PresentationType";
 import TimesNewRomanBase64 from "./TimesNewRoman-base64";
+import html2canvas from 'html2canvas';
 
 const SLIDE_WIDTH = 935;
 const SLIDE_HEIGHT = 525;
@@ -21,73 +22,108 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const scale = Math.min(pageWidth / SLIDE_WIDTH, pageHeight / SLIDE_HEIGHT);
-    const scaledX = (x: number) => x * scale;
-    const scaledY = (y: number) => y * scale;
+    const tempContainer = document.createElement('div');
+    tempContainer.style.width = `${SLIDE_WIDTH}px`;
+    tempContainer.style.height = `${SLIDE_HEIGHT}px`;
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.overflow = 'hidden';
+    document.body.appendChild(tempContainer);
+
+    const toBase64 = (url: string): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    reject(new Error("Could not get 2D context"));
+                    return
+                }
+                ctx.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL('image/jpeg');
+                resolve(dataURL);
+            };
+            img.onerror = (error) => {
+                console.error("Error loading image:", error, url)
+                reject(error)
+            };
+            img.src = url;
+        });
+    };
 
     for (const [index, slide] of editor.presentation.slides.entries()) {
-        if (index > 0) {
-            doc.addPage();
-        }
+        tempContainer.innerHTML = '';
+
+        const slideElement = document.createElement('div');
+        slideElement.style.width = `${SLIDE_WIDTH}px`;
+        slideElement.style.height = `${SLIDE_HEIGHT}px`;
+        slideElement.style.position = 'relative';
 
         if (slide.background.type === 'solid') {
-            doc.setFillColor(slide.background.color);
-            doc.rect(0, 0, pageWidth, pageHeight, 'F');
+            slideElement.style.backgroundColor = slide.background.color;
         } else if (slide.background.type === 'image') {
-            try {
-                const imgData = slide.background.src;
-                doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
-            } catch (error) {
-                console.error("Error adding background image to PDF:", error);
-            }
+            slideElement.style.backgroundImage = `url(${slide.background.src})`;
+            slideElement.style.backgroundSize = 'cover';
+            slideElement.style.backgroundRepeat = 'no-repeat';
+            slideElement.style.backgroundPosition = 'center';
+        } else if (slide.background.type === 'gradient') {
+            slideElement.style.backgroundImage = slide.background.gradient;
         }
 
         for (const element of slide.content) {
+            const elementDiv = document.createElement('div');
+            elementDiv.style.position = 'absolute';
+            elementDiv.style.left = `${element.position.x}px`;
+            elementDiv.style.top = `${element.position.y}px`;
+            elementDiv.style.width = `${element.size.width}px`;
+            elementDiv.style.height = `${element.size.height}px`;
+
             if (element.type === 'text') {
                 const textElement = element as TextContent;
-                doc.setFontSize(textElement.fontSize * scale);
-                doc.setTextColor(textElement.fontColor);
-                doc.setFont(textElement.fontFamily);
-
-                const xPdf = scaledX(textElement.position.x);
-                const yPdf = scaledY(textElement.position.y);
-
-                if (!isNaN(xPdf) && !isNaN(yPdf)) {
-                    doc.text(
-                        textElement.value,
-                        xPdf,
-                        yPdf,
-                        { baseline: 'top' }
-                    );
-                } else {
-                    console.warn("Invalid text position:", textElement);
-                }
-
+                elementDiv.style.fontFamily = textElement.fontFamily;
+                elementDiv.style.fontSize = `${textElement.fontSize}px`;
+                elementDiv.style.color = textElement.fontColor;
+                elementDiv.textContent = textElement.value;
             } else if (element.type === 'image') {
                 const imageElement = element as ImageContent;
-                try {
-                    const imgData = imageElement.src;
-                    if (typeof imgData === 'string') {
-                        const xPdf = scaledX(imageElement.position.x);
-                        const yPdf = scaledY(imageElement.position.y);
-                        const wPdf = scaledX(imageElement.size.width);
-                        const hPdf = scaledY(imageElement.size.height);
+                const img = document.createElement('img');
 
-                        if (!isNaN(xPdf) && !isNaN(yPdf) && !isNaN(wPdf) && !isNaN(hPdf)) {
-                            doc.addImage(imgData, 'JPEG', xPdf, yPdf, wPdf, hPdf);
-                        } else {
-                            console.warn("Invalid image position or size:", imageElement);
-                        }
-                    } else {
-                        console.warn("Invalid image data:", imageElement);
-                    }
+                try {
+                    const base64Data = await toBase64(imageElement.src);
+                    img.src = base64Data;
                 } catch (error) {
-                    console.error("Error adding image to PDF:", error);
+                    console.error("Error converting image to base64:", error);
                 }
+
+                img.style.width = '100%';
+                img.style.height = '100%';
+                elementDiv.appendChild(img);
             }
+            slideElement.appendChild(elementDiv);
+        }
+
+        tempContainer.appendChild(slideElement);
+
+        try {
+            const canvas = await html2canvas(slideElement, {
+                useCORS: true,
+            });
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+            doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+            if (index < editor.presentation.slides.length - 1) {
+                doc.addPage();
+            }
+        } catch (error) {
+            console.error("Error rendering slide to image:", error);
         }
     }
 
+    document.body.removeChild(tempContainer);
     return doc.output('datauristring');
 };
 
@@ -98,11 +134,16 @@ const exportToPdf = (editor: EditorType) => {
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
 
+        const fileName = editor.presentation.title || 'presentation';
+
         iframe.onload = () => {
             try {
-                iframe.contentWindow?.print();
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = `${fileName}.pdf`;
+                link.click();
             } catch (error) {
-                console.error("Error printing PDF:", error);
+                console.error("Error saving PDF:", error);
                 window.open(dataUrl);
             } finally {
                 setTimeout(() => {

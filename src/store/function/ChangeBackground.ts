@@ -1,15 +1,13 @@
 import { EditorType } from "../EditorType";
-import { SolidBackground, ImageBackground } from "../PresentationType";
-
-type BackgroundType = SolidBackground | ImageBackground;
+import { SolidBackground, ImageBackground, GradientBackground, Background } from "../PresentationType";
 
 interface ChangeBackgroundOptions {
-    type: 'solid' | 'image';
+    type: 'solid' | 'image' | 'gradient';
     value: string;
 }
 
 function changeBackground(editor: EditorType, options: ChangeBackgroundOptions): EditorType {
-    let newBackground: BackgroundType;
+    let newBackground: Background;
 
     if (options.type === 'solid') {
         newBackground = {
@@ -21,7 +19,13 @@ function changeBackground(editor: EditorType, options: ChangeBackgroundOptions):
             type: 'image',
             src: options.value,
         } as ImageBackground;
-    } else {
+    } else if (options.type === 'gradient') {
+        newBackground = {
+            type: 'gradient',
+            gradient: options.value,
+        } as GradientBackground;
+    }
+    else {
         throw new Error("Invalid background type");
     }
 

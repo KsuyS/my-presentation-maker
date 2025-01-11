@@ -1,21 +1,19 @@
 .slideList {
     overflow: auto;
     border-right: 1px solid;
+    padding-top: 10px;
 }
 
 .slideContainer {
     display: flex;
-}
 
-.emptySlidesMessage {
-    margin-left: 261px;
 }
 
 .item {
     margin: 10px;
     border-radius: 10px;
+    border: 1px solid;
 }
-
 
 .slideNumber {
     font-size: 16px;

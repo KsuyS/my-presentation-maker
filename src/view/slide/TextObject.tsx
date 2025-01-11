@@ -1,7 +1,7 @@
 import { SelectionType } from "../../store/EditorType";
 import { TextContent } from "../../store/PresentationType";
 import { useAppActions } from "../../store/Hooks/useAppActions.ts";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useState, useEffect, useRef } from "react";
 
 type TextObjectProps = {
     textObject: TextContent;
@@ -14,6 +14,8 @@ function TextObject({ textObject, scale = 1, selection, readOnly }: TextObjectPr
     const { updateTextContent } = useAppActions();
     const [isEditing, setIsEditing] = useState(false);
     const [newValue, setNewValue] = useState(textObject.value);
+    const editableRef = useRef<HTMLDivElement | null>(null);
+    const cursorPosition = useRef<number | null>(null);
 
     const textObjectStyles: CSSProperties = {
         position: "absolute",
@@ -30,8 +32,39 @@ function TextObject({ textObject, scale = 1, selection, readOnly }: TextObjectPr
             : "none",
     };
 
+    const setCursor = (position: number | null) => {
+        const el = editableRef.current;
+        if (!el || position === null) return;
+
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.setStart(el.childNodes[0] || el, Math.min(position, el.textContent?.length || 0));
+        range.collapse(true);
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+    };
+
+    const saveCursorPosition = () => {
+        const selection = window.getSelection();
+        if (selection?.rangeCount) {
+            const range = selection.getRangeAt(0);
+            const preCaretRange = range.cloneRange();
+            preCaretRange.selectNodeContents(editableRef.current!);
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            cursorPosition.current = preCaretRange.toString().length;
+        }
+    };
+
+    const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
+        saveCursorPosition();
+        setNewValue(e.currentTarget.textContent || '');
+    };
+
     const handleDoubleClick = () => {
-        setIsEditing(true);
+        if (!readOnly) {
+            setIsEditing(true);
+            setTimeout(() => setCursor(newValue.length), 0);
+        }
     };
 
     const handleBlur = () => {
@@ -41,30 +74,24 @@ function TextObject({ textObject, scale = 1, selection, readOnly }: TextObjectPr
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setNewValue(e.target.value);
-    };
+    useEffect(() => {
+        if (isEditing) {
+            setTimeout(() => setCursor(cursorPosition.current), 0);
+        }
+    }, [newValue]);
 
-    return isEditing ? (
-        <textarea
-            autoFocus
-            style={{
-                ...textObjectStyles,
-                resize: "none",
-                outline: "none",
-                border: "1px solid #545557",
-                fontSize: `${textObject.fontSize * scale}px`,
-                fontFamily: textObject.fontFamily,
-                backgroundColor: "transparent",
-            }}
-            value={newValue}
-            onChange={handleChange}
+    return (
+        <div
+            ref={editableRef}
+            style={textObjectStyles}
+            onDoubleClick={handleDoubleClick}
+            contentEditable={isEditing}
+            suppressContentEditableWarning={true}
+            onInput={handleInput}
             onBlur={handleBlur}
-        />
-    ) : (
-        <p onDoubleClick={handleDoubleClick} style={textObjectStyles}>
-            {textObject.value}
-        </p>
+        >
+            {newValue}
+        </div>
     );
 }
 

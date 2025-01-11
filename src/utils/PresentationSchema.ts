@@ -58,6 +58,14 @@ const presentationSchema = {
                                     src: { type: 'string' }
                                 },
                                 required: ['type', 'src']
+                            },
+                            {
+                                type: "object",
+                                properties: {
+                                    type: { const: 'gradient' },
+                                    src: { type: 'string' }
+                                },
+                                required: ['type', 'gradient']
                             }
                         ]
                     }

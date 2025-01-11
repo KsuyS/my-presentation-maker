@@ -21,7 +21,12 @@ export type ImageBackground = {
     src: string;
 };
 
-export type Background = SolidBackground | ImageBackground;
+export type GradientBackground = {
+    type: 'gradient',
+    gradient: string;
+};
+
+export type Background = SolidBackground | ImageBackground | GradientBackground;
 
 export type SlideObject = TextContent | ImageContent;
 

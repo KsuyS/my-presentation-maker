@@ -19,6 +19,7 @@ type SlideProps = {
     className: string,
     showResizeHandles?: boolean,
     readOnly?: boolean,
+    isShow?: boolean,
 };
 
 function CurrentSlide({
@@ -27,6 +28,7 @@ function CurrentSlide({
     className,
     showResizeHandles = true,
     readOnly = false,
+    isShow = false,
 }: SlideProps) {
     const selection = useAppSelector((editor => editor.selection))
 
@@ -36,13 +38,12 @@ function CurrentSlide({
     const { setSelection } = useAppActions()
 
     const onObjClick = (objectId: string) => {
-        if (!readOnly) {
+        if (!readOnly && !isShow) {
             setSelection({
                 selectedSlideId: selection.selectedSlideId,
                 selectedObjectId: objectId,
             })
-        }
-        else {
+        } else {
             setSelection({
                 selectedSlideId: selection.selectedSlideId,
                 selectedObjectId: null,
@@ -50,11 +51,10 @@ function CurrentSlide({
         }
     };
 
-
     const selectedObjId = selection.selectedObjectId;
 
     const onSlideClick = () => {
-        if (selectedObjId && !readOnly) {
+        if (selectedObjId && !readOnly && !isShow) {
             setSelection({
                 selectedSlideId: selection.selectedSlideId,
                 selectedObjectId: null,
@@ -66,28 +66,37 @@ function CurrentSlide({
         return <></>;
     }
 
-    const slideStyles: CSSProperties = {
-        backgroundColor: slide?.background?.type === 'solid' ? slide.background.color : 'transparent',
-        backgroundImage: slide?.background?.type === 'image' ? `url(${slide.background.src})` : 'none',
-        backgroundSize: 'cover',
-        position: 'relative',
-        width: `${SLIDE_WIDTH * scale}px`,
-        height: `${SLIDE_HEIGHT * scale}px`,
-        zIndex: 1,
-    };
+    const getBackgroundStyle = () => {
+        let style: CSSProperties = {
+            width: `${SLIDE_WIDTH * scale}px`,
+            height: `${SLIDE_HEIGHT * scale}px`,
+            position: 'relative',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            border: isShow ? '1px solid #545557' : (selection.selectedSlideId === slide?.id ? '3px solid #545557' : '1px solid #545557'),
+            zIndex: 1,
+        };
 
-    if (selection.selectedSlideId === slide?.id) {
-        slideStyles.border = '3px solid #545557';
-    }
+        if (slide.background.type === 'solid') {
+            style.backgroundColor = slide.background.color;
+        } else if (slide.background.type === 'image') {
+            style.backgroundImage = `url(${slide.background.src})`;
+        } else if (slide.background.type === 'gradient') {
+            style.backgroundImage = slide.background.gradient;
+        }
+
+        return style;
+    };
 
     return (
         <div
-            style={slideStyles}
+            style={getBackgroundStyle()}
             className={`${styles.slide} ${className}`}
             onMouseMove={(event) => {
-                if (isResizing) {
+                if (isResizing && !isShow) {
                     handleResizeMouseMove(event);
-                } else if (!readOnly) {
+                } else if (!readOnly && !isShow) {
                     handleElementMouseMove(event);
                 }
             }}
@@ -118,7 +127,7 @@ function CurrentSlide({
                                     textObject={slideObject}
                                     scale={scale}
                                     selection={selection}
-                                    readOnly={readOnly}
+                                    readOnly={readOnly || isShow}
                                 />
                             ) : (
                                 <ImageObject
@@ -126,10 +135,10 @@ function CurrentSlide({
                                     imageObject={slideObject}
                                     scale={scale}
                                     selection={selection}
-                                    readOnly={readOnly}
+                                    readOnly={readOnly || isShow}
                                 />
                             )}
-                            {isSelectedObject && showResizeHandles && !readOnly && (
+                            {isSelectedObject && showResizeHandles && !readOnly && !isShow && (
                                 <>
                                     <div className={`${styles.resizeHandle} ${styles.topLeft}`}
                                         onMouseDown={(event) => handleResizeMouseDown(event, slideObject.id, 'top-left')}

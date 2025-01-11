@@ -2,41 +2,78 @@ import styles from './Toolbar.module.css';
 import { useAppActions } from '../../store/Hooks/useAppActions.ts';
 import * as React from "react";
 import { HistoryContext } from '../../store/Hooks/historyContext.ts';
+import { exportToJson, importFromJson } from "../../utils/jsonUtils";
+import { exportToPdf, generatePdfDataUrl } from '../../utils/ExportToPdf.ts';
+import { TextContent } from '../../store/PresentationType.ts';
 
 
 import { importImageFromUnsplash } from "../../utils/UnsplashUtils";
 
 import addSlideIcon from '../../assets/add-slide.png';
-import removeSlideIcon from '../../assets/delete-slide.png';
-import addTextIcon from '../../assets/add-slide.png';
-import removeTextIcon from '../../assets/delete-slide.png';
-import addImageIcon from '../../assets/add-slide.png';
+import removeIcon from '../../assets/delete.png';
+import addTextIcon from '../../assets/add-text.png';
+import addImageIcon from '../../assets/add-image.png';
 import undoIcon from '../../assets/undo.png';
+import backgroundIcon from '../../assets/background.png';
+import backgroundUnsplashIcon from '../../assets/backgroundUnsplash.png';
+import unsplashIcon from '../../assets/unsplash.png';
 import redoIcon from '../../assets/redo.png';
-import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
+import exportIcon from '../../assets/export.png';
+import importIcon from '../../assets/import.png';
+import pdfIcon from '../../assets/pdf.png';
+import playerIcon from '../../assets/player.png';
+import gradientIcon from '../../assets/gradient.png';
 
+import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
 import { useState, useEffect, useCallback } from 'react';
 
-function Toolbar() {
-    const [backgroundOption, setBackgroundOption] = useState<'color' | 'image'>('color');
-    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground, updateFontSize, 
+type ToolbarProps = {
+    navigate: (path: string) => void;
+};
+
+function Toolbar({ navigate }: ToolbarProps) {
+    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground, updateFontSize,
         updateFontFamily, updateFontColor } = useAppActions();
     const history = React.useContext(HistoryContext);
     const [unsplashImages, setUnsplashImages] = useState<string[]>([]);
     const [isUnsplashModalOpen, setIsUnsplashModalOpen] = useState(false);
     const [unsplashQuery, setUnsplashQuery] = useState('');
+    const [activeSection, setActiveSection] = useState('main');
+    const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+    const editor = useAppSelector((editor => editor))
+    const [isGradientVisible, setIsGradientVisible] = useState(false)
+    const [isUnsplashModalOpenForBackground, setIsUnsplashModalOpenForBackground] = useState(false);
+    const [unsplashBackgroundQuery, setUnsplashBackgroundQuery] = useState('');
+    const [unsplashBackgroundImages, setUnsplashBackgroundImages] = useState<string[]>([]);
 
     const selection = useAppSelector((editor) => {
         const selectedSlide = editor.presentation.slides.find(slide => slide.id === editor.selection.selectedSlideId);
         const selectedObject = selectedSlide?.content.find(object => object.id === editor.selection.selectedObjectId);
         return { ...editor.selection, selectedObject };
     });
+    const isTextSelected = selection.selectedObject?.type === 'text';
+    const isImageSelected = selection.selectedObject?.type === 'image';
+
+    const sections = {
+        main: 'Главная',
+        background: 'Фон',
+        text: 'Текст',
+        images: 'Изображения'
+    };
 
     const fontFamilies = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia'];
     const fontSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40];
     const [fontFamily, setFontFamily] = useState(fontFamilies[0]);
     const [fontSize, setFontSize] = useState(12);
-    const [fontColor, setFontColor] = useState('');
+    const [fontColor, setFontColor] = useState('#000000');
+
+    const [gradientType, setGradientType] = useState<'linear' | 'radial'>('linear');
+    const [gradientDirection, setGradientDirection] = useState<string>('to right');
+    const [gradientStartColor, setGradientStartColor] = useState<string>('#ffffff');
+    const [gradientEndColor, setGradientEndColor] = useState<string>('#000000');
+    const [gradientRadialShape, setGradientRadialShape] = useState<'circle' | 'ellipse'>('circle');
+    const [gradientRadialPosition, setGradientRadialPosition] = useState<{ x: string; y: string; }>({ x: '50%', y: '50%' });
+
 
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -126,95 +163,410 @@ function Toolbar() {
         setIsUnsplashModalOpen(false);
     };
 
+    const handleExport = () => {
+        exportToJson(editor);
+    };
+
+    const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            importFromJson(file, setEditor);
+        }
+    };
+
+    const handlePreviewPdf = async () => {
+        try {
+            const dataUrl = await generatePdfDataUrl(editor);
+            setPdfPreviewUrl(dataUrl);
+        } catch (error) {
+            console.error("Error generating PDF preview:", error);
+        }
+    };
+
+    const handleSavePdf = () => {
+        if (pdfPreviewUrl) {
+            exportToPdf(editor);
+        }
+    };
+
+    const handleGradientBackgroundChange = () => {
+        let value = '';
+
+        if (gradientType === 'linear') {
+            value = `linear-gradient(${gradientDirection}, ${gradientStartColor}, ${gradientEndColor})`;
+        } else {
+            value = `radial-gradient(${gradientRadialShape} at ${gradientRadialPosition.x} ${gradientRadialPosition.y}, ${gradientStartColor}, ${gradientEndColor})`;
+        }
+        changeBackground({ type: 'gradient', value });
+    };
+
+    const handleSetActiveSection = (section: string) => {
+        setActiveSection(section);
+        if (section !== 'background') {
+            setIsGradientVisible(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selection.selectedObject?.type === 'text') {
+            const textElement = selection.selectedObject as TextContent;
+            setFontFamily(textElement.fontFamily || fontFamilies[0]);
+            setFontSize(textElement.fontSize || 12);
+            setFontColor(textElement.fontColor || '#000000');
+        }
+    }, [selection.selectedObject]);
+
+    const handleImportBackgroundFromUnsplash = async () => {
+        try {
+            const images = await importImageFromUnsplash(unsplashBackgroundQuery);
+            if (images.length > 0) {
+                setUnsplashBackgroundImages(images);
+            } else {
+                console.error("No images found for this query.");
+            }
+        } catch (error) {
+            console.error("Error fetching images from Unsplash:", error);
+        }
+    };
+
+    const handleBackgroundImageSelection = (src: string) => {
+        changeBackground({ type: 'image', value: src });
+        setIsUnsplashModalOpenForBackground(false);
+    };
+
     return (
-        <div className={styles.toolbar}>
-            <button className={styles.button} onClick={addSlide}>
-                <img className={styles.imageButton} src={addSlideIcon} alt="Добавить слайд" />
-                Добавить слайд
-            </button>
-            <button className={styles.button} onClick={removeSlide}>
-                <img className={styles.imageButton} src={removeSlideIcon} alt="Удалить слайд" />
-                Удалить слайд
-            </button>
-            <button className={styles.button} onClick={addText}>
-                <img className={styles.imageButton} src={addTextIcon} alt="Добавить текст" />
-                Добавить текст
-            </button>
-            <div className={styles.changeImage}>
-                <input
-                    type="file"
-                    id="imageUploader"
-                    accept="image/*"
-                    onChange={onChangeImgUpload}
-                    className={styles.imageUploader}
-                />
-                <label htmlFor="imageUploader" className={`${styles.button} ${styles.fileLabel}`}>
-                    <img className={styles.imageButton} src={addImageIcon} alt="Добавить изображение" />
-                    Добавить изображение
-                </label>
-            </div>
-            <button className={styles.button} onClick={removeObject}>
-                <img className={styles.imageButton} src={removeTextIcon} alt="Удалить объект" />
-                Удалить объект
-            </button>
-            <div className={styles.changeBackground}>
-                <select
-                    id="backgroundSelector"
-                    value={backgroundOption}
-                    onChange={(e) => setBackgroundOption(e.target.value as 'color' | 'image')}
-                    className={`${styles.dropdown} ${styles.button}`}
-                >
-                    <option value="color">Цвет фона</option>
-                    <option value="image">Фоновое изображение</option>
-                </select>
+        <div className={styles.toolbarContainer}>
+            <div className={styles.toolbarNav}>
+                {Object.entries(sections).map(([key, value]) => (
+                    <button
+                        key={key}
+                        className={`${styles.navButton} ${activeSection === key ? styles.active : ''}`}
+                        onClick={() => handleSetActiveSection(key)}
+                    >
+                        {value}
+                    </button>
+                ))}
             </div>
 
-            {backgroundOption === 'color' && (
-                <div className={styles.changeColor}>
-                    <input
-                        type="color"
-                        id="colorPicker"
-                        onChange={onChangeColorBackground}
-                        className={`${styles.colorPicker}`}
-                    />
-                </div>
-            )}
+            <div className={styles.toolbarContent}>
+                {activeSection === 'main' && (
+                    <div className={styles.sectionContent}>
+                        <button className={styles.toolButton} title="Добавить слайд" onClick={addSlide}>
+                            <img src={addSlideIcon} alt="Добавить слайд" />
+                        </button>
+                        <button className={styles.toolButton} title="Удалить слайд" onClick={removeSlide}>
+                            <img src={removeIcon} alt="Удалить слайд" />
+                        </button>
+                        <button className={styles.toolButton} title="Отменить" onClick={onUndo}>
+                            <img src={undoIcon} alt="Отменить" />
+                        </button>
+                        <button className={styles.toolButton} title="Повторить" onClick={onRedo}>
+                            <img src={redoIcon} alt="Повторить" />
+                        </button>
+                        <button className={styles.toolButton} title="Экспорт JSON" onClick={handleExport}>
+                            <img src={exportIcon} alt="Экспорт JSON" />
+                        </button>
 
-            {backgroundOption === 'image' && (
-                <div className={styles.changeImage}>
-                    <input
-                        type="file"
-                        id="bgImageUploader"
-                        accept="image/*"
-                        onChange={onChangeImgBackground}
-                        className={styles.imageUploader}
-                    />
-                    <label htmlFor="bgImageUploader" className={`${styles.button} ${styles.fileLabel}`}>
-                        Выберите изображение для фона
-                    </label>
-                </div>
-            )}
+                        <div className={styles.toolButton} title="Импорт JSON">
+                            <input
+                                type="file"
+                                accept=".json"
+                                onChange={handleImport}
+                                className={styles.imageUploader}
+                                id="jsonFileInput"
+                            />
+                            <label htmlFor="jsonFileInput">
+                                <img src={importIcon} alt="Импорт JSON" />
+                            </label>
+                        </div>
 
-            <button className={styles.button} onClick={onUndo}>
-                <img className={styles.imageButton} src={undoIcon} alt="Undo" />
-                Undo
-            </button>
+                        <button className={styles.toolButton} title="Предпросмотр PDF" onClick={handlePreviewPdf}>
+                            <img src={pdfIcon} alt="Предпросмотр PDF" />
+                        </button>
 
-            <button className={styles.button} onClick={onRedo}>
-                <img className={styles.imageButton} src={redoIcon} alt="Redo" />
-                Redo
-            </button>
-            <button
-                className={styles.button}
-                onClick={() => {
-                    setUnsplashQuery('');
-                    setUnsplashImages([]);
-                    setIsUnsplashModalOpen(true);
-                }}
-            >
-                <img className={styles.imageButton} src={addImageIcon} alt="Unsplash" />
-                Unsplash
-            </button>
+                        <button
+                            className={styles.toolButton}
+                            title="Слайд-шоу"
+                            onClick={() => navigate("/player")}
+                        >
+                            <img src={playerIcon} alt="Слайд-шоу" />
+                        </button>
+                    </div>
+                )}
+                {pdfPreviewUrl && (
+                    <div className={styles.pdfPreviewOverlay}>
+                        <div className={styles.pdfPreviewContainer}>
+                            <div className={styles.pdfPreviewHeader}>
+                                <h2>Предпросмотр PDF</h2>
+                                <div className={styles.buttonGroup}>
+                                    <button className={styles.saveButton} onClick={handleSavePdf}>
+                                        Сохранить PDF
+                                    </button>
+                                    <button className={styles.closeButton} onClick={() => setPdfPreviewUrl(null)}>
+                                        Закрыть
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className={styles.pdfViewer}>
+                                <iframe
+                                    src={pdfPreviewUrl}
+                                    className={styles.pdfPreviewIframe}
+                                    title="PDF Preview"
+                                ></iframe>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeSection === 'background' && (
+                    <div className={styles.sectionContent}>
+                        <div className={styles.toolButton} title="Цвет">
+                            <input
+                                type="color"
+                                onChange={onChangeColorBackground}
+                                className={styles.colorPicker}
+                            />
+                        </div>
+                        <button
+                            className={styles.toolButton}
+                            title="Градиент"
+                            onClick={() => setIsGradientVisible(!isGradientVisible)}
+                        >
+                            <img src={gradientIcon} alt="Градиент" />
+                        </button>
+                        <div className={styles.toolButton} title="Изображение с компьютера">
+                            <input
+                                type="file"
+                                id="bgImageUploader"
+                                accept="image/*"
+                                onChange={onChangeImgBackground}
+                                className={styles.imageUploader}
+                            />
+                            <label htmlFor="bgImageUploader">
+                                <img src={backgroundIcon} alt="Изображение с компьютера" />
+                            </label>
+                        </div>
+                        <button
+                            className={styles.toolButton}
+                            title="Изображение из Unsplash"
+                            onClick={() => setIsUnsplashModalOpenForBackground(true)}
+                        >
+                            <img src={backgroundUnsplashIcon} alt="Изображение из Unsplash" />
+                        </button>
+                        {isGradientVisible && (
+                            <div className={styles.gradientControls}>
+                                <select
+                                    value={gradientType}
+                                    onChange={(e) => setGradientType(e.target.value as 'linear' | 'radial')}
+                                    className={styles.toolBtn}
+                                >
+                                    <option value="linear">Linear</option>
+                                    <option value="radial">Radial</option>
+                                </select>
+
+                                {gradientType === 'linear' && (
+                                    <select
+                                        value={gradientDirection}
+                                        onChange={(e) => setGradientDirection(e.target.value)}
+                                        className={styles.toolBtn}
+                                    >
+                                        <option value="to right">To Right</option>
+                                        <option value="to left">To Left</option>
+                                        <option value="to bottom">To Bottom</option>
+                                        <option value="to top">To Top</option>
+                                        <option value="to bottom right">To Bottom Right</option>
+                                        <option value="to bottom left">To Bottom Left</option>
+                                        <option value="to top right">To Top Right</option>
+                                        <option value="to top left">To Top Left</option>
+                                    </select>
+                                )}
+
+                                {gradientType === 'radial' && (
+                                    <>
+                                        <select
+                                            value={gradientRadialShape}
+                                            onChange={(e) => setGradientRadialShape(e.target.value as 'circle' | 'ellipse')}
+                                            className={styles.toolBtn}
+                                        >
+                                            <option value="circle">Circle</option>
+                                            <option value="ellipse">Ellipse</option>
+                                        </select>
+                                        <div className={styles.radialPosition}>
+                                            <span>X: </span>
+                                            <input
+                                                type="text"
+                                                value={gradientRadialPosition.x}
+                                                onChange={(e) => setGradientRadialPosition({ ...gradientRadialPosition, x: e.target.value })}
+                                                className={styles.toolBtn}
+                                            />
+                                            <span> Y: </span>
+                                            <input
+                                                type="text"
+                                                value={gradientRadialPosition.y}
+                                                onChange={(e) => setGradientRadialPosition({ ...gradientRadialPosition, y: e.target.value })}
+                                                className={styles.toolBtn}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+
+                                <input
+                                    type="color"
+                                    value={gradientStartColor}
+                                    onChange={(e) => setGradientStartColor(e.target.value)}
+                                    className={styles.colorPicker}
+                                    title="Start Color"
+                                />
+                                <input
+                                    type="color"
+                                    value={gradientEndColor}
+                                    onChange={(e) => setGradientEndColor(e.target.value)}
+                                    className={styles.colorPicker}
+                                    title="End Color"
+                                />
+                                <button onClick={handleGradientBackgroundChange} className={styles.button}>
+                                    Применить
+                                </button>
+                            </div>
+                        )}
+                        {isUnsplashModalOpenForBackground && (
+                            <div className={styles.modalOverlay}>
+                                <div className={styles.modalContent}>
+                                    <div className={styles.modalHeader}>
+                                        <h2>Выберите фон из Unsplash</h2>
+                                        <button
+                                            className={styles.closeButton}
+                                            onClick={() => setIsUnsplashModalOpenForBackground(false)}
+                                        >
+                                            Закрыть
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="text"
+                                            placeholder="Введите запрос для поиска..."
+                                            value={unsplashBackgroundQuery}
+                                            onChange={(e) => setUnsplashBackgroundQuery(e.target.value)}
+                                            className={styles.unsplashInput}
+                                        />
+                                        <button
+                                            className={styles.button}
+                                            onClick={handleImportBackgroundFromUnsplash}
+                                        >
+                                            Найти
+                                        </button>
+                                    </div>
+                                    <div className={styles.imageGrid}>
+                                        {unsplashBackgroundImages.map((imgSrc, index) => (
+                                            <img
+                                                key={index}
+                                                src={imgSrc}
+                                                alt={`Unsplash ${index}`}
+                                                className={styles.imageItem}
+                                                onClick={() => handleBackgroundImageSelection(imgSrc)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeSection === 'text' && (
+                    <div className={styles.sectionContent}>
+                        <button className={styles.toolButton} title="Добавить текст" onClick={addText}>
+                            <img src={addTextIcon} alt="Добавить текст" />
+                        </button>
+                        <button className={styles.toolButton} title="Удалить текст" onClick={removeObject} disabled={!isTextSelected}>
+                            <img src={removeIcon} alt="Удалить текст" />
+
+                        </button>
+                        <select
+                            className={`${styles.toolButton} ${styles.toolBtn}`}
+                            title="Шрифт"
+                            value={fontFamily}
+                            onChange={(e) => {
+                                const newFontFamily = e.target.value;
+                                setFontFamily(newFontFamily);
+                                updateFontFamily({
+                                    slideId: selection.selectedSlideId ?? '',
+                                    objectId: selection.selectedObjectId ?? '',
+                                    fontFamily: newFontFamily,
+                                });
+                            }}
+                            disabled={!isTextSelected}
+                        >
+                            {fontFamilies.map((family) => (
+                                <option key={family} value={family}>{family}</option>
+                            ))}
+                        </select>
+
+                        <select
+                            className={`${styles.toolButton} ${styles.toolBtn}`}
+                            title="Размер шрифта"
+                            value={fontSize}
+                            onChange={(e) => {
+                                const newFontSize = parseInt(e.target.value, 10);
+                                setFontSize(newFontSize);
+                                updateFontSize({
+                                    slideId: selection.selectedSlideId ?? '',
+                                    objectId: selection.selectedObjectId ?? '',
+                                    fontSize: newFontSize,
+                                });
+                            }}
+                            disabled={!isTextSelected}
+                        >
+                            {fontSizes.map((size) => (
+                                <option key={size} value={size}>{size}</option>
+                            ))}
+                        </select>
+
+                        <div className={styles.toolButton} title="Цвет текста">
+                            <input
+                                type="color"
+                                value={fontColor}
+                                onChange={(e) => {
+                                    const newFontColor = e.target.value;
+                                    setFontColor(newFontColor);
+                                    updateFontColor({
+                                        slideId: selection.selectedSlideId ?? '',
+                                        objectId: selection.selectedObjectId ?? '',
+                                        fontColor: newFontColor,
+                                    });
+                                }}
+                                className={styles.colorPicker}
+                                disabled={!isTextSelected}
+                            />
+                        </div>
+                    </div>
+                )}
+                {activeSection === 'images' && (
+                    <div className={styles.sectionContent}>
+                        <div className={styles.toolButton} title="Добавить изображение с компьютера">
+                            <input
+                                type="file"
+                                id="imageUploader"
+                                accept="image/*"
+                                onChange={onChangeImgUpload}
+                                className={styles.imageUploader} />
+                            <label htmlFor="imageUploader">
+                                <img src={addImageIcon} alt="Добавить изображение" />
+                            </label>
+                        </div>
+                        <button
+                            className={styles.toolButton}
+                            title="Добавить изображение из Unsplash"
+                            onClick={() => setIsUnsplashModalOpen(true)}>
+                            <img src={unsplashIcon} alt="Unsplash" />
+                        </button>
+                        <button className={styles.toolButton} title="Удалить изображение" onClick={removeObject} disabled={!isImageSelected}>
+                            <img src={removeIcon} alt="Удалить изображение" />
+                        </button>
+                    </div>
+                )}
+            </div>
 
             {isUnsplashModalOpen && (
                 <div className={styles.modalOverlay}>
@@ -228,7 +580,6 @@ function Toolbar() {
                                 Закрыть
                             </button>
                         </div>
-
                         <div>
                             <input
                                 type="text"
@@ -244,7 +595,6 @@ function Toolbar() {
                                 Найти
                             </button>
                         </div>
-
                         <div className={styles.imageGrid}>
                             {unsplashImages.map((imgSrc, index) => (
                                 <img
@@ -256,78 +606,6 @@ function Toolbar() {
                                 />
                             ))}
                         </div>
-                    </div>
-                </div>
-            )}
-
-            {selection.selectedObjectId && selection.selectedObject?.type === 'text' && (
-                <div>
-                    <div className={styles.changeFont}>
-                        <select
-                            value={fontSize}
-                            onChange={(e) => {
-                                const newFontSize = parseInt(e.target.value, 10);
-                                setFontSize(newFontSize);
-                                updateFontSize({
-                                    slideId: selection.selectedSlideId ?? '',
-                                    objectId: selection.selectedObjectId ?? '',
-                                    fontSize: newFontSize,
-                                });
-                            }}
-                            className={styles.dropdown}
-                        >
-                            {fontSizes.map((font, index) => (
-                                <option key={index} value={font}>
-                                    {font}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-            )}
-            {selection.selectedObjectId && selection.selectedObject?.type === 'text' && (
-                <div>
-                    <div className={styles.changeFont}>
-                        <select
-                            value={fontFamily}
-                            onChange={(e) => {
-                                const newFontFamily = e.target.value;
-                                setFontFamily(newFontFamily);
-                                updateFontFamily({
-                                    slideId: selection.selectedSlideId ?? '',
-                                    objectId: selection.selectedObjectId ?? '',
-                                    fontFamily: newFontFamily,
-                                });
-                            }}
-                            className={styles.dropdown}
-                        >
-                            {fontFamilies.map((family, index) => (
-                                <option key={index} value={family}>
-                                    {family}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-            )}
-            {selection.selectedObjectId && selection.selectedObject?.type === 'text' && (
-                <div>
-                    <div className={styles.changeTextColor}>
-                        <input
-                            type="color"
-                            id="textColorPicker"
-                            value={fontColor}
-                            onChange={(e) => {
-                                const newFontColor = e.target.value;
-                                setFontColor(newFontColor);
-                                updateFontColor({
-                                    slideId: selection.selectedSlideId ?? '',
-                                    objectId: selection.selectedObjectId ?? '',
-                                    fontColor: newFontColor,
-                                });
-                            }}
-                            className={styles.colorPicker}
-                        />
                     </div>
                 </div>
             )}

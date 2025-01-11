@@ -1,81 +1,186 @@
-.toolbar {
+/* Основной контейнер тулбара */
+.toolbarContainer {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    background-color: #e0f7fa;
-    padding: 15px 25px;
-    height: 72px;
+    flex-direction: column;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
 }
 
-.button {
+/* Навигационная панель тулбара */
+.toolbarNav {
     display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+    background-color: #e0e0e0;
+    border-bottom: 1px solid black;
+}
+
+/* Содержимое тулбара */
+.toolbarContent {
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+/* Контейнер секции с контентом */
+.sectionContent {
+    display: flex;
+    gap: 10px;
     align-items: center;
-    background-color: #d3d3d3;
-    color: #333;
+}
+
+/* Кнопка навигации */
+.navButton {
+    padding: 8px 16px;
     border: none;
-    border-radius: 4px;
-    padding: 8px 8px;
-    margin: 5px;
+    background: none;
     cursor: pointer;
-    font-size: 10px;
-    transition: background-color 0.3s ease;
-    height: 32px;
+    border-radius: 4px;
 }
 
-.changeFont {
-    margin: 5px;
-    height: 32px;
+/* Активная кнопка навигации */
+.navButton.active {
+    background-color: #e0e0e0;
+    font-weight: bold;
 }
 
-.button img {
-    width: 16px;
-    height: 16px;
-    margin-right: 6px;
+/* Кнопка инструмента */
+.toolButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
 }
 
-.button:hover {
-    background-color: #b0b0b0;
+/* Обрамление для кнопки инструмента */
+.toolBtn {
+    border: 1px solid black;
+    margin: 0;
+    padding: 1px;
 }
 
-.label {
-    margin-right: 10px;
+/* Ховер эффект для кнопки инструмента */
+.toolButton:hover {
+    background-color: #e0e0e0;
 }
 
+/* Изображение внутри кнопки инструмента */
+.toolButton img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Выпадающий список внутри кнопки инструмента */
+select.toolButton {
+    width: auto;
+    padding: 0 8px;
+    height: 30px;
+}
+
+/* Палитра цветов */
 .colorPicker {
-    padding: 4px;
-}
-
-.dropdown {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #d3d3d3;
-    background-color: #d3d3d3;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
     cursor: pointer;
 }
 
-.dropdown:hover {
-    background-color: #b0b0b0;
-}
-
+/* Скрытый элемент загрузки изображения */
 .imageUploader {
     display: none;
 }
 
+/* Лейбл для загрузки изображения */
+.imageUploader + label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Лейбл для выбора файла */
 .fileLabel {
-    background-color: #d3d3d3;
+    background-color: #e0e0e0;
     color: #333;
     border-radius: 4px;
-    padding: 8px 8px;
+    padding: 8px;
     margin: 5px;
     cursor: pointer;
     font-size: 10px;
     transition: background-color 0.3s ease;
 }
 
+/* Ховер эффект для лейбла выбора файла */
 .fileLabel:hover {
-    background-color: #b0b0b0;
+    background-color: #ccc;
 }
 
+/* Оверлей модального окна */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Контент модального окна */
+.modalContent {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    height: 90vh;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Заголовок модального окна */
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Заголовок модального окна (текст) */
+.modalHeader h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* Кнопка закрытия модального окна */
+.closeButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 8px;
+    border: none;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Ховер эффект для кнопки закрытия */
+.closeButton:hover {
+    background-color: #ccc;
+}
+
+/* Оверлей предпросмотра PDF */
 .pdfPreviewOverlay {
     position: fixed;
     top: 0;
@@ -89,108 +194,275 @@
     z-index: 1000;
 }
 
+/* Контейнер предпросмотра PDF */
 .pdfPreviewContainer {
-    background-color: white;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
     border-radius: 8px;
-    position: relative;
-    width: 80%;
-    height: 80%;
-
+    width: 90%;
+    height: 90vh;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
 }
 
+/* Заголовок предпросмотра PDF */
+.pdfPreviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f5f5;
+}
+
+/* Предварительный просмотр PDF */
+.pdfViewer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ифрейм для предпросмотра PDF */
 .pdfPreviewIframe {
     width: 100%;
     height: 100%;
     border: none;
 }
 
-.closePreviewButton {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: none;
+/* Группа кнопок */
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+/* Кнопка сохранения */
+.saveButton {
+    padding: 8px 16px;
     border: none;
-    font-size: 16px;
     cursor: pointer;
-    padding: 5px 10px;
     border-radius: 4px;
-    background-color: #ddd;
-
-}
-
-.closePreviewButton:hover {
-    background-color: #ccc;
-}
-
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modalContent {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    width: 80%;
-    max-width: 1000px;
-    max-height: 90%;
-    overflow-y: auto;
-    position: relative;
-    text-align: center;
-}
-
-.modalHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.modalHeader h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.closeButton {
-    background-color: #ff4d4d;
+    font-size: 14px;
+    background-color: #4caf50;
     color: white;
+    transition: 0.3s;
+}
+
+/* Ховер эффект для кнопки сохранения */
+.saveButton:hover {
+    background-color: #45a049;
+}
+
+/* Кнопка закрытия */
+.closeButton {
+    padding: 8px 16px;
     border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #e74c3c;
+    color: white;
+    transition: 0.3s;
 }
 
+/* Ховер эффект для кнопки закрытия */
 .closeButton:hover {
-    background-color: #e04444;
+    background-color: #c0392b;
 }
 
+/* Сетка изображений */
 .imageGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
 }
 
+/* Элемент сетки изображений */
 .imageItem {
     width: 100%;
     height: 150px;
     object-fit: cover;
-    border-radius: 4px;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 4px;
+    transition: transform 0.2s;
 }
 
+/* Ховер эффект для элемента сетки изображений */
 .imageItem:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Поле ввода для поиска изображений на Unsplash */
+.unsplashInput {
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+}
+
+/* Контролы для градиента */
+.gradientControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+/* Селект, цветовой пикер и поля ввода для позиции радиального градиента */
+.gradientControls select,
+.gradientControls input[type="color"],
+.gradientControls .radialPosition input {
+    margin-right: 0.3rem;
+}
+
+/* Кнопка в контролах градиента */
+/* Кнопка в контролах градиента */
+.gradientControls button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Общая кнопка (для универсального использования) */
+.button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Контейнер для позиции радиального градиента */
+.radialPosition {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+/* Поля ввода для позиции радиального градиента */
+.radialPosition input {
+    width: 50px;
+}
+
+/* Состояние отключения для кнопок инструментов и цветовых пикеров */
+.toolButton:disabled,
+.colorPicker:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Дополнительные стили для модального окна */
+
+/* Кнопка закрытия модального окна (дублирование для ясности) */
+.closeButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 8px;
+    border: none;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Ховер эффект для кнопки закрытия (дублирование для ясности) */
+.closeButton:hover {
+    background-color: #ccc;
+}
+
+/* Дополнительные стили для предпросмотра PDF */
+
+/* Заголовок предпросмотра PDF (дублирование для ясности) */
+.pdfPreviewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f5f5;
+}
+
+/* Предварительный просмотр PDF (дублирование для ясности) */
+.pdfViewer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ифрейм для предпросмотра PDF (дублирование для ясности) */
+.pdfPreviewIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Дополнительные стили для сетки изображений */
+
+/* Элемент сетки изображений (дублирование для ясности) */
+.imageItem {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+/* Ховер эффект для элемента сетки изображений (дублирование для ясности) */
+.imageItem:hover {
+    transform: scale(1.05);
+}
+
+/* Дополнительные стили для полей ввода и выбора файлов */
+
+/* Поле ввода для поиска изображений на Unsplash (дублирование для ясности) */
+.unsplashInput {
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+}
+
+/* Лейбл для загрузки изображения (дублирование для ясности) */
+.imageUploader + label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Лейбл для выбора файла (дублирование для ясности) */
+.fileLabel {
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 4px;
+    padding: 8px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: background-color 0.3s ease;
+}
+
+/* Ховер эффект для лейбла выбора файла (дублирование для ясности) */
+.fileLabel:hover {
+    background-color: #ccc;
 }
