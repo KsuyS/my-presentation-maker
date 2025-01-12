@@ -10,7 +10,7 @@ const defaultEditor: EditorType = {
         ],
     },
     selection: {
-        selectedSlideId: slide.id,
+        selectedSlideIds: [slide.id],
         selectedObjectId: null,
     }
 }

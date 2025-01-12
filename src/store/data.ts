@@ -31,7 +31,7 @@ const presentation: Presentation = {
   const data: EditorType = {
     presentation,
     selection: {
-        selectedSlideId: presentation.slides[0].id,
+        selectedSlideIds: [presentation.slides[0].id],
         selectedObjectId: null
     }
 }

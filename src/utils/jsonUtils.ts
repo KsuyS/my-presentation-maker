@@ -7,7 +7,7 @@ const normalizeSelection = (editor: EditorType): EditorType => {
     return {
         ...editor,
         selection: {
-            selectedSlideId: firstSlideId,
+            selectedSlideIds: firstSlideId ? [firstSlideId] : [],
             selectedObjectId: null,
         }
     };
