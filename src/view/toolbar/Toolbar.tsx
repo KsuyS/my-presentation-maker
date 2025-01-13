@@ -367,8 +367,8 @@ function Toolbar({ navigate }: ToolbarProps) {
                                     onChange={(e) => setGradientType(e.target.value as 'linear' | 'radial')}
                                     className={styles.toolBtn}
                                 >
-                                    <option value="linear">Linear</option>
-                                    <option value="radial">Radial</option>
+                                    <option value="linear">Линейный</option>
+                                    <option value="radial">Радиальный</option>
                                 </select>
 
                                 {gradientType === 'linear' && (
@@ -377,14 +377,14 @@ function Toolbar({ navigate }: ToolbarProps) {
                                         onChange={(e) => setGradientDirection(e.target.value)}
                                         className={styles.toolBtn}
                                     >
-                                        <option value="to right">To Right</option>
-                                        <option value="to left">To Left</option>
-                                        <option value="to bottom">To Bottom</option>
-                                        <option value="to top">To Top</option>
-                                        <option value="to bottom right">To Bottom Right</option>
-                                        <option value="to bottom left">To Bottom Left</option>
-                                        <option value="to top right">To Top Right</option>
-                                        <option value="to top left">To Top Left</option>
+                                        <option value="to right">Вправо</option>
+                                        <option value="to left">Влево</option>
+                                        <option value="to bottom">Вниз</option>
+                                        <option value="to top">Вверх</option>
+                                        <option value="to bottom right">Внизу справа</option>
+                                        <option value="to bottom left">Внизу слева</option>
+                                        <option value="to top right">Вверху справа</option>
+                                        <option value="to top left">Вверху слева</option>
                                     </select>
                                 )}
 
@@ -395,8 +395,8 @@ function Toolbar({ navigate }: ToolbarProps) {
                                             onChange={(e) => setGradientRadialShape(e.target.value as 'circle' | 'ellipse')}
                                             className={styles.toolBtn}
                                         >
-                                            <option value="circle">Circle</option>
-                                            <option value="ellipse">Ellipse</option>
+                                            <option value="circle">Круг</option>
+                                            <option value="ellipse">Эллипс</option>
                                         </select>
                                         <div className={styles.radialPosition}>
                                             <span>X: </span>
