@@ -46,12 +46,13 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [unsplashBackgroundQuery, setUnsplashBackgroundQuery] = useState('');
     const [unsplashBackgroundImages, setUnsplashBackgroundImages] = useState<string[]>([]);
 
+
     const selection = useAppSelector((editor) => {
         const selectedSlideIds = editor.selection?.selectedSlideIds || [];
-    
+
         const selectedSlides = editor.presentation.slides.filter(slide => selectedSlideIds.includes(slide.id));
         const selectedObject = selectedSlides[0]?.content.find(object => object.id === editor.selection?.selectedObjectId);
-    
+
         return {
             ...editor.selection,
             selectedObject,
@@ -59,6 +60,7 @@ function Toolbar({ navigate }: ToolbarProps) {
     });
     const isTextSelected = selection.selectedObject?.type === 'text';
     const isImageSelected = selection.selectedObject?.type === 'image';
+    const isEmptyPresentation = editor.presentation.slides.length === 0;
 
     const sections = {
         main: 'Главная',
@@ -260,7 +262,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         <button className={styles.toolButton} title="Добавить слайд" onClick={addSlide}>
                             <img src={addSlideIcon} alt="Добавить слайд" />
                         </button>
-                        <button className={styles.toolButton} title="Удалить слайд" onClick={removeSlide}>
+                        <button className={styles.toolButton} title="Удалить слайд" onClick={removeSlide} disabled={isEmptyPresentation}>
                             <img src={removeIcon} alt="Удалить слайд" />
                         </button>
                         <button className={styles.toolButton} title="Отменить" onClick={onUndo}>
@@ -269,7 +271,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         <button className={styles.toolButton} title="Повторить" onClick={onRedo}>
                             <img src={redoIcon} alt="Повторить" />
                         </button>
-                        <button className={styles.toolButton} title="Экспорт JSON" onClick={handleExport}>
+                        <button className={styles.toolButton} title="Экспорт JSON" onClick={handleExport} disabled={isEmptyPresentation}>
                             <img src={exportIcon} alt="Экспорт JSON" />
                         </button>
 
@@ -286,7 +288,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                             </label>
                         </div>
 
-                        <button className={styles.toolButton} title="Предпросмотр PDF" onClick={handlePreviewPdf}>
+                        <button className={styles.toolButton} title="Предпросмотр PDF" onClick={handlePreviewPdf} disabled={isEmptyPresentation}>
                             <img src={pdfIcon} alt="Предпросмотр PDF" />
                         </button>
 
@@ -294,6 +296,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                             className={styles.toolButton}
                             title="Слайд-шоу"
                             onClick={() => navigate("/player")}
+                            disabled={isEmptyPresentation}
                         >
                             <img src={playerIcon} alt="Слайд-шоу" />
                         </button>
@@ -329,6 +332,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                     <div className={styles.sectionContent}>
                         <div className={styles.toolButton} title="Цвет">
                             <input
+                                disabled={isEmptyPresentation}
                                 type="color"
                                 onChange={onChangeColorBackground}
                                 className={styles.colorPicker}
@@ -336,6 +340,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         </div>
                         <button
                             className={styles.toolButton}
+                            disabled={isEmptyPresentation}
                             title="Градиент"
                             onClick={() => setIsGradientVisible(!isGradientVisible)}
                         >
@@ -343,6 +348,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         </button>
                         <div className={styles.toolButton} title="Изображение с компьютера">
                             <input
+                                disabled={isEmptyPresentation}
                                 type="file"
                                 id="bgImageUploader"
                                 accept="image/*"
@@ -355,6 +361,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         </div>
                         <button
                             className={styles.toolButton}
+                            disabled={isEmptyPresentation}
                             title="Изображение из Unsplash"
                             onClick={() => setIsUnsplashModalOpenForBackground(true)}
                         >
@@ -482,10 +489,10 @@ function Toolbar({ navigate }: ToolbarProps) {
 
                 {activeSection === 'text' && (
                     <div className={styles.sectionContent}>
-                        <button className={styles.toolButton} title="Добавить текст" onClick={addText}>
+                        <button className={styles.toolButton} title="Добавить текст" onClick={addText} disabled={isEmptyPresentation}>
                             <img src={addTextIcon} alt="Добавить текст" />
                         </button>
-                        <button className={styles.toolButton} title="Удалить текст" onClick={removeObject} disabled={!isTextSelected}>
+                        <button className={styles.toolButton} title="Удалить текст" onClick={removeObject} disabled={!isTextSelected || isEmptyPresentation} >
                             <img src={removeIcon} alt="Удалить текст" />
 
                         </button>
@@ -502,7 +509,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                                     fontFamily: newFontFamily,
                                 });
                             }}
-                            disabled={!isTextSelected}
+                            disabled={!isTextSelected || isEmptyPresentation}
                         >
                             {fontFamilies.map((family) => (
                                 <option key={family} value={family}>{family}</option>
@@ -522,7 +529,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                                     fontSize: newFontSize,
                                 });
                             }}
-                            disabled={!isTextSelected}
+                            disabled={!isTextSelected || isEmptyPresentation}
                         >
                             {fontSizes.map((size) => (
                                 <option key={size} value={size}>{size}</option>
@@ -543,7 +550,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                                     });
                                 }}
                                 className={styles.colorPicker}
-                                disabled={!isTextSelected}
+                                disabled={!isTextSelected || isEmptyPresentation}
                             />
                         </div>
                     </div>
@@ -553,6 +560,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         <div className={styles.toolButton} title="Добавить изображение с компьютера">
                             <input
                                 type="file"
+                                disabled={isEmptyPresentation}
                                 id="imageUploader"
                                 accept="image/*"
                                 onChange={onChangeImgUpload}
@@ -564,6 +572,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         <button
                             className={styles.toolButton}
                             title="Добавить изображение из Unsplash"
+                            disabled={isEmptyPresentation}
                             onClick={() => setIsUnsplashModalOpen(true)}>
                             <img src={unsplashIcon} alt="Unsplash" />
                         </button>

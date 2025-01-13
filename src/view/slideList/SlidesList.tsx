@@ -29,7 +29,7 @@ function SlidesList() {
         }
         setSelection({
             selectedSlideIds: newSelectedSlideIds,
-            selectedObjectId: editor.selection.selectedObjectId,
+            selectedObjectId: null,
         })
     }
 

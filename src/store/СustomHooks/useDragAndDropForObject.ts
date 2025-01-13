@@ -47,7 +47,6 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
         const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, 525 - element.size.height));
 
         currentPosition.current = {x: newX, y: newY}
-        // changeObjectPosition(editor, slideId, draggedElementId, newX, newY); //Удаляем сохранение из mousemove
     }
 
 
