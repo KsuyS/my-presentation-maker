@@ -31,23 +31,25 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
     }
   }
 
-    function handleElementMouseMove(event: React.MouseEvent<HTMLDivElement>): void {
-        if (!isDragging || !draggedElementId || !initialPosition.current) return;
+  function handleElementMouseMove(event: React.MouseEvent<HTMLDivElement>): void {
+    if (!isDragging || !draggedElementId || !initialPosition.current) return;
 
-        const deltaX = event.clientX - dragStartPos.current.x;
-        const deltaY = event.clientY - dragStartPos.current.y;
+    const deltaX = event.clientX - dragStartPos.current.x;
+    const deltaY = event.clientY - dragStartPos.current.y;
 
-        const slide = editor.presentation.slides.find((s) => s.id === slideId);
-        if (!slide) return;
+    const slide = editor.presentation.slides.find((s) => s.id === slideId);
+    if (!slide) return;
 
-        const element = slide.content.find((el) => el.id === draggedElementId);
-        if (!element) return;
+    const element = slide.content.find((el) => el.id === draggedElementId);
+    if (!element) return;
 
-        const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, 935 - element.size.width));
-        const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, 525 - element.size.height));
+    const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, 935 - element.size.width - 1));
+    const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, 525 - element.size.height - 1));
 
-        currentPosition.current = {x: newX, y: newY}
-    }
+    currentPosition.current = { x: newX, y: newY };
+    //changeObjectPosition(editor, slideId, draggedElementId, newX, newY);
+  }
+
 
 
   function handleElementMouseUp(): void {
@@ -60,6 +62,7 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
     setDraggedElementId(null);
     initialPosition.current = null;
     currentPosition.current = null;
+    
   }
 
   return {

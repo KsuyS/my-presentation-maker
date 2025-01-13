@@ -76,7 +76,7 @@ function CurrentSlide({
             backgroundPosition: 'center',
             border: isShow
                 ? '1px solid #545557'
-                : (selection?.selectedSlideIds?.includes(slide.id) ? '3px solid #545557' : '1px solid #545557'),
+                : (selection?.selectedSlideIds?.includes(slide.id) && readOnly ? '3px solid #545557' : '1px solid #545557'),
             zIndex: 1,
         };
 
