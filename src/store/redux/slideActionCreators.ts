@@ -1,5 +1,7 @@
 import { ActionType } from "./actions"
 import { EditorType } from "../EditorType"
+import { fetchUnsplashImages } from "./unsplashMiddleWare"
+import { fetchUnsplashBackgrounds } from "./unsplashMiddleWare"
 
 function addSlide() {
     return {
@@ -111,7 +113,13 @@ const updateFontColor = (payload: { slideId: string; objectId: string; fontColor
     payload,
 });
 
+const fetchImages = (query: string) => {
+    return fetchUnsplashImages(query);
+};
 
+const fetchBackgrounds = (query: string) => {
+    return fetchUnsplashBackgrounds(query);
+};
 export {
     addSlide,
     removeSlide,
@@ -128,5 +136,7 @@ export {
     updateTextContent,
     updateFontSize,
     updateFontFamily,
-    updateFontColor
+    updateFontColor,
+    fetchImages,
+    fetchBackgrounds
 }

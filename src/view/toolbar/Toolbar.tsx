@@ -6,9 +6,6 @@ import { exportToJson, importFromJson } from "../../utils/jsonUtils";
 import { exportToPdf, generatePdfDataUrl } from '../../utils/ExportToPdf.ts';
 import { TextContent } from '../../store/PresentationType.ts';
 
-
-import { importImageFromUnsplash } from "../../utils/UnsplashUtils";
-
 import addSlideIcon from '../../assets/add-slide.png';
 import removeIcon from '../../assets/delete.png';
 import addTextIcon from '../../assets/add-text.png';
@@ -32,32 +29,60 @@ type ToolbarProps = {
 };
 
 function Toolbar({ navigate }: ToolbarProps) {
-    const { setEditor, addSlide, removeSlide, addText, addImage, removeObject, changeBackground, updateFontSize,
-        updateFontFamily, updateFontColor } = useAppActions();
+    const {
+        setEditor,
+        addSlide,
+        removeSlide,
+        addText,
+        addImage,
+        removeObject,
+        changeBackground,
+        updateFontSize,
+        updateFontFamily,
+        updateFontColor,
+        fetchImages,
+        fetchBackgrounds
+    } = useAppActions();
+
     const history = React.useContext(HistoryContext);
-    const [unsplashImages, setUnsplashImages] = useState<string[]>([]);
-    const [isUnsplashModalOpen, setIsUnsplashModalOpen] = useState(false);
-    const [unsplashQuery, setUnsplashQuery] = useState('');
     const [activeSection, setActiveSection] = useState('main');
     const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
-    const editor = useAppSelector((editor => editor))
-    const [isGradientVisible, setIsGradientVisible] = useState(false)
-    const [isUnsplashModalOpenForBackground, setIsUnsplashModalOpenForBackground] = useState(false);
-    const [unsplashBackgroundQuery, setUnsplashBackgroundQuery] = useState('');
-    const [unsplashBackgroundImages, setUnsplashBackgroundImages] = useState<string[]>([]);
+    const editor = useAppSelector((editor => editor));
+    const [isGradientVisible, setIsGradientVisible] = useState(false);
 
+    // Состояния для модальных окон
+    const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
+    // Состояния для поисковых запросов
+    const [imageSearchQuery, setImageSearchQuery] = useState('');
+    const [backgroundSearchQuery, setBackgroundSearchQuery] = useState('');
+
+    // Селекторы для Unsplash
+    const images = useAppSelector(state => state.unsplash?.images?.data ?? []);
+    const imagesLoading = useAppSelector(state => state.unsplash?.images?.loading ?? false);
+    const imagesError = useAppSelector(state => state.unsplash?.images?.error ?? null);
+
+    const backgrounds = useAppSelector(state => state.unsplash?.backgrounds?.data ?? []);
+    const backgroundsLoading = useAppSelector(state => state.unsplash?.backgrounds?.loading ?? false);
+    const backgroundsError = useAppSelector(state => state.unsplash?.backgrounds?.error ?? null);
+
+    // Селектор для выбранных элементов
     const selection = useAppSelector((editor) => {
         const selectedSlideIds = editor.selection?.selectedSlideIds || [];
-
-        const selectedSlides = editor.presentation.slides.filter(slide => selectedSlideIds.includes(slide.id));
-        const selectedObject = selectedSlides[0]?.content.find(object => object.id === editor.selection?.selectedObjectId);
+        const selectedSlides = editor.presentation.slides.filter(slide =>
+            selectedSlideIds.includes(slide.id)
+        );
+        const selectedObject = selectedSlides[0]?.content.find(
+            object => object.id === editor.selection?.selectedObjectId
+        );
 
         return {
             ...editor.selection,
             selectedObject,
         };
     });
+
     const isTextSelected = selection.selectedObject?.type === 'text';
     const isImageSelected = selection.selectedObject?.type === 'image';
     const isEmptyPresentation = editor.presentation.slides.length === 0;
@@ -69,20 +94,21 @@ function Toolbar({ navigate }: ToolbarProps) {
         images: 'Изображения'
     };
 
+    // Настройки текста
     const fontFamilies = ['Arial', 'Times New Roman', 'Courier New', 'Verdana', 'Georgia'];
     const fontSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40];
     const [fontFamily, setFontFamily] = useState(fontFamilies[0]);
     const [fontSize, setFontSize] = useState(12);
     const [fontColor, setFontColor] = useState('#000000');
 
+    // Настройки градиента
     const [gradientType, setGradientType] = useState<'linear' | 'radial'>('linear');
     const [gradientDirection, setGradientDirection] = useState<string>('to right');
     const [gradientStartColor, setGradientStartColor] = useState<string>('#ffffff');
     const [gradientEndColor, setGradientEndColor] = useState<string>('#000000');
     const [gradientRadialShape, setGradientRadialShape] = useState<'circle' | 'ellipse'>('circle');
     const [gradientRadialPosition, setGradientRadialPosition] = useState<{ x: string; y: string; }>({ x: '50%', y: '50%' });
-
-
+    // Обработчики изображений
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -118,6 +144,7 @@ function Toolbar({ navigate }: ToolbarProps) {
         }
     };
 
+    // Обработчики Undo/Redo
     const onUndo = useCallback(() => {
         const newEditor = history.undo();
         if (newEditor) {
@@ -132,6 +159,7 @@ function Toolbar({ navigate }: ToolbarProps) {
         }
     }, [history, setEditor]);
 
+    // Обработчики клавиш
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             const isMac = navigator.platform.toUpperCase().includes('MAC');
@@ -148,29 +176,23 @@ function Toolbar({ navigate }: ToolbarProps) {
         };
 
         window.addEventListener('keydown', handleKeyDown);
-
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onUndo, onRedo]);
 
-    const handleImportFromUnsplash = async () => {
-        try {
-            const images = await importImageFromUnsplash(unsplashQuery);
-            if (images.length > 0) {
-                setUnsplashImages(images);
-                setIsUnsplashModalOpen(true);
-            } else {
-                console.error("No images found for this query.");
-            }
-        } catch (error) {
-            console.error("Error fetching images from Unsplash:", error);
+    // Обработчики Unsplash
+    const handleImportFromUnsplash = () => {
+        if (imageSearchQuery.trim()) {
+            fetchImages(imageSearchQuery);
         }
     };
 
-    const handleImageSelection = (src: string) => {
-        addImage({ src });
-        setIsUnsplashModalOpen(false);
+    const handleSearchBackgrounds = () => {
+        if (backgroundSearchQuery.trim()) {
+            fetchBackgrounds(backgroundSearchQuery);
+        }
     };
 
+    // Обработчики экспорта/импорта
     const handleExport = () => {
         exportToJson(editor);
     };
@@ -182,6 +204,7 @@ function Toolbar({ navigate }: ToolbarProps) {
         }
     };
 
+    // Обработчики PDF
     const handlePreviewPdf = async () => {
         try {
             const dataUrl = await generatePdfDataUrl(editor);
@@ -197,9 +220,9 @@ function Toolbar({ navigate }: ToolbarProps) {
         }
     };
 
+    // Обработчик изменения градиента
     const handleGradientBackgroundChange = () => {
         let value = '';
-
         if (gradientType === 'linear') {
             value = `linear-gradient(${gradientDirection}, ${gradientStartColor}, ${gradientEndColor})`;
         } else {
@@ -215,6 +238,7 @@ function Toolbar({ navigate }: ToolbarProps) {
         }
     };
 
+    // Эффект для обновления настроек текста
     useEffect(() => {
         if (selection.selectedObject?.type === 'text') {
             const textElement = selection.selectedObject as TextContent;
@@ -223,24 +247,6 @@ function Toolbar({ navigate }: ToolbarProps) {
             setFontColor(textElement.fontColor || '#000000');
         }
     }, [selection.selectedObject]);
-
-    const handleImportBackgroundFromUnsplash = async () => {
-        try {
-            const images = await importImageFromUnsplash(unsplashBackgroundQuery);
-            if (images.length > 0) {
-                setUnsplashBackgroundImages(images);
-            } else {
-                console.error("No images found for this query.");
-            }
-        } catch (error) {
-            console.error("Error fetching images from Unsplash:", error);
-        }
-    };
-
-    const handleBackgroundImageSelection = (src: string) => {
-        changeBackground({ type: 'image', value: src });
-        setIsUnsplashModalOpenForBackground(false);
-    };
 
     return (
         <div className={styles.toolbarContainer}>
@@ -302,6 +308,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                         </button>
                     </div>
                 )}
+
                 {pdfPreviewUrl && (
                     <div className={styles.pdfPreviewOverlay}>
                         <div className={styles.pdfPreviewContainer}>
@@ -326,9 +333,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                             </div>
                         </div>
                     </div>
-                )}
-
-                {activeSection === 'background' && (
+                )}{activeSection === 'background' && (
                     <div className={styles.sectionContent}>
                         <div className={styles.toolButton} title="Цвет">
                             <input
@@ -363,7 +368,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                             className={styles.toolButton}
                             disabled={isEmptyPresentation}
                             title="Изображение из Unsplash"
-                            onClick={() => setIsUnsplashModalOpenForBackground(true)}
+                            onClick={() => setIsBackgroundModalOpen(true)}
                         >
                             <img src={backgroundUnsplashIcon} alt="Изображение из Unsplash" />
                         </button>
@@ -442,15 +447,14 @@ function Toolbar({ navigate }: ToolbarProps) {
                                     Применить
                                 </button>
                             </div>
-                        )}
-                        {isUnsplashModalOpenForBackground && (
+                        )}{isBackgroundModalOpen && (
                             <div className={styles.modalOverlay}>
                                 <div className={styles.modalContent}>
                                     <div className={styles.modalHeader}>
-                                        <h2>Выберите фон из Unsplash</h2>
+                                        <h2>Выберите фоновое изображение из Unsplash</h2>
                                         <button
                                             className={styles.closeButton}
-                                            onClick={() => setIsUnsplashModalOpenForBackground(false)}
+                                            onClick={() => setIsBackgroundModalOpen(false)}
                                         >
                                             Закрыть
                                         </button>
@@ -458,26 +462,36 @@ function Toolbar({ navigate }: ToolbarProps) {
                                     <div>
                                         <input
                                             type="text"
-                                            placeholder="Введите запрос для поиска..."
-                                            value={unsplashBackgroundQuery}
-                                            onChange={(e) => setUnsplashBackgroundQuery(e.target.value)}
+                                            placeholder="Введите запрос для поиска фона..."
+                                            value={backgroundSearchQuery}
+                                            onChange={(e) => setBackgroundSearchQuery(e.target.value)}
                                             className={styles.unsplashInput}
                                         />
                                         <button
                                             className={styles.button}
-                                            onClick={handleImportBackgroundFromUnsplash}
+                                            onClick={handleSearchBackgrounds}
+                                            disabled={backgroundsLoading}
                                         >
-                                            Найти
+                                            {backgroundsLoading ? 'Загрузка...' : 'Найти'}
                                         </button>
                                     </div>
+                                    {backgroundsError && (
+                                        <div className={styles.errorMessage}>{backgroundsError}</div>
+                                    )}
                                     <div className={styles.imageGrid}>
-                                        {unsplashBackgroundImages.map((imgSrc, index) => (
+                                        {backgrounds.map((imgSrc, index) => (
                                             <img
                                                 key={index}
                                                 src={imgSrc}
-                                                alt={`Unsplash ${index}`}
+                                                alt={`Unsplash Background ${index}`}
                                                 className={styles.imageItem}
-                                                onClick={() => handleBackgroundImageSelection(imgSrc)}
+                                                onClick={() => {
+                                                    changeBackground({
+                                                        type: 'image',
+                                                        value: imgSrc
+                                                    });
+                                                    setIsBackgroundModalOpen(false);
+                                                }}
                                             />
                                         ))}
                                     </div>
@@ -494,7 +508,6 @@ function Toolbar({ navigate }: ToolbarProps) {
                         </button>
                         <button className={styles.toolButton} title="Удалить текст" onClick={removeObject} disabled={!isTextSelected || isEmptyPresentation} >
                             <img src={removeIcon} alt="Удалить текст" />
-
                         </button>
                         <select
                             className={`${styles.toolButton} ${styles.toolBtn}`}
@@ -554,8 +567,7 @@ function Toolbar({ navigate }: ToolbarProps) {
                             />
                         </div>
                     </div>
-                )}
-                {activeSection === 'images' && (
+                )}{activeSection === 'images' && (
                     <div className={styles.sectionContent}>
                         <div className={styles.toolButton} title="Добавить изображение с компьютера">
                             <input
@@ -564,7 +576,8 @@ function Toolbar({ navigate }: ToolbarProps) {
                                 id="imageUploader"
                                 accept="image/*"
                                 onChange={onChangeImgUpload}
-                                className={styles.imageUploader} />
+                                className={styles.imageUploader}
+                            />
                             <label htmlFor="imageUploader">
                                 <img src={addImageIcon} alt="Добавить изображение" />
                             </label>
@@ -573,59 +586,71 @@ function Toolbar({ navigate }: ToolbarProps) {
                             className={styles.toolButton}
                             title="Добавить изображение из Unsplash"
                             disabled={isEmptyPresentation}
-                            onClick={() => setIsUnsplashModalOpen(true)}>
+                            onClick={() => setIsImageModalOpen(true)}
+                        >
                             <img src={unsplashIcon} alt="Unsplash" />
                         </button>
-                        <button className={styles.toolButton} title="Удалить изображение" onClick={removeObject} disabled={!isImageSelected}>
+                        <button
+                            className={styles.toolButton}
+                            title="Удалить изображение"
+                            onClick={removeObject}
+                            disabled={!isImageSelected}
+                        >
                             <img src={removeIcon} alt="Удалить изображение" />
                         </button>
                     </div>
                 )}
-            </div>
 
-            {isUnsplashModalOpen && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modalContent}>
-                        <div className={styles.modalHeader}>
-                            <h2>Выберите изображение из Unsplash</h2>
-                            <button
-                                className={styles.closeButton}
-                                onClick={() => setIsUnsplashModalOpen(false)}
-                            >
-                                Закрыть
-                            </button>
-                        </div>
-                        <div>
-                            <input
-                                type="text"
-                                placeholder="Введите запрос для поиска..."
-                                value={unsplashQuery}
-                                onChange={(e) => setUnsplashQuery(e.target.value)}
-                                className={styles.unsplashInput}
-                            />
-                            <button
-                                className={styles.button}
-                                onClick={handleImportFromUnsplash}
-                            >
-                                Найти
-                            </button>
-                        </div>
-                        <div className={styles.imageGrid}>
-                            {unsplashImages.map((imgSrc, index) => (
-                                <img
-                                    key={index}
-                                    src={imgSrc}
-                                    alt={`Unsplash ${index}`}
-                                    className={styles.imageItem}
-                                    onClick={() => handleImageSelection(imgSrc)}
+                {isImageModalOpen && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modalContent}>
+                            <div className={styles.modalHeader}>
+                                <h2>Выберите изображение из Unsplash</h2>
+                                <button
+                                    className={styles.closeButton}
+                                    onClick={() => setIsImageModalOpen(false)}
+                                >
+                                    Закрыть
+                                </button>
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Введите запрос для поиска..."
+                                    value={imageSearchQuery}
+                                    onChange={(e) => setImageSearchQuery(e.target.value)}
+                                    className={styles.unsplashInput}
                                 />
-                            ))}
+                                <button
+                                    className={styles.button}
+                                    onClick={handleImportFromUnsplash}
+                                    disabled={imagesLoading}
+                                >
+                                    {imagesLoading ? 'Загрузка...' : 'Найти'}
+                                </button>
+                            </div>
+                            {imagesError && (
+                                <div className={styles.errorMessage}>{imagesError}</div>
+                            )}
+                            <div className={styles.imageGrid}>
+                                {images.map((imgSrc, index) => (
+                                    <img
+                                        key={index}
+                                        src={imgSrc}
+                                        alt={`Unsplash ${index}`}
+                                        className={styles.imageItem}
+                                        onClick={() => {
+                                            addImage({ src: imgSrc });
+                                            setIsImageModalOpen(false);
+                                        }}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 }
-
 export { Toolbar };

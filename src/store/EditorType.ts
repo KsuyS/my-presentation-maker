@@ -1,4 +1,4 @@
-import {Presentation} from "./PresentationType.ts";
+import { Presentation } from "./PresentationType.ts";
 
 export type SelectionType = {
     selectedSlideIds: string[],
@@ -8,4 +8,16 @@ export type SelectionType = {
 export type EditorType = {
     presentation: Presentation,
     selection: SelectionType,
+    unsplash: {
+        images: {
+            data: string[];
+            loading: boolean;
+            error: string | null;
+        };
+        backgrounds: {
+            data: string[];
+            loading: boolean;
+            error: string | null;
+        };
+    };
 }

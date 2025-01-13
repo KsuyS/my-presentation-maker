@@ -19,6 +19,42 @@ enum ActionType {
     UPDATE_FONT_SIZE = 'updateFontSize',
     UPDATE_FONT_FAMILY = 'updateFontFamily',
     UPDATE_FONT_COLOR = 'updateFontColor',
+    FETCH_UNSPLASH_IMAGES_REQUEST = 'fetchUnsplashImagesRequest',
+    FETCH_UNSPLASH_IMAGES_SUCCESS = 'fetchUnsplashImagesSuccess',
+    FETCH_UNSPLASH_IMAGES_FAILURE = 'fetchUnsplashImagesFailure',
+    FETCH_UNSPLASH_BACKGROUNDS_REQUEST = 'fetchUnsplashBackgroundsRequest',
+    FETCH_UNSPLASH_BACKGROUNDS_SUCCESS = 'fetchUnsplashBackgroundsSuccess',
+    FETCH_UNSPLASH_BACKGROUNDS_FAILURE = 'fetchUnsplashBackgroundsFailure',
+}
+
+type FetchUnsplashImagesRequestAction = {
+    type: ActionType.FETCH_UNSPLASH_IMAGES_REQUEST;
+    payload: string; // query
+}
+
+type FetchUnsplashImagesSuccessAction = {
+    type: ActionType.FETCH_UNSPLASH_IMAGES_SUCCESS;
+    payload: string[]; // массив URL изображений
+}
+
+type FetchUnsplashImagesFailureAction = {
+    type: ActionType.FETCH_UNSPLASH_IMAGES_FAILURE;
+    payload: string; // error message
+}
+
+type FetchUnsplashImagesBackgroundRequestAction = {
+    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_REQUEST;
+    payload: string; // query
+}
+
+type FetchUnsplashImagesBackgroundSuccessAction = {
+    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_SUCCESS;
+    payload: string[]; // массив URL изображений
+}
+
+type FetchUnsplashImagesBackgroundFailureAction = {
+    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_FAILURE;
+    payload: string; // error message
 }
 
 type RenamePresentationTitleAction = {
@@ -145,7 +181,8 @@ type UpdateFontColorAction = {
 type EditorAction = AddSlideAction | RemoveSlideAction | SetSelectionAction | SetEditorAction | AddTextAction | AddImageAction |
     RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction | RenamePresentationTitleAction |
     ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction | UpdateFontSizeAction
-    | UpdateFontFamilyAction | UpdateFontColorAction
+    | UpdateFontFamilyAction | UpdateFontColorAction | FetchUnsplashImagesRequestAction | FetchUnsplashImagesSuccessAction |
+    FetchUnsplashImagesFailureAction | FetchUnsplashImagesBackgroundRequestAction | FetchUnsplashImagesBackgroundSuccessAction | FetchUnsplashImagesBackgroundFailureAction
 
 export {
     ActionType,
