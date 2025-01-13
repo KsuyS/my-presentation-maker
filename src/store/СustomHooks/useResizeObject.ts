@@ -3,117 +3,133 @@ import { useAppActions } from '../Hooks/useAppActions';
 import { useAppSelector } from '../Hooks/useAppSelector';
 
 type UseResizeElementProps = {
-  slideId: string;
-  minWidth?: number;
-  minHeight?: number;
+    slideId: string;
+    minWidth?: number;
+    minHeight?: number;
 };
 
 function useResizeObject({ slideId, minWidth = 20, minHeight = 20 }: UseResizeElementProps) {
-  const [isResizing, setIsResizing] = useState(false);
-  const [resizedElementId, setResizedElementId] = useState<string | null>(null);
-  const startSize = useRef({ width: 0, height: 0 });
-  const startMousePos = useRef({ x: 0, y: 0 });
-  const initialPosition = useRef({ x: 0, y: 0 });
-  const resizeDirection = useRef<string | null>(null);
-  const editor = useAppSelector(state => state);
-  const { changeObjectSize } = useAppActions();
+    const [isResizing, setIsResizing] = useState(false);
+    const [resizedElementId, setResizedElementId] = useState<string | null>(null);
+    const startSize = useRef({ width: 0, height: 0 });
+    const startMousePos = useRef({ x: 0, y: 0 });
+    const initialPosition = useRef({ x: 0, y: 0 });
+    const resizeDirection = useRef<string | null>(null);
+    const currentSize = useRef<{ width: number; height: number } | null>(null);
+    const currentPosition = useRef<{ x: number; y: number } | null>(null)
 
-  function handleResizeMouseDown(event: React.MouseEvent<HTMLDivElement>, elementId: string, direction: string): void {
-    event.preventDefault();
-    setIsResizing(true);
-    setResizedElementId(elementId);
-    resizeDirection.current = direction;
-    startMousePos.current = { x: event.clientX, y: event.clientY };
+    const editor = useAppSelector(state => state);
+    const { changeObjectSize } = useAppActions();
 
-    const slide = editor.presentation.slides.find(s => s.id === slideId);
-    const element = slide?.content.find(e => e.id === elementId);
-    if (element) {
-      startSize.current = { width: element.size.width, height: element.size.height };
-      initialPosition.current = { x: element.position.x, y: element.position.y };
-    }
-  }
+    function handleResizeMouseDown(event: React.MouseEvent<HTMLDivElement>, elementId: string, direction: string): void {
+        event.preventDefault();
+        setIsResizing(true);
+        setResizedElementId(elementId);
+        resizeDirection.current = direction;
+        startMousePos.current = { x: event.clientX, y: event.clientY };
 
-  function handleResizeMouseMove(event: React.MouseEvent<HTMLDivElement>): void {
-    if (!isResizing || !resizedElementId) {
-      return;
-    }
-
-    const deltaX = event.clientX - startMousePos.current.x;
-    const deltaY = event.clientY - startMousePos.current.y;
-
-    let newWidth = startSize.current.width;
-    let newHeight = startSize.current.height;
-    let newX = initialPosition.current.x;
-    let newY = initialPosition.current.y;
-
-    switch (resizeDirection.current) {
-      case 'top-left':
-        newX += deltaX;
-        newY += deltaY;
-        newWidth = Math.max(minWidth, startSize.current.width - deltaX);
-        newHeight = Math.max(minHeight, startSize.current.height - deltaY);
-        break;
-
-      case 'top-right':
-        newY += deltaY;
-        newWidth = Math.max(minWidth, startSize.current.width + deltaX);
-        newHeight = Math.max(minHeight, startSize.current.height - deltaY);
-        break;
-
-      case 'bottom-left':
-        newX += deltaX;
-        newWidth = Math.max(minWidth, startSize.current.width - deltaX);
-        newHeight = Math.max(minHeight, startSize.current.height + deltaY);
-        break;
-
-      case 'bottom-right':
-        newWidth = Math.max(minWidth, startSize.current.width + deltaX);
-        newHeight = Math.max(minHeight, startSize.current.height + deltaY);
-        break;
-
-      case 'middle-left':
-        newX += deltaX;
-        newWidth = Math.max(minWidth, startSize.current.width - deltaX);
-        break;
-
-      case 'middle-right':
-        newWidth = Math.max(minWidth, startSize.current.width + deltaX);
-        break;
-
-      case 'top-middle':
-        newY += deltaY;
-        newHeight = Math.max(minHeight, startSize.current.height - deltaY);
-        break;
-
-      case 'bottom-middle':
-        newHeight = Math.max(minHeight, startSize.current.height + deltaY);
-        break;
+        const slide = editor.presentation.slides.find(s => s.id === slideId);
+        const element = slide?.content.find(e => e.id === elementId);
+        if (element) {
+            startSize.current = { width: element.size.width, height: element.size.height };
+            initialPosition.current = { x: element.position.x, y: element.position.y };
+            currentSize.current = { width: element.size.width, height: element.size.height }
+            currentPosition.current = {x: element.position.x, y: element.position.y}
+        }
     }
 
-    if (newX < 0) {
-      newWidth += newX;
-      newX = 0;
+    function handleResizeMouseMove(event: React.MouseEvent<HTMLDivElement>): void {
+        if (!isResizing || !resizedElementId) {
+            return;
+        }
+
+        const deltaX = event.clientX - startMousePos.current.x;
+        const deltaY = event.clientY - startMousePos.current.y;
+
+        let newWidth = startSize.current.width;
+        let newHeight = startSize.current.height;
+        let newX = initialPosition.current.x;
+        let newY = initialPosition.current.y;
+
+
+        switch (resizeDirection.current) {
+            case 'top-left':
+                newX += deltaX;
+                newY += deltaY;
+                newWidth = Math.max(minWidth, startSize.current.width - deltaX);
+                newHeight = Math.max(minHeight, startSize.current.height - deltaY);
+                break;
+
+            case 'top-right':
+                newY += deltaY;
+                newWidth = Math.max(minWidth, startSize.current.width + deltaX);
+                newHeight = Math.max(minHeight, startSize.current.height - deltaY);
+                break;
+
+            case 'bottom-left':
+                newX += deltaX;
+                newWidth = Math.max(minWidth, startSize.current.width - deltaX);
+                newHeight = Math.max(minHeight, startSize.current.height + deltaY);
+                break;
+
+            case 'bottom-right':
+                newWidth = Math.max(minWidth, startSize.current.width + deltaX);
+                newHeight = Math.max(minHeight, startSize.current.height + deltaY);
+                break;
+
+            case 'middle-left':
+                newX += deltaX;
+                newWidth = Math.max(minWidth, startSize.current.width - deltaX);
+                break;
+
+            case 'middle-right':
+                newWidth = Math.max(minWidth, startSize.current.width + deltaX);
+                break;
+
+            case 'top-middle':
+                newY += deltaY;
+                newHeight = Math.max(minHeight, startSize.current.height - deltaY);
+                break;
+
+            case 'bottom-middle':
+                newHeight = Math.max(minHeight, startSize.current.height + deltaY);
+                break;
+        }
+
+        if (newX < 0) {
+            newWidth += newX;
+            newX = 0;
+        }
+        if (newY < 0) {
+            newHeight += newY;
+            newY = 0;
+        }
+
+
+        currentSize.current = {width: newWidth, height: newHeight}
+        currentPosition.current = {x: newX, y: newY}
     }
-    if (newY < 0) {
-      newHeight += newY;
-      newY = 0;
+
+    function handleResizeMouseUp(): void {
+
+        if (resizedElementId && currentSize.current && currentPosition.current) {
+            changeObjectSize(editor, slideId, resizedElementId, currentSize.current.width, currentSize.current.height, currentPosition.current.x, currentPosition.current.y);
+        }
+
+        setIsResizing(false);
+        setResizedElementId(null);
+        resizeDirection.current = null;
+        currentSize.current = null;
+        currentPosition.current = null;
+
     }
 
-    changeObjectSize(editor, slideId, resizedElementId, newWidth, newHeight, newX, newY);
-  }
-
-  function handleResizeMouseUp(): void {
-    setIsResizing(false);
-    setResizedElementId(null);
-    resizeDirection.current = null;
-  }
-
-  return {
-    isResizing,
-    handleResizeMouseDown,
-    handleResizeMouseMove,
-    handleResizeMouseUp,
-  };
+    return {
+        isResizing,
+        handleResizeMouseDown,
+        handleResizeMouseMove,
+        handleResizeMouseUp,
+    };
 }
 
 export { useResizeObject };
