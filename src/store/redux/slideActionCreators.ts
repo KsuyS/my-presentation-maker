@@ -87,9 +87,7 @@ const changeObjectSize = (
     },
 });
 
-const updateTextContent = (slideId: string, objectId: string, value: string
-
-) => ({
+const updateTextContent = (slideId: string, objectId: string, value: string) => ({
     type: ActionType.UPDATE_TEXT_CONTENT,
     payload: {
         slideId,

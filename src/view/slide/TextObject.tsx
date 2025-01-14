@@ -18,6 +18,7 @@ function TextObject({ textObject, scale = 1, selection, readOnly, temporaryPosit
     const [newValue, setNewValue] = useState(textObject.value);
     const editableRef = useRef<HTMLDivElement | null>(null);
     const cursorPosition = useRef<number | null>(null);
+    useEffect(() => { setNewValue(textObject.value); }, [textObject.value]);
 
     const textObjectStyles: CSSProperties = {
         position: 'absolute',

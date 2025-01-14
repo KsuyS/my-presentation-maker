@@ -84,8 +84,7 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 editor,
                 action.payload.slideId,
                 action.payload.objectId,
-                action.payload.value
-            );
+                action.payload.value);
             break;
         case ActionType.UPDATE_FONT_SIZE:
             newState = updateFontSize(
@@ -109,83 +108,83 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 action.payload.fontColor);
             break;
 
-            case ActionType.FETCH_UNSPLASH_IMAGES_REQUEST:
-                return {
-                    ...editor,
-                    unsplash: {
-                        ...editor.unsplash,
-                        images: {
-                            ...editor.unsplash.images,
-                            loading: true,
-                            error: null
-                        }
+        case ActionType.FETCH_UNSPLASH_IMAGES_REQUEST:
+            return {
+                ...editor,
+                unsplash: {
+                    ...editor.unsplash,
+                    images: {
+                        ...editor.unsplash.images,
+                        loading: true,
+                        error: null
                     }
-                };
-            
-            case ActionType.FETCH_UNSPLASH_IMAGES_SUCCESS:
-                return {
-                    ...editor,
-                    unsplash: {
-                        ...editor.unsplash,
-                        images: {
-                            data: action.payload,
-                            loading: false,
-                            error: null
-                        }
+                }
+            };
+
+        case ActionType.FETCH_UNSPLASH_IMAGES_SUCCESS:
+            return {
+                ...editor,
+                unsplash: {
+                    ...editor.unsplash,
+                    images: {
+                        data: action.payload,
+                        loading: false,
+                        error: null
                     }
-                };
-            
-            case ActionType.FETCH_UNSPLASH_IMAGES_FAILURE:
-                return {
-                    ...editor,
-                    unsplash: {
-                        ...editor.unsplash,
-                        images: {
-                            ...editor.unsplash.images,
-                            loading: false,
-                            error: action.payload
-                        }
+                }
+            };
+
+        case ActionType.FETCH_UNSPLASH_IMAGES_FAILURE:
+            return {
+                ...editor,
+                unsplash: {
+                    ...editor.unsplash,
+                    images: {
+                        ...editor.unsplash.images,
+                        loading: false,
+                        error: action.payload
                     }
-                };
-            
-            case ActionType.FETCH_UNSPLASH_BACKGROUNDS_REQUEST:
-                return {
-                    ...editor,
-                    unsplash: {
-                        ...editor.unsplash,
-                        backgrounds: {
-                            ...editor.unsplash.backgrounds,
-                            loading: true,
-                            error: null
-                        }
+                }
+            };
+
+        case ActionType.FETCH_UNSPLASH_BACKGROUNDS_REQUEST:
+            return {
+                ...editor,
+                unsplash: {
+                    ...editor.unsplash,
+                    backgrounds: {
+                        ...editor.unsplash.backgrounds,
+                        loading: true,
+                        error: null
                     }
-                };
-            
-            case ActionType.FETCH_UNSPLASH_BACKGROUNDS_SUCCESS:
-                return {
-                    ...editor,
-                    unsplash: {
-                        ...editor.unsplash,
-                        backgrounds: {
-                            data: action.payload,
-                            loading: false,
-                            error: null
-                        }
+                }
+            };
+
+        case ActionType.FETCH_UNSPLASH_BACKGROUNDS_SUCCESS:
+            return {
+                ...editor,
+                unsplash: {
+                    ...editor.unsplash,
+                    backgrounds: {
+                        data: action.payload,
+                        loading: false,
+                        error: null
                     }
-                };
-            
-            case ActionType.FETCH_UNSPLASH_BACKGROUNDS_FAILURE:
-                return {
-                    ...editor,
-                    unsplash: {
-                        ...editor.unsplash,
-                        backgrounds: {
-                            ...editor.unsplash.backgrounds,
-                            loading: false,
-                            error: action.payload
-                        }
+                }
+            };
+
+        case ActionType.FETCH_UNSPLASH_BACKGROUNDS_FAILURE:
+            return {
+                ...editor,
+                unsplash: {
+                    ...editor.unsplash,
+                    backgrounds: {
+                        ...editor.unsplash.backgrounds,
+                        loading: false,
+                        error: action.payload
                     }
-                };
+                }
+            };
 
         default:
             return editor;
