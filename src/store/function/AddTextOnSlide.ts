@@ -19,6 +19,11 @@ function addText(editor: EditorType): EditorType {
         fontFamily: 'Times New Roman',
         fontSize: 16,
         fontColor: '#000000',
+        textAlign: 'left',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none',
+        textCase: 'none',
     };
 
     const updatedSlides = editor.presentation.slides.map(slide => {

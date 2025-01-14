@@ -19,6 +19,12 @@ enum ActionType {
     UPDATE_FONT_SIZE = 'updateFontSize',
     UPDATE_FONT_FAMILY = 'updateFontFamily',
     UPDATE_FONT_COLOR = 'updateFontColor',
+    UPDATE_TEXT_ALIGN = 'updateTextAlign',
+    UPDATE_FONT_WEIGHT = 'updateFontWeight',
+    UPDATE_FONT_STYLE = 'updateFontStyle',
+    UPDATE_TEXT_DECORATION = 'updateTextDecoration',
+    UPDATE_TEXT_CASE = 'updateTextCase',
+    UPDATE_TEXT_BACKGROUND = 'updateTextBackground',
     FETCH_UNSPLASH_IMAGES_REQUEST = 'fetchUnsplashImagesRequest',
     FETCH_UNSPLASH_IMAGES_SUCCESS = 'fetchUnsplashImagesSuccess',
     FETCH_UNSPLASH_IMAGES_FAILURE = 'fetchUnsplashImagesFailure',
@@ -177,13 +183,67 @@ type UpdateFontColorAction = {
     };
 };
 
+type UpdateTextAlignAction = {
+    type: ActionType.UPDATE_TEXT_ALIGN,
+    payload: {
+        slideId: string,
+        objectId: string,
+        textAlign: 'left' | 'center' | 'right',
+    };
+};
+
+type UpdateFontWeightAction = {
+    type: ActionType.UPDATE_FONT_WEIGHT,
+    payload: {
+        slideId: string,
+        objectId: string,
+        fontWeight: 'normal' | 'bold',
+    };
+};
+
+type UpdateFontStyleAction = {
+    type: ActionType.UPDATE_FONT_STYLE,
+    payload: {
+        slideId: string,
+        objectId: string,
+        fontStyle: 'normal' | 'italic',
+    };
+};
+
+type UpdateTextDecorationAction = {
+    type: ActionType.UPDATE_TEXT_DECORATION,
+    payload: {
+        slideId: string,
+        objectId: string,
+        textDecoration: 'none' | 'underline',
+    };
+};
+
+type UpdateTextCaseAction = {
+    type: ActionType.UPDATE_TEXT_CASE,
+    payload: {
+        slideId: string,
+        objectId: string,
+        textCase: 'capitalize' | 'uppercase' | 'lowercase',
+    };
+};
+
+type UpdateTextBackgroundAction = {
+    type: ActionType.UPDATE_TEXT_BACKGROUND,
+    payload: {
+        slideId: string,
+        objectId: string,
+        backgroundColor: string,
+    };
+};
 
 type EditorAction = AddSlideAction | RemoveSlideAction | SetSelectionAction | SetEditorAction | AddTextAction | AddImageAction |
     RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction | RenamePresentationTitleAction |
-    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction | UpdateFontSizeAction | 
+    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction | UpdateFontSizeAction |
     UpdateFontFamilyAction | UpdateFontColorAction | FetchUnsplashImagesRequestAction | FetchUnsplashImagesSuccessAction |
-    FetchUnsplashImagesFailureAction | FetchUnsplashImagesBackgroundRequestAction | FetchUnsplashImagesBackgroundSuccessAction | 
-    FetchUnsplashImagesBackgroundFailureAction
+    FetchUnsplashImagesFailureAction | FetchUnsplashImagesBackgroundRequestAction | FetchUnsplashImagesBackgroundSuccessAction |
+    FetchUnsplashImagesBackgroundFailureAction | UpdateTextAlignAction | UpdateFontWeightAction | UpdateFontStyleAction |
+    UpdateTextDecorationAction | UpdateTextCaseAction | UpdateTextBackgroundAction
 
 export {
     ActionType,

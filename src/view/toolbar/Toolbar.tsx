@@ -20,6 +20,13 @@ import importIcon from '../../assets/import.png';
 import pdfIcon from '../../assets/pdf.png';
 import playerIcon from '../../assets/player.png';
 import gradientIcon from '../../assets/gradient.png';
+import alignLeftIcon from '../../assets/leftAlign.png';
+import alignCenterIcon from '../../assets/centerAlign.png';
+import alignRightIcon from '../../assets/rightAlign.png';
+import fontWeightIcon from '../../assets/bold.png';
+import fontStyleIcon from '../../assets/italic.png';
+import textDecorationIcon from '../../assets/decoration.png';
+import textCaseIcon from '../../assets/case.png';
 
 import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
 import { useState, useEffect, useCallback } from 'react';
@@ -41,7 +48,13 @@ function Toolbar({ navigate }: ToolbarProps) {
         updateFontFamily,
         updateFontColor,
         fetchImages,
-        fetchBackgrounds
+        fetchBackgrounds,
+        updateTextAlign,
+        updateFontWeight,
+        updateFontStyle,
+        updateTextDecoration,
+        updateTextCase,
+        updateTextBackground
     } = useAppActions();
 
     const history = React.useContext(HistoryContext);
@@ -100,6 +113,67 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [fontFamily, setFontFamily] = useState(fontFamilies[0]);
     const [fontSize, setFontSize] = useState(12);
     const [fontColor, setFontColor] = useState('#000000');
+    const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('left');
+    const [isBold, setIsBold] = useState(false);
+    const [isItalic, setIsItalic] = useState(false);
+    const [isDecoration, setisDecoration] = useState(false);
+    const [isTextCaseDropdownOpen, setIsTextCaseDropdownOpen] = useState(false);
+    const [textCase, setTextCase] = useState<'capitalize' | 'uppercase' | 'lowercase'>('capitalize');
+    const [backgroundColor, setTextBackground] = useState('#000000');
+
+    const handleTextAlign = (align: 'left' | 'center' | 'right') => {
+        if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
+            editor.selection.selectedSlideIds.forEach(slideId => {
+                updateTextAlign(slideId, editor.selection.selectedObjectId!, align);
+            });
+        }
+    };
+
+    const handleFontWeight = () => {
+        if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
+            const newFontWeight = isBold ? 'normal' : 'bold';
+            editor.selection.selectedSlideIds.forEach(slideId => {
+                updateFontWeight(
+                    slideId, editor.selection.selectedObjectId!, newFontWeight,
+                );
+            });
+            setIsBold(!isBold);
+        }
+    };
+
+    const handleFontStyle = () => {
+        if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
+            const newFontStyle = isItalic ? 'normal' : 'italic';
+            editor.selection.selectedSlideIds.forEach(slideId => {
+                updateFontStyle(
+                    slideId, editor.selection.selectedObjectId!, newFontStyle,
+                );
+            });
+            setIsItalic(!isItalic);
+        }
+    };
+
+    const handleTextDecoration = () => {
+        if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
+            const newTextDecoration = isDecoration ? 'none' : 'underline';
+            editor.selection.selectedSlideIds.forEach(slideId => {
+                updateTextDecoration(
+                    slideId, editor.selection.selectedObjectId!, newTextDecoration,
+                );
+            });
+            setisDecoration(!isDecoration);
+        }
+    };
+
+    const handleTextCase = (newTextCase: 'capitalize' | 'uppercase' | 'lowercase') => {
+        if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
+            editor.selection.selectedSlideIds.forEach(slideId => {
+                updateTextCase(
+                    slideId, editor.selection.selectedObjectId!, newTextCase);
+            });
+            setTextCase(newTextCase);
+        }
+    };
 
     // Настройки градиента
     const [gradientType, setGradientType] = useState<'linear' | 'radial'>('linear');
@@ -108,6 +182,7 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [gradientEndColor, setGradientEndColor] = useState<string>('#000000');
     const [gradientRadialShape, setGradientRadialShape] = useState<'circle' | 'ellipse'>('circle');
     const [gradientRadialPosition, setGradientRadialPosition] = useState<{ x: string; y: string; }>({ x: '50%', y: '50%' });
+
     // Обработчики изображений
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -127,6 +202,20 @@ function Toolbar({ navigate }: ToolbarProps) {
     const onChangeColorBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const color = (event.target as HTMLInputElement).value;
         changeBackground({ type: 'solid', value: color });
+    };
+
+    const onChangeTextBackground = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newBackgroundColor = e.target.value;
+        if (selection.selectedSlideIds.length > 0 && selection.selectedObjectId) {
+            setTextBackground(newBackgroundColor);
+            selection.selectedSlideIds.forEach(slideId => {
+                updateTextBackground(
+                    slideId,
+                    selection.selectedObjectId!,
+                    newBackgroundColor
+                );
+            });
+        }
     };
 
     const onChangeImgBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -245,6 +334,12 @@ function Toolbar({ navigate }: ToolbarProps) {
             setFontFamily(textElement.fontFamily || fontFamilies[0]);
             setFontSize(textElement.fontSize || 12);
             setFontColor(textElement.fontColor || '#000000');
+            setTextAlign(textElement.textAlign || 'left');
+            setIsBold(textElement.fontWeight === 'bold');
+            setIsItalic(textElement.fontStyle === 'italic');
+            setisDecoration(textElement.textDecoration === 'underline');
+            setTextCase(textElement.textCase || 'none');
+            setTextBackground(textElement.backgroundColor || 'transparent')
         }
     }, [selection.selectedObject]);
 
@@ -562,6 +657,110 @@ function Toolbar({ navigate }: ToolbarProps) {
                                         fontColor: newFontColor,
                                     });
                                 }}
+                                className={styles.colorPicker}
+                                disabled={!isTextSelected || isEmptyPresentation}
+                            />
+                        </div>
+
+                        <button
+                            className={`${styles.toolButton} ${isBold ? styles.active : ''}`}
+                            onClick={handleFontWeight}
+                            title="Жирный"
+                            disabled={!isTextSelected || isEmptyPresentation}
+                        >
+                            <img src={fontWeightIcon} alt="Жирный" />
+                        </button>
+
+                        <button
+                            className={`${styles.toolButton} ${isItalic ? styles.active : ''}`}
+                            onClick={handleFontStyle}
+                            title="Курсив"
+                            disabled={!isTextSelected || isEmptyPresentation}
+                        >
+                            <img src={fontStyleIcon} alt="Курсив" />
+                        </button>
+
+                        <button
+                            className={`${styles.toolButton} ${isDecoration ? styles.active : ''}`}
+                            onClick={handleTextDecoration}
+                            title="Подчёркивание"
+                            disabled={!isTextSelected || isEmptyPresentation}
+                        >
+                            <img src={textDecorationIcon} alt="Подчёркивание" />
+                        </button>
+                        <div className={styles.dropdownContainer}>
+                            <button
+                                className={`${styles.toolButton} ${isTextCaseDropdownOpen ? styles.active : ''}`}
+                                onClick={() => setIsTextCaseDropdownOpen(!isTextCaseDropdownOpen)}
+                                title="Регистр"
+                                disabled={!isTextSelected || isEmptyPresentation}
+                            >
+                                <img src={textCaseIcon} alt="Регистр" />
+                            </button>
+
+                            {isTextCaseDropdownOpen && (
+                                <div className={styles.dropdownMenu}>
+                                    <button
+                                        className={`${styles.dropdownItem} ${textCase === 'capitalize' ? styles.active : ''}`}
+                                        onClick={() => {
+                                            handleTextCase('capitalize');
+                                            setIsTextCaseDropdownOpen(false);
+                                        }}
+                                    >
+                                        Как в предложениях
+                                    </button>
+                                    <button
+                                        className={`${styles.dropdownItem} ${textCase === 'uppercase' ? styles.active : ''}`}
+                                        onClick={() => {
+                                            handleTextCase('uppercase');
+                                            setIsTextCaseDropdownOpen(false);
+                                        }}
+                                    >
+                                        ВСЕ ПРОПИСНЫЕ
+                                    </button>
+                                    <button
+                                        className={`${styles.dropdownItem} ${textCase === 'lowercase' ? styles.active : ''}`}
+                                        onClick={() => {
+                                            handleTextCase('lowercase');
+                                            setIsTextCaseDropdownOpen(false);
+                                        }}
+                                    >
+                                        все строчные
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={styles.toolbarGroup}>
+                            <button
+                                className={`${styles.toolButton} ${textAlign === 'left' ? styles.active : ''}`}
+                                onClick={() => handleTextAlign('left')}
+                                title="По левому краю"
+                                disabled={!isTextSelected || isEmptyPresentation}
+                            >
+                                <img src={alignLeftIcon} alt="По левому краю" />
+                            </button>
+                            <button
+                                className={`${styles.toolButton} ${textAlign === 'center' ? styles.active : ''}`}
+                                onClick={() => handleTextAlign('center')}
+                                title="По центру"
+                                disabled={!isTextSelected || isEmptyPresentation}
+                            >
+                                <img src={alignCenterIcon} alt="По центру" />
+                            </button>
+                            <button
+                                className={`${styles.toolButton} ${textAlign === 'right' ? styles.active : ''}`}
+                                onClick={() => handleTextAlign('right')}
+                                title="По правому краю"
+                                disabled={!isTextSelected || isEmptyPresentation}
+                            >
+                                <img src={alignRightIcon} alt="По правому краю" />
+                            </button>
+                        </div>
+                        <div className={styles.toolButton} title="Цвет выделения текста">
+                            <input
+                                type="color"
+                                value={backgroundColor}
+                                onChange={onChangeTextBackground}
                                 className={styles.colorPicker}
                                 disabled={!isTextSelected || isEmptyPresentation}
                             />

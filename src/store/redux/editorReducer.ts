@@ -17,6 +17,12 @@ import { updateTextContent } from '../function/UpdateTextContent';
 import { updateFontSize } from '../function/UpdateFontSize';
 import { updateFontFamily } from '../function/UpdateFontFamily';
 import { updateFontColor } from '../function/UpdateFontColor';
+import { updateTextAlign } from '../function/UpdateTextAlign';
+import { updateFontWeight } from '../function/UpdateFontWeight';
+import { updateFontStyle } from '../function/UpdateFontStyle';
+import { updateTextDecoration } from '../function/UpdateTextDecoration';
+import { updateTextCase } from '../function/UpdateTextCase';
+import { updateTextBackground } from '../function/UpdateTextBackground';
 
 const initialState: EditorType = loadFromLocalStorage() || data;
 
@@ -107,7 +113,57 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 action.payload.objectId,
                 action.payload.fontColor);
             break;
+        case ActionType.UPDATE_TEXT_ALIGN:
+            newState = updateTextAlign(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.textAlign
+            );
+            break;
+        case ActionType.UPDATE_FONT_WEIGHT:
+            newState = updateFontWeight(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.fontWeight
+            );
+            break;
+        case ActionType.UPDATE_FONT_STYLE:
+            newState = updateFontStyle(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.fontStyle
+            );
+            break;
 
+        case ActionType.UPDATE_TEXT_DECORATION:
+            newState = updateTextDecoration(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.textDecoration
+            );
+            break;
+
+        case ActionType.UPDATE_TEXT_CASE:
+            newState = updateTextCase(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.textCase
+            );
+            break;
+
+        case ActionType.UPDATE_TEXT_BACKGROUND:
+            newState = updateTextBackground(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.backgroundColor
+            );
+            break;
         case ActionType.FETCH_UNSPLASH_IMAGES_REQUEST:
             return {
                 ...editor,

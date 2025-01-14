@@ -13,17 +13,17 @@ export type Slide = {
 
 export type SolidBackground = {
     type: 'solid',
-    color: string;
+    color: string,
 };
 
 export type ImageBackground = {
     type: 'image',
-    src: string;
+    src: string,
 };
 
 export type GradientBackground = {
     type: 'gradient',
-    gradient: string;
+    gradient: string,
 };
 
 export type Background = SolidBackground | ImageBackground | GradientBackground;
@@ -38,7 +38,7 @@ export type BaseSlideObject = {
     },
     size: {
         width: number,
-        height: number;
+        height: number,
     },
 };
 
@@ -47,7 +47,13 @@ export type TextContent = BaseSlideObject & {
     value: string,
     fontFamily: string,
     fontSize: number,
-    fontColor: string;
+    fontColor: string,
+    textAlign: 'left' | 'center' | 'right',
+    fontWeight: 'normal' | 'bold',
+    fontStyle: 'normal' | 'italic',
+    textDecoration: 'none' | 'underline',
+    textCase: 'capitalize' | 'uppercase' | 'lowercase',
+    backgroundColor?: string,
 };
 
 export type ImageContent = BaseSlideObject & {

@@ -29,6 +29,15 @@ function TextObject({ textObject, scale = 1, selection, readOnly, temporaryPosit
         fontSize: `${textObject.fontSize * scale}px`,
         fontFamily: textObject.fontFamily,
         color: textObject.fontColor,
+        textAlign: textObject.textAlign || 'left',
+        fontWeight: textObject.fontWeight || 'normal',
+        fontStyle: textObject.fontStyle || 'normal',
+        textDecoration: textObject.textDecoration || 'capitalize',
+        textTransform: textObject.textCase === 'uppercase' ? 'uppercase' :
+            textObject.textCase === 'lowercase' ? 'lowercase' :
+                textObject.textCase === 'capitalize' ? 'capitalize' :
+                    'none',
+        backgroundColor: textObject.backgroundColor || 'transparent',
         zIndex: 3,
         border: !readOnly && selection.selectedObjectId === textObject.id
             ? "3px solid #545557"

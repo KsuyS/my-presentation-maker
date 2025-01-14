@@ -111,6 +111,60 @@ const updateFontColor = (payload: { slideId: string; objectId: string; fontColor
     payload,
 });
 
+const updateTextAlign = (slideId: string, objectId: string, textAlign: 'left' | 'center' | 'right') => ({
+    type: ActionType.UPDATE_TEXT_ALIGN,
+    payload: {
+        slideId,
+        objectId,
+        textAlign
+    }
+});
+
+const updateFontWeight = (slideId: string, objectId: string, fontWeight: 'normal' | 'bold' ) => ({
+    type: ActionType.UPDATE_FONT_WEIGHT,
+    payload: {
+        slideId,
+        objectId,
+        fontWeight
+    }
+});
+
+const updateFontStyle = (slideId: string, objectId: string, fontStyle: 'normal' | 'italic' ) => ({
+    type: ActionType.UPDATE_FONT_STYLE,
+    payload: {
+        slideId,
+        objectId,
+        fontStyle
+    }
+});
+
+const updateTextDecoration = (slideId: string, objectId: string, textDecoration: 'none' | 'underline' ) => ({
+    type: ActionType.UPDATE_TEXT_DECORATION,
+    payload: {
+        slideId,
+        objectId,
+        textDecoration
+    }
+});
+
+const updateTextCase = (slideId: string, objectId: string, textCase: 'capitalize' | 'uppercase' | 'lowercase' ) => ({
+    type: ActionType.UPDATE_TEXT_CASE,
+    payload: {
+        slideId,
+        objectId,
+        textCase
+    }
+});
+
+const updateTextBackground = (slideId: string, objectId: string, backgroundColor: string) => ({
+    type: ActionType.UPDATE_TEXT_CASE,
+    payload: {
+        slideId,
+        objectId,
+        backgroundColor
+    }
+});
+
 const fetchImages = (query: string) => {
     return fetchUnsplashImages(query);
 };
@@ -136,5 +190,11 @@ export {
     updateFontFamily,
     updateFontColor,
     fetchImages,
-    fetchBackgrounds
+    fetchBackgrounds,
+    updateTextAlign,
+    updateFontWeight,
+    updateFontStyle,
+    updateTextDecoration,
+    updateTextCase,
+    updateTextBackground
 }
