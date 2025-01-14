@@ -53,8 +53,7 @@ function Toolbar({ navigate }: ToolbarProps) {
         updateFontWeight,
         updateFontStyle,
         updateTextDecoration,
-        updateTextCase,
-        updateTextBackground
+        updateTextCase
     } = useAppActions();
 
     const history = React.useContext(HistoryContext);
@@ -119,7 +118,6 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [isDecoration, setisDecoration] = useState(false);
     const [isTextCaseDropdownOpen, setIsTextCaseDropdownOpen] = useState(false);
     const [textCase, setTextCase] = useState<'capitalize' | 'uppercase' | 'lowercase'>('capitalize');
-    const [backgroundColor, setTextBackground] = useState('#000000');
 
     const handleTextAlign = (align: 'left' | 'center' | 'right') => {
         if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
@@ -202,20 +200,6 @@ function Toolbar({ navigate }: ToolbarProps) {
     const onChangeColorBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const color = (event.target as HTMLInputElement).value;
         changeBackground({ type: 'solid', value: color });
-    };
-
-    const onChangeTextBackground = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newBackgroundColor = e.target.value;
-        if (selection.selectedSlideIds.length > 0 && selection.selectedObjectId) {
-            setTextBackground(newBackgroundColor);
-            selection.selectedSlideIds.forEach(slideId => {
-                updateTextBackground(
-                    slideId,
-                    selection.selectedObjectId!,
-                    newBackgroundColor
-                );
-            });
-        }
     };
 
     const onChangeImgBackground: React.ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -339,7 +323,6 @@ function Toolbar({ navigate }: ToolbarProps) {
             setIsItalic(textElement.fontStyle === 'italic');
             setisDecoration(textElement.textDecoration === 'underline');
             setTextCase(textElement.textCase || 'none');
-            setTextBackground(textElement.backgroundColor || 'transparent')
         }
     }, [selection.selectedObject]);
 
@@ -755,15 +738,6 @@ function Toolbar({ navigate }: ToolbarProps) {
                             >
                                 <img src={alignRightIcon} alt="По правому краю" />
                             </button>
-                        </div>
-                        <div className={styles.toolButton} title="Цвет выделения текста">
-                            <input
-                                type="color"
-                                value={backgroundColor}
-                                onChange={onChangeTextBackground}
-                                className={styles.colorPicker}
-                                disabled={!isTextSelected || isEmptyPresentation}
-                            />
                         </div>
                     </div>
                 )}{activeSection === 'images' && (

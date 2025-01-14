@@ -22,7 +22,6 @@ import { updateFontWeight } from '../function/UpdateFontWeight';
 import { updateFontStyle } from '../function/UpdateFontStyle';
 import { updateTextDecoration } from '../function/UpdateTextDecoration';
 import { updateTextCase } from '../function/UpdateTextCase';
-import { updateTextBackground } from '../function/UpdateTextBackground';
 
 const initialState: EditorType = loadFromLocalStorage() || data;
 
@@ -153,15 +152,6 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 action.payload.slideId,
                 action.payload.objectId,
                 action.payload.textCase
-            );
-            break;
-
-        case ActionType.UPDATE_TEXT_BACKGROUND:
-            newState = updateTextBackground(
-                editor,
-                action.payload.slideId,
-                action.payload.objectId,
-                action.payload.backgroundColor
             );
             break;
         case ActionType.FETCH_UNSPLASH_IMAGES_REQUEST:

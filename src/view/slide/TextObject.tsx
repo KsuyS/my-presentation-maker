@@ -37,7 +37,6 @@ function TextObject({ textObject, scale = 1, selection, readOnly, temporaryPosit
             textObject.textCase === 'lowercase' ? 'lowercase' :
                 textObject.textCase === 'capitalize' ? 'capitalize' :
                     'none',
-        backgroundColor: textObject.backgroundColor || 'transparent',
         zIndex: 3,
         border: !readOnly && selection.selectedObjectId === textObject.id
             ? "3px solid #545557"

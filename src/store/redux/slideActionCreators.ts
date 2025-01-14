@@ -156,14 +156,6 @@ const updateTextCase = (slideId: string, objectId: string, textCase: 'capitalize
     }
 });
 
-const updateTextBackground = (slideId: string, objectId: string, backgroundColor: string) => ({
-    type: ActionType.UPDATE_TEXT_CASE,
-    payload: {
-        slideId,
-        objectId,
-        backgroundColor
-    }
-});
 
 const fetchImages = (query: string) => {
     return fetchUnsplashImages(query);
@@ -195,6 +187,5 @@ export {
     updateFontWeight,
     updateFontStyle,
     updateTextDecoration,
-    updateTextCase,
-    updateTextBackground
+    updateTextCase
 }

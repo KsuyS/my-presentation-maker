@@ -23,7 +23,7 @@ function addText(editor: EditorType): EditorType {
         fontWeight: 'normal',
         fontStyle: 'normal',
         textDecoration: 'none',
-        textCase: 'none',
+        textCase: 'capitalize',
     };
 
     const updatedSlides = editor.presentation.slides.map(slide => {

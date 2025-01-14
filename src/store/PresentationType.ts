@@ -53,7 +53,6 @@ export type TextContent = BaseSlideObject & {
     fontStyle: 'normal' | 'italic',
     textDecoration: 'none' | 'underline',
     textCase: 'capitalize' | 'uppercase' | 'lowercase',
-    backgroundColor?: string,
 };
 
 export type ImageContent = BaseSlideObject & {
