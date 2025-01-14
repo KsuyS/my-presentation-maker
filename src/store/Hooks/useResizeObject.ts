@@ -102,7 +102,6 @@ function useResizeObject({ slideId }: UseResizeObjectProps) {
                 break;
         }
 
-        // Ограничения по размеру слайда
         newWidth = Math.min(newWidth, 935 - newX);
         newHeight = Math.min(newHeight, 525 - newY);
 

@@ -120,7 +120,7 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
                     const base64Data = await toBase64(imageElement.src);
                     img.src = base64Data;
                 } catch (error) {
-                    console.error("Error converting image to base64:", error);
+                    alert("Ошибка преобразования изображения в base64: " + error)
                 }
 
                 img.style.width = '100%';
@@ -143,7 +143,7 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
                 doc.addPage();
             }
         } catch (error) {
-            console.error("Error rendering slide to image:", error);
+            alert("Ошибка при преобразовании слайда в изображение: " + error)
         }
     }
 
@@ -167,7 +167,7 @@ const exportToPdf = (editor: EditorType) => {
                 link.download = `${fileName}.pdf`;
                 link.click();
             } catch (error) {
-                console.error("Error saving PDF:", error);
+                alert("Ошибка сохранения PDF: " + error);
                 window.open(dataUrl);
             } finally {
                 setTimeout(() => {
@@ -176,7 +176,7 @@ const exportToPdf = (editor: EditorType) => {
             }
         };
     }).catch(error => {
-        console.error("Error generating PDF:", error);
+        alert("Ошибка создания PDF: " + error)
     });
 };
 

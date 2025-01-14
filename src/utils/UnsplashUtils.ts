@@ -13,10 +13,10 @@ export async function importImageFromUnsplash(query: string) {
             const imageUrls = data.results.map((image: any) => image.urls.small);
             return imageUrls;
         } else {
-            throw new Error('No images found');
+            throw new Error("Изображения не найдены.");
         }
     } catch (error) {
-        console.error('Error importing image from Unsplash:', error);
+        alert("Ошибка импорта изображения из Unsplash:" + error)
         return [];
     }
 }

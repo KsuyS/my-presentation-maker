@@ -16,7 +16,7 @@ export const fetchUnsplashImages = (query: string) => {
                 payload: images
             });
         } catch (error: unknown) {
-            let errorMessage = 'Произошла ошибка при загрузке изображений';
+            let errorMessage = 'Произошла ошибка при загрузке изображений.';
             if (error instanceof Error) {
                 errorMessage = error.message;
             }
@@ -42,7 +42,7 @@ export const fetchUnsplashBackgrounds = (query: string) => {
                 payload: images
             });
         } catch (error: unknown) {
-            let errorMessage = 'Произошла ошибка при загрузке фоновых изображений';
+            let errorMessage = 'Произошла ошибка при загрузке фоновых изображений.';
             if (error instanceof Error) {
                 errorMessage = error.message;
             }

@@ -25,7 +25,7 @@ function changeBackground(editor: EditorType, options: ChangeBackgroundOptions):
             gradient: options.value,
         } as GradientBackground;
     } else {
-        throw new Error("Invalid background type");
+        throw new Error("Неверный тип фона");
     }
 
     const selectedSlideIds = editor.selection?.selectedSlideIds;

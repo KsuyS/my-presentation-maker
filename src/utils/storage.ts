@@ -14,7 +14,7 @@ const loadFromLocalStorage = (): EditorType | null => {
 
         const valid = validate(editorData.presentation);
         if (!valid) {
-            console.error('Ошибки валидации:', validate.errors);
+            alert("Ошибки валидации:" + validate.errors)
             return null;
         }
 
