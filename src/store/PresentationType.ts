@@ -55,7 +55,18 @@ export type TextContent = BaseSlideObject & {
     textCase: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
 };
 
+export type BorderStyle = 
+    | 'none' // Без рамки
+    | 'black-thick' // Широкая черная рамка
+    | 'black-thin' // Простая черная рамка
+    | 'white-thick' // Широкая белая рамка
+    | 'white-thin' // Простая белая рамка
+    | 'rounded-oval' // Овал со сглаженными краями
+    | 'rounded-rect' // Прямоугольник со сглаженными краями
+    | 'beveled-rect'; // Скошенный прямоугольник
+
 export type ImageContent = BaseSlideObject & {
     type: 'image',
     src: string,
+    borderStyle?: BorderStyle,
 };

@@ -120,7 +120,7 @@ const updateTextAlign = (slideId: string, objectId: string, textAlign: 'left' | 
     }
 });
 
-const updateFontWeight = (slideId: string, objectId: string, fontWeight: 'normal' | 'bold' ) => ({
+const updateFontWeight = (slideId: string, objectId: string, fontWeight: 'normal' | 'bold') => ({
     type: ActionType.UPDATE_FONT_WEIGHT,
     payload: {
         slideId,
@@ -129,7 +129,7 @@ const updateFontWeight = (slideId: string, objectId: string, fontWeight: 'normal
     }
 });
 
-const updateFontStyle = (slideId: string, objectId: string, fontStyle: 'normal' | 'italic' ) => ({
+const updateFontStyle = (slideId: string, objectId: string, fontStyle: 'normal' | 'italic') => ({
     type: ActionType.UPDATE_FONT_STYLE,
     payload: {
         slideId,
@@ -138,7 +138,7 @@ const updateFontStyle = (slideId: string, objectId: string, fontStyle: 'normal' 
     }
 });
 
-const updateTextDecoration = (slideId: string, objectId: string, textDecoration: 'none' | 'underline' ) => ({
+const updateTextDecoration = (slideId: string, objectId: string, textDecoration: 'none' | 'underline') => ({
     type: ActionType.UPDATE_TEXT_DECORATION,
     payload: {
         slideId,
@@ -147,7 +147,7 @@ const updateTextDecoration = (slideId: string, objectId: string, textDecoration:
     }
 });
 
-const updateTextCase = (slideId: string, objectId: string, textCase: 'none' | 'capitalize' | 'uppercase' | 'lowercase' ) => ({
+const updateTextCase = (slideId: string, objectId: string, textCase: 'none' | 'capitalize' | 'uppercase' | 'lowercase') => ({
     type: ActionType.UPDATE_TEXT_CASE,
     payload: {
         slideId,
@@ -155,6 +155,24 @@ const updateTextCase = (slideId: string, objectId: string, textCase: 'none' | 'c
         textCase
     }
 });
+
+const updateImageBorderStyle =
+    (slideId: string, objectId: string,
+        borderStyle: 'none'
+            | 'black-thick'
+            | 'black-thin'
+            | 'white-thick'
+            | 'white-thin'
+            | 'rounded-oval'
+            | 'rounded-rect'
+            | 'beveled-rect',) => ({
+                type: ActionType.UPDATE_IMAGE_BORDER_STYLE,
+                payload: {
+                    slideId,
+                    objectId,
+                    borderStyle
+                }
+            });
 
 
 const fetchImages = (query: string) => {
@@ -187,5 +205,6 @@ export {
     updateFontWeight,
     updateFontStyle,
     updateTextDecoration,
-    updateTextCase
+    updateTextCase,
+    updateImageBorderStyle
 }

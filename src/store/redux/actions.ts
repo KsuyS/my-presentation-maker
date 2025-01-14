@@ -24,6 +24,7 @@ enum ActionType {
     UPDATE_FONT_STYLE = 'updateFontStyle',
     UPDATE_TEXT_DECORATION = 'updateTextDecoration',
     UPDATE_TEXT_CASE = 'updateTextCase',
+    UPDATE_IMAGE_BORDER_STYLE = 'updateImageBorderStyle',
     FETCH_UNSPLASH_IMAGES_REQUEST = 'fetchUnsplashImagesRequest',
     FETCH_UNSPLASH_IMAGES_SUCCESS = 'fetchUnsplashImagesSuccess',
     FETCH_UNSPLASH_IMAGES_FAILURE = 'fetchUnsplashImagesFailure',
@@ -227,13 +228,29 @@ type UpdateTextCaseAction = {
     };
 };
 
+type UpdateImageBorderStyle = {
+    type: ActionType.UPDATE_IMAGE_BORDER_STYLE,
+    payload: {
+        slideId: string,
+        objectId: string,
+        borderStyle: 'none'
+        | 'black-thick'
+        | 'black-thin'
+        | 'white-thick'
+        | 'white-thin'
+        | 'rounded-oval'
+        | 'rounded-rect'
+        | 'beveled-rect',
+    };
+};
+
 type EditorAction = AddSlideAction | RemoveSlideAction | SetSelectionAction | SetEditorAction | AddTextAction | AddImageAction |
     RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction | RenamePresentationTitleAction |
     ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction | UpdateFontSizeAction |
     UpdateFontFamilyAction | UpdateFontColorAction | FetchUnsplashImagesRequestAction | FetchUnsplashImagesSuccessAction |
     FetchUnsplashImagesFailureAction | FetchUnsplashImagesBackgroundRequestAction | FetchUnsplashImagesBackgroundSuccessAction |
     FetchUnsplashImagesBackgroundFailureAction | UpdateTextAlignAction | UpdateFontWeightAction | UpdateFontStyleAction |
-    UpdateTextDecorationAction | UpdateTextCaseAction
+    UpdateTextDecorationAction | UpdateTextCaseAction | UpdateImageBorderStyle
 
 export {
     ActionType,

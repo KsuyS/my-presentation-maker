@@ -22,6 +22,7 @@ import { updateFontWeight } from '../function/UpdateFontWeight';
 import { updateFontStyle } from '../function/UpdateFontStyle';
 import { updateTextDecoration } from '../function/UpdateTextDecoration';
 import { updateTextCase } from '../function/UpdateTextCase';
+import { updateImageBorderStyle } from '../function/UpdateImageBorderStyle';
 
 const initialState: EditorType = loadFromLocalStorage() || data;
 
@@ -152,6 +153,14 @@ function editorReducer(editor: EditorType = initialState, action: EditorAction):
                 action.payload.slideId,
                 action.payload.objectId,
                 action.payload.textCase
+            );
+            break;
+        case ActionType.UPDATE_IMAGE_BORDER_STYLE:
+            newState = updateImageBorderStyle(
+                editor,
+                action.payload.slideId,
+                action.payload.objectId,
+                action.payload.borderStyle
             );
             break;
         case ActionType.FETCH_UNSPLASH_IMAGES_REQUEST:

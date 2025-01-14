@@ -53,7 +53,8 @@ function Toolbar({ navigate }: ToolbarProps) {
         updateFontWeight,
         updateFontStyle,
         updateTextDecoration,
-        updateTextCase
+        updateTextCase,
+        updateImageBorderStyle
     } = useAppActions();
 
     const history = React.useContext(HistoryContext);
@@ -194,6 +195,23 @@ function Toolbar({ navigate }: ToolbarProps) {
                 }
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const setBorderStyle = (borderStyle: 'none'
+        | 'black-thick'
+        | 'black-thin'
+        | 'white-thick'
+        | 'white-thin'
+        | 'rounded-oval'
+        | 'rounded-rect'
+        | 'beveled-rect') => {
+        const { selectedSlideIds, selectedObjectId } = selection;
+        if (selectedSlideIds.length === 1 && selectedObjectId) {
+
+            updateImageBorderStyle(selectedSlideIds[0], selectedObjectId, borderStyle);
+        } else {
+            alert("Пожалуйста, выберите один объект изображения для изменения рамки.");
         }
     };
 
@@ -831,6 +849,15 @@ function Toolbar({ navigate }: ToolbarProps) {
                         </div>
                     </div>
                 )}
+
+                <button onClick={() => setBorderStyle('black-thick')}>Широкая черная рамка</button>
+                <button onClick={() => setBorderStyle('black-thin')}>Простая черная рамка</button>
+                <button onClick={() => setBorderStyle('white-thick')}>Широкая белая рамка</button>
+                <button onClick={() => setBorderStyle('white-thin')}>Простая белая рамка</button>
+                <button onClick={() => setBorderStyle('rounded-oval')}>Овальная рамка</button>
+                <button onClick={() => setBorderStyle('rounded-rect')}>Прямоугольник со сглаженными краями</button>
+                <button onClick={() => setBorderStyle('beveled-rect')}>Скошенный прямоугольник</button>
+
             </div>
         </div>
     );
