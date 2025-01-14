@@ -9,9 +9,9 @@ type UseDragAndDropElementProps = {
 function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
+  const [temporaryPosition, setTemporaryPosition] = useState<{ x: number, y: number } | null>(null);
   const dragStartPos = useRef({ x: 0, y: 0 });
   const initialPosition = useRef<{ x: number; y: number } | null>(null);
-  const currentPosition = useRef<{ x: number; y: number } | null>(null);
 
   const { changeObjectPosition } = useAppActions();
   const editor = useAppSelector((state) => state);
@@ -20,6 +20,7 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
     event.preventDefault();
     setIsDragging(true);
     setDraggedElementId(elementId);
+    setTemporaryPosition(null);
     dragStartPos.current = { x: event.clientX, y: event.clientY };
 
     const slide = editor.presentation.slides.find((s) => s.id === slideId);
@@ -27,7 +28,6 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
 
     if (element) {
       initialPosition.current = { x: element.position.x, y: element.position.y };
-      currentPosition.current = { x: element.position.x, y: element.position.y };
     }
   }
 
@@ -46,27 +46,23 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
     const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, 935 - element.size.width - 1));
     const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, 525 - element.size.height - 1));
 
-    currentPosition.current = { x: newX, y: newY };
-    //changeObjectPosition(editor, slideId, draggedElementId, newX, newY);
+    setTemporaryPosition({ x: newX, y: newY });
   }
 
-
-
   function handleElementMouseUp(): void {
-    if (initialPosition.current && draggedElementId && currentPosition.current) {
-      console.log('Initial Position:', initialPosition.current);
-      changeObjectPosition(editor, slideId, draggedElementId, currentPosition.current.x, currentPosition.current.y)
+    if (temporaryPosition && draggedElementId) {
+      changeObjectPosition(editor, slideId, draggedElementId, temporaryPosition.x, temporaryPosition.y);
     }
 
     setIsDragging(false);
     setDraggedElementId(null);
+    setTemporaryPosition(null);
     initialPosition.current = null;
-    currentPosition.current = null;
-    
   }
 
   return {
     isDragging,
+    temporaryPosition,
     handleElementMouseDown,
     handleElementMouseMove,
     handleElementMouseUp,

@@ -2,130 +2,140 @@ import { useState, useRef } from 'react';
 import { useAppActions } from '../Hooks/useAppActions';
 import { useAppSelector } from '../Hooks/useAppSelector';
 
-type UseResizeElementProps = {
+type UseResizeObjectProps = {
     slideId: string;
-    minWidth?: number;
-    minHeight?: number;
 };
 
-function useResizeObject({ slideId, minWidth = 20, minHeight = 20 }: UseResizeElementProps) {
+type ResizeHandle = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' |
+    'middle-left' | 'middle-right' | 'top-middle' | 'bottom-middle';
+
+function useResizeObject({ slideId }: UseResizeObjectProps) {
     const [isResizing, setIsResizing] = useState(false);
-    const [resizedElementId, setResizedElementId] = useState<string | null>(null);
-    const startSize = useRef({ width: 0, height: 0 });
-    const startMousePos = useRef({ x: 0, y: 0 });
-    const initialPosition = useRef({ x: 0, y: 0 });
-    const resizeDirection = useRef<string | null>(null);
-    const currentSize = useRef<{ width: number; height: number } | null>(null);
-    const currentPosition = useRef<{ x: number; y: number } | null>(null)
+    const [resizingElementId, setResizingElementId] = useState<string | null>(null);
+    const [activeHandle, setActiveHandle] = useState<ResizeHandle | null>(null);
+    const [temporarySize, setTemporarySize] = useState<{ width: number, height: number } | null>(null);
+    const [temporaryPosition, setTemporaryPosition] = useState<{ x: number, y: number } | null>(null);
 
-    const editor = useAppSelector(state => state);
+    const startPos = useRef({ x: 0, y: 0 });
+    const initialSize = useRef<{ width: number; height: number } | null>(null);
+    const initialPosition = useRef<{ x: number; y: number } | null>(null);
+
     const { changeObjectSize } = useAppActions();
+    const editor = useAppSelector((state) => state);
 
-    function handleResizeMouseDown(event: React.MouseEvent<HTMLDivElement>, elementId: string, direction: string): void {
+    function handleResizeMouseDown(
+        event: React.MouseEvent<HTMLDivElement>,
+        elementId: string,
+        handle: ResizeHandle
+    ): void {
         event.preventDefault();
-        setIsResizing(true);
-        setResizedElementId(elementId);
-        resizeDirection.current = direction;
-        startMousePos.current = { x: event.clientX, y: event.clientY };
+        event.stopPropagation();
 
-        const slide = editor.presentation.slides.find(s => s.id === slideId);
-        const element = slide?.content.find(e => e.id === elementId);
+        setIsResizing(true);
+        setResizingElementId(elementId);
+        setActiveHandle(handle);
+        setTemporarySize(null);
+        setTemporaryPosition(null);
+
+        startPos.current = { x: event.clientX, y: event.clientY };
+
+        const slide = editor.presentation.slides.find((s) => s.id === slideId);
+        const element = slide?.content.find((e) => e.id === elementId);
+
         if (element) {
-            startSize.current = { width: element.size.width, height: element.size.height };
+            initialSize.current = { width: element.size.width, height: element.size.height };
             initialPosition.current = { x: element.position.x, y: element.position.y };
-            currentSize.current = { width: element.size.width, height: element.size.height }
-            currentPosition.current = {x: element.position.x, y: element.position.y}
         }
     }
 
     function handleResizeMouseMove(event: React.MouseEvent<HTMLDivElement>): void {
-        if (!isResizing || !resizedElementId) {
-            return;
-        }
+        if (!isResizing || !resizingElementId || !initialSize.current || !initialPosition.current || !activeHandle) return;
 
-        const deltaX = event.clientX - startMousePos.current.x;
-        const deltaY = event.clientY - startMousePos.current.y;
+        const deltaX = event.clientX - startPos.current.x;
+        const deltaY = event.clientY - startPos.current.y;
 
-        let newWidth = startSize.current.width;
-        let newHeight = startSize.current.height;
+        const slide = editor.presentation.slides.find((s) => s.id === slideId);
+        if (!slide) return;
+
+        const element = slide.content.find((el) => el.id === resizingElementId);
+        if (!element) return;
+
+        let newWidth = initialSize.current.width;
+        let newHeight = initialSize.current.height;
         let newX = initialPosition.current.x;
         let newY = initialPosition.current.y;
 
-
-        switch (resizeDirection.current) {
+        switch (activeHandle) {
             case 'top-left':
-                newX += deltaX;
-                newY += deltaY;
-                newWidth = Math.max(minWidth, startSize.current.width - deltaX);
-                newHeight = Math.max(minHeight, startSize.current.height - deltaY);
+                newWidth = Math.max(10, initialSize.current.width - deltaX);
+                newHeight = Math.max(10, initialSize.current.height - deltaY);
+                newX = initialPosition.current.x + initialSize.current.width - newWidth;
+                newY = initialPosition.current.y + initialSize.current.height - newHeight;
                 break;
-
             case 'top-right':
-                newY += deltaY;
-                newWidth = Math.max(minWidth, startSize.current.width + deltaX);
-                newHeight = Math.max(minHeight, startSize.current.height - deltaY);
+                newWidth = Math.max(10, initialSize.current.width + deltaX);
+                newHeight = Math.max(10, initialSize.current.height - deltaY);
+                newY = initialPosition.current.y + initialSize.current.height - newHeight;
                 break;
-
             case 'bottom-left':
-                newX += deltaX;
-                newWidth = Math.max(minWidth, startSize.current.width - deltaX);
-                newHeight = Math.max(minHeight, startSize.current.height + deltaY);
+                newWidth = Math.max(10, initialSize.current.width - deltaX);
+                newHeight = Math.max(10, initialSize.current.height + deltaY);
+                newX = initialPosition.current.x + initialSize.current.width - newWidth;
                 break;
-
             case 'bottom-right':
-                newWidth = Math.max(minWidth, startSize.current.width + deltaX);
-                newHeight = Math.max(minHeight, startSize.current.height + deltaY);
+                newWidth = Math.max(10, initialSize.current.width + deltaX);
+                newHeight = Math.max(10, initialSize.current.height + deltaY);
                 break;
-
             case 'middle-left':
-                newX += deltaX;
-                newWidth = Math.max(minWidth, startSize.current.width - deltaX);
+                newWidth = Math.max(10, initialSize.current.width - deltaX);
+                newX = initialPosition.current.x + initialSize.current.width - newWidth;
                 break;
-
             case 'middle-right':
-                newWidth = Math.max(minWidth, startSize.current.width + deltaX);
+                newWidth = Math.max(10, initialSize.current.width + deltaX);
                 break;
-
             case 'top-middle':
-                newY += deltaY;
-                newHeight = Math.max(minHeight, startSize.current.height - deltaY);
+                newHeight = Math.max(10, initialSize.current.height - deltaY);
+                newY = initialPosition.current.y + initialSize.current.height - newHeight;
                 break;
-
             case 'bottom-middle':
-                newHeight = Math.max(minHeight, startSize.current.height + deltaY);
+                newHeight = Math.max(10, initialSize.current.height + deltaY);
                 break;
         }
 
-        if (newX < 0) {
-            newWidth += newX;
-            newX = 0;
-        }
-        if (newY < 0) {
-            newHeight += newY;
-            newY = 0;
-        }
+        // Ограничения по размеру слайда
+        newWidth = Math.min(newWidth, 935 - newX);
+        newHeight = Math.min(newHeight, 525 - newY);
 
-
-        currentSize.current = {width: newWidth, height: newHeight}
-        currentPosition.current = {x: newX, y: newY}
+        setTemporarySize({ width: newWidth, height: newHeight });
+        setTemporaryPosition({ x: newX, y: newY });
     }
 
     function handleResizeMouseUp(): void {
-
-        if (resizedElementId && currentSize.current && currentPosition.current) {
-            changeObjectSize(editor, slideId, resizedElementId, currentSize.current.width, currentSize.current.height, currentPosition.current.x, currentPosition.current.y);
+        if (temporarySize && temporaryPosition && resizingElementId) {
+            changeObjectSize(
+                editor,
+                slideId,
+                resizingElementId,
+                temporarySize.width,
+                temporarySize.height,
+                temporaryPosition.x,
+                temporaryPosition.y
+            );
         }
 
         setIsResizing(false);
-        setResizedElementId(null);
-        resizeDirection.current = null;
-        currentSize.current = null;
-        currentPosition.current = null;
-
+        setResizingElementId(null);
+        setActiveHandle(null);
+        setTemporarySize(null);
+        setTemporaryPosition(null);
+        initialSize.current = null;
+        initialPosition.current = null;
     }
 
     return {
         isResizing,
+        temporarySize,
+        temporaryPosition,
         handleResizeMouseDown,
         handleResizeMouseMove,
         handleResizeMouseUp,

@@ -8,9 +8,11 @@ type TextObjectProps = {
     scale?: number;
     selection: SelectionType;
     readOnly: boolean;
+    temporaryPosition?: { x: number, y: number } | null;
+    temporarySize?: { width: number, height: number } | null;
 };
 
-function TextObject({ textObject, scale = 1, selection, readOnly }: TextObjectProps) {
+function TextObject({ textObject, scale = 1, selection, readOnly, temporaryPosition, temporarySize }: TextObjectProps) {
     const { updateTextContent } = useAppActions();
     const [isEditing, setIsEditing] = useState(false);
     const [newValue, setNewValue] = useState(textObject.value);
@@ -18,11 +20,11 @@ function TextObject({ textObject, scale = 1, selection, readOnly }: TextObjectPr
     const cursorPosition = useRef<number | null>(null);
 
     const textObjectStyles: CSSProperties = {
-        position: "absolute",
-        top: `${textObject.position.y * scale}px`,
-        left: `${textObject.position.x * scale}px`,
-        width: `${textObject.size.width * scale}px`,
-        height: `${textObject.size.height * scale}px`,
+        position: 'absolute',
+        top: `${(temporaryPosition?.y ?? textObject.position.y) * scale}px`,
+        left: `${(temporaryPosition?.x ?? textObject.position.x) * scale}px`,
+        width: `${(temporarySize?.width ?? textObject.size.width) * scale}px`,
+        height: `${(temporarySize?.height ?? textObject.size.height) * scale}px`,
         fontSize: `${textObject.fontSize * scale}px`,
         fontFamily: textObject.fontFamily,
         color: textObject.fontColor,

@@ -8,18 +8,20 @@ type ImageObjectProps = {
     scale?: number,
     selection: SelectionType,
     readOnly: boolean,
+    temporaryPosition?: { x: number, y: number } | null;
+    temporarySize?: { width: number, height: number } | null;
 }
 
-function ImageObject({ imageObject, scale = 1, selection, readOnly }: ImageObjectProps) {
+function ImageObject({ imageObject, scale = 1, selection, readOnly, temporaryPosition, temporarySize }: ImageObjectProps) {
 
     const { setSelection } = useAppActions();
 
     const imageObjectStyles: CSSProperties = {
         position: 'absolute',
-        top: `${imageObject.position.y * scale}px`,
-        left: `${imageObject.position.x * scale}px`,
-        width: `${imageObject.size.width * scale}px`,
-        height: `${imageObject.size.height * scale}px`,
+        top: `${(temporaryPosition?.y ?? imageObject.position.y) * scale}px`,
+        left: `${(temporaryPosition?.x ?? imageObject.position.x) * scale}px`,
+        width: `${(temporarySize?.width ?? imageObject.size.width) * scale}px`,
+        height: `${(temporarySize?.height ?? imageObject.size.height) * scale}px`,
         zIndex: 3,
         border: !readOnly && selection.selectedObjectId === imageObject.id
             ? "3px solid #545557"
