@@ -1,4 +1,4 @@
-import { EditorType } from "../EditorType";
+import { EditorType } from '../EditorType';
 
 function removeObject(editor: EditorType): EditorType {
     if (!editor.selection) {

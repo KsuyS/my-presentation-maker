@@ -1,6 +1,6 @@
 import styles from './SlidesList.module.css';
 import { CurrentSlide } from '../slide/currentSlide';
-import { useDragAndDropSlide } from '../../store/СustomHooks/useDragAndDropForSlide';
+import { useDragAndDropSlide } from '../../store/Hooks/useDragAndDropForSlide';
 import { useAppSelector } from '../../store/Hooks/useAppSelector';
 import { useAppActions } from '../../store/Hooks/useAppActions';
 
@@ -57,7 +57,6 @@ function SlidesList() {
                         margin: "10px",
                         marginLeft: "60px",
                         fontSize: "12px"
-
                     }}>
                         Добавьте слайд
                     </div>

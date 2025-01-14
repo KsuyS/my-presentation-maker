@@ -1,7 +1,7 @@
-import { ActionType } from "./actions"
-import { EditorType } from "../EditorType"
-import { fetchUnsplashImages } from "./unsplashMiddleWare"
-import { fetchUnsplashBackgrounds } from "./unsplashMiddleWare"
+import { ActionType } from './actions'
+import { EditorType } from '../EditorType'
+import { fetchUnsplashImages } from './unsplashMiddleWare'
+import { fetchUnsplashBackgrounds } from './unsplashMiddleWare'
 
 function addSlide() {
     return {
@@ -94,7 +94,7 @@ const updateTextContent = (slideId: string, objectId: string, value: string
     payload: {
         slideId,
         objectId,
-        value
+        value,
     },
 });
 

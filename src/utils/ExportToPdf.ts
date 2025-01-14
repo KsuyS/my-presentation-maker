@@ -1,12 +1,12 @@
-import { EditorType } from "../store/EditorType";
-import { jsPDF } from "jspdf";
-import { TextContent, ImageContent } from "../store/PresentationType";
-import TimesNewRomanBase64 from "../store/Fonts/TimesNewRoman-base64";
+import { EditorType } from '../store/EditorType';
+import { jsPDF } from 'jspdf';
+import { TextContent, ImageContent } from '../store/PresentationType';
+import TimesNewRomanBase64 from '../store/Fonts/TimesNewRoman-base64';
 import html2canvas from 'html2canvas';
-import ArialBase64 from "../store/Fonts/Arial-base64";
-import CourierNewBase64 from "../store/Fonts/CourierNew-base64";
-import GeorgiaBase64 from "../store/Fonts/Georgia-base64";
-import VerdanaBase64 from "../store/Fonts/Verdana-base64";
+import ArialBase64 from '../store/Fonts/Arial-base64';
+import CourierNewBase64 from '../store/Fonts/CourierNew-base64';
+import GeorgiaBase64 from '../store/Fonts/Georgia-base64';
+import VerdanaBase64 from '../store/Fonts/Verdana-base64';
 
 const SLIDE_WIDTH = 935;
 const SLIDE_HEIGHT = 525;

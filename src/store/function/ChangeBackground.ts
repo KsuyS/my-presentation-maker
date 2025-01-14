@@ -1,9 +1,9 @@
-import { EditorType } from "../EditorType";
-import { SolidBackground, ImageBackground, GradientBackground, Background } from "../PresentationType";
+import { EditorType } from '../EditorType';
+import { SolidBackground, ImageBackground, GradientBackground, Background } from '../PresentationType';
 
 interface ChangeBackgroundOptions {
-    type: 'solid' | 'image' | 'gradient';
-    value: string;
+    type: 'solid' | 'image' | 'gradient',
+    value: string,
 }
 
 function changeBackground(editor: EditorType, options: ChangeBackgroundOptions): EditorType {

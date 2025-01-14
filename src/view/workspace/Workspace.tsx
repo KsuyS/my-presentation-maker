@@ -1,9 +1,9 @@
-import { Slide } from "../../store/PresentationType";
-import { useAppSelector } from "../../store/Hooks/useAppSelector";
-import { CurrentSlide } from '../slide/currentSlide'
 import styles from './Workspace.module.css'
-import { useAppActions } from "../../store/Hooks/useAppActions";
-import { useEffect } from "react";
+import { Slide } from '../../store/PresentationType';
+import { useAppSelector } from '../../store/Hooks/useAppSelector';
+import { CurrentSlide } from '../slide/currentSlide'
+import { useAppActions } from '../../store/Hooks/useAppActions';
+import { useEffect } from 'react';
 
 function Workspace() {
     const editor = useAppSelector((editor => editor))

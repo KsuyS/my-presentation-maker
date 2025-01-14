@@ -1,4 +1,4 @@
-import { EditorType } from "../EditorType";
+import { EditorType } from '../EditorType';
 
 function changeSlidePosition(editor: EditorType, slideIds: string[], targetSlideId: string): EditorType {
     if (!slideIds || slideIds.length === 0 || !targetSlideId) {

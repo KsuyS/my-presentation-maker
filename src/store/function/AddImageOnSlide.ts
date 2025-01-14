@@ -1,6 +1,6 @@
-import { EditorType } from "../EditorType";
-import { ImageContent } from "../PresentationType";
-import { generateRandomId } from "./GenerateRandomId";
+import { EditorType } from '../EditorType';
+import { ImageContent } from '../PresentationType';
+import { generateRandomId } from './GenerateRandomId';
 
 function addImage(editor: EditorType, { src }: { src: string }): EditorType {
     if (!editor.selection || editor.selection.selectedSlideIds.length === 0) {

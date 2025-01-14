@@ -1,22 +1,22 @@
-import { EditorType } from "../EditorType";
-import { addSlide } from "../function/AddSlide";
-import { setSelection } from "../SetSelection";
-import { ActionType, EditorAction } from "./actions";
-import { data } from "../data"
-import { removeSlide } from "../function/RemoveSlide";
-import { addText } from "../function/AddTextOnSlide";
-import { addImage } from "../function/AddImageOnSlide";
-import { removeObject } from "../function/RemoveObjectOnSlide";
-import { changeBackground } from "../function/ChangeBackground";
-import { renamePresentationTitle } from "../function/RenamePresentationTitle";
-import { changeSlidePosition } from "../function/ChangeSlidePosition";
-import { changeObjectPosition } from "../function/ChangeObjectPosition";
-import { changeObjectSize } from "../function/ChangeObjectSize";
-import { saveToLocalStorage, loadFromLocalStorage } from "../../utils/storage";
-import { updateTextContent } from "../function/UpdateTextContent";
-import { updateFontSize } from "../function/UpdateFontSize";
-import { updateFontFamily } from "../function/UpdateFontFamily";
-import { updateFontColor } from "../function/UpdateFontColor";
+import { EditorType } from '../EditorType';
+import { addSlide } from '../function/AddSlide';
+import { setSelection } from '../SetSelection';
+import { ActionType, EditorAction } from './actions';
+import { data } from '../data'
+import { removeSlide } from '../function/RemoveSlide';
+import { addText } from '../function/AddTextOnSlide';
+import { addImage } from '../function/AddImageOnSlide';
+import { removeObject } from '../function/RemoveObjectOnSlide';
+import { changeBackground } from '../function/ChangeBackground';
+import { renamePresentationTitle } from '../function/RenamePresentationTitle';
+import { changeSlidePosition } from '../function/ChangeSlidePosition';
+import { changeObjectPosition } from '../function/ChangeObjectPosition';
+import { changeObjectSize } from '../function/ChangeObjectSize';
+import { saveToLocalStorage, loadFromLocalStorage } from '../../utils/storage';
+import { updateTextContent } from '../function/UpdateTextContent';
+import { updateFontSize } from '../function/UpdateFontSize';
+import { updateFontFamily } from '../function/UpdateFontFamily';
+import { updateFontColor } from '../function/UpdateFontColor';
 
 const initialState: EditorType = loadFromLocalStorage() || data;
 

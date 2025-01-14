@@ -1,9 +1,8 @@
+import styles from './player.module.css';
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../store/Hooks/useAppSelector";
 import { CurrentSlide } from "../slide/currentSlide";
-import styles from './player.module.css';
-
 import left from '../../assets/left.png';
 import right from '../../assets/right.png';
 import back from '../../assets/back.png';

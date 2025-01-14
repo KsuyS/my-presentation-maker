@@ -1,4 +1,4 @@
-import { EditorType } from "../EditorType";
+import { EditorType } from '../EditorType';
 
 function changeObjectPosition(editor: EditorType, slideId: string, objectId: string, newX: number, newY: number): EditorType {
     return {

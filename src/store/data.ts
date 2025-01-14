@@ -1,39 +1,36 @@
-import {Presentation} from "./PresentationType";
-import {EditorType} from "./EditorType";
+import { Presentation } from "./PresentationType";
+import { EditorType } from "./EditorType";
 
 const presentation: Presentation = {
-    title: "Новая презентация",
-    slides: [
-      {
-        id: "slide1",
-        content: [
-          {
-            type: 'text',
-            id: "text1",
-            position: { x: 100, y: 100 },
-            size: { width: 100, height: 50 },
-            value: "Welcome!",
-            fontFamily: "Times New Roman",
-            fontSize: 20,
-            fontColor: "#00000",
-          },
-        ],
-        background: { type: 'solid', color: '#e6e8e6' },
-      },
-      {
-        id: "slide2",
-        content: [],
-        background: { type: 'solid', color: '#bdbfb2' },
-      },
-    ]
-  }
+  title: "Новая презентация",
+  slides: [
+    {
+      id: "slide1",
+      content: [
+      ],
+      background: { type: 'solid', color: '#ffffff' },
+    },
+  ]
+}
 
-  const data: EditorType = {
-    presentation,
-    selection: {
-        selectedSlideIds: [presentation.slides[0].id],
-        selectedObjectId: null
+const data: EditorType = {
+  presentation,
+  selection: {
+    selectedSlideIds: [presentation.slides[0].id],
+    selectedObjectId: null,
+  },
+  unsplash: {
+    images: {
+      data: [],
+      loading: false,
+      error: null
+    },
+    backgrounds: {
+      data: [],
+      loading: false,
+      error: null
     }
+  }
 }
 
 export {

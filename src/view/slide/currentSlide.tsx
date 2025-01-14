@@ -1,13 +1,13 @@
-import { Slide } from "../../store/PresentationType";
-import { TextObject } from "./TextObject";
-import { ImageObject } from "./ImageObject";
 import styles from './Slide.module.css';
-import { CSSProperties } from "react";
-import type { SelectionType } from "../../store/EditorType.ts";
-import { useAppSelector } from "../../store/Hooks/useAppSelector.ts";
-import { useDragAndDropObject } from "../../store/СustomHooks/useDragAndDropForObject.ts";
-import { useResizeObject } from "../../store/СustomHooks/useResizeObject.ts";
-import { useAppActions } from "../../store/Hooks/useAppActions.ts";
+import { CSSProperties } from 'react';
+import { Slide } from '../../store/PresentationType';
+import { TextObject } from './TextObject';
+import { ImageObject } from './ImageObject';
+import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
+import { useDragAndDropObject } from '../../store/Hooks/useDragAndDropForObject.ts';
+import { useResizeObject } from '../../store/Hooks/useResizeObject.ts';
+import { useAppActions } from '../../store/Hooks/useAppActions.ts';
+import type { SelectionType } from '../../store/EditorType.ts';
 
 const SLIDE_WIDTH = 935;
 const SLIDE_HEIGHT = 525;

@@ -1,5 +1,5 @@
-import { EditorType } from "../EditorType";
-import { SlideObject } from "../PresentationType";
+import { EditorType } from '../EditorType';
+import { SlideObject } from '../PresentationType';
 
 function resizeObject(
     currentEditor: EditorType,

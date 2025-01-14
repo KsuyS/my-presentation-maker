@@ -1,6 +1,6 @@
+import { Dispatch } from 'redux';
 import { importImageFromUnsplash } from '../../utils/UnsplashUtils';
 import { ActionType } from './actions';
-import { Dispatch } from 'redux';
 
 export const fetchUnsplashImages = (query: string) => {
     return async (dispatch: Dispatch) => {

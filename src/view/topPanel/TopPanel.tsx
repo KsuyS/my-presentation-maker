@@ -1,5 +1,4 @@
 import styles from './TopPanel.module.css';
-import * as React from "react";
 import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
 import { useAppActions } from '../../store/Hooks/useAppActions.ts';
 import presentation from '../../assets/presentation.png';

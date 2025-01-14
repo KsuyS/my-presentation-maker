@@ -1,5 +1,5 @@
-import { EditorType } from "../EditorType";
-import { ActionType } from "./actions";
+import { EditorType } from '../EditorType';
+import { ActionType } from './actions';
 
 function setEditor(newEditor: EditorType) {
     return {

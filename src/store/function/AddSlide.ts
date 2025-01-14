@@ -29,6 +29,18 @@ function addSlide(editor: EditorType): EditorType {
         selection: {
             selectedSlideIds: [newSlide.id],
             selectedObjectId: null
+        },
+        unsplash: {
+            images: {
+                data: [],
+                loading: false,
+                error: null
+            },
+            backgrounds: {
+                data: [],
+                loading: false,
+                error: null
+            }
         }
     };
 }

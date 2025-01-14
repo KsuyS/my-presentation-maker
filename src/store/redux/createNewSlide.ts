@@ -1,9 +1,9 @@
-import { uuidV4 } from "../../utils/uuidV4";
-import { Slide } from "../PresentationType";
+import { Slide } from '../PresentationType';
+import { generateRandomId } from '../function/GenerateRandomId';
 
 function createNewSlide(): Slide {
     return {
-        id: uuidV4(),
+        id: generateRandomId(),
         content: [],
         background: { type: 'solid', color: '#ffffff' },
     }

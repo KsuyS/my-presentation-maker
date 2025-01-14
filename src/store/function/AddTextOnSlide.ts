@@ -1,6 +1,6 @@
-import { EditorType } from "../EditorType";
-import { TextContent } from "../PresentationType";
-import { generateRandomId } from "./GenerateRandomId";
+import { EditorType } from '../EditorType';
+import { TextContent } from '../PresentationType';
+import { generateRandomId } from './GenerateRandomId';
 
 function addText(editor: EditorType): EditorType {
     const newText = "Введите текст";

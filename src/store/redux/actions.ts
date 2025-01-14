@@ -1,4 +1,4 @@
-import { EditorType, SelectionType } from "../EditorType"
+import { EditorType, SelectionType } from '../EditorType'
 
 enum ActionType {
     RENAME_PRESENTATION = 'renamePresentation',
@@ -28,33 +28,33 @@ enum ActionType {
 }
 
 type FetchUnsplashImagesRequestAction = {
-    type: ActionType.FETCH_UNSPLASH_IMAGES_REQUEST;
-    payload: string; // query
+    type: ActionType.FETCH_UNSPLASH_IMAGES_REQUEST,
+    payload: string,
 }
 
 type FetchUnsplashImagesSuccessAction = {
-    type: ActionType.FETCH_UNSPLASH_IMAGES_SUCCESS;
-    payload: string[]; // массив URL изображений
+    type: ActionType.FETCH_UNSPLASH_IMAGES_SUCCESS,
+    payload: string[],
 }
 
 type FetchUnsplashImagesFailureAction = {
-    type: ActionType.FETCH_UNSPLASH_IMAGES_FAILURE;
-    payload: string; // error message
+    type: ActionType.FETCH_UNSPLASH_IMAGES_FAILURE,
+    payload: string,
 }
 
 type FetchUnsplashImagesBackgroundRequestAction = {
-    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_REQUEST;
-    payload: string; // query
+    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_REQUEST,
+    payload: string,
 }
 
 type FetchUnsplashImagesBackgroundSuccessAction = {
-    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_SUCCESS;
-    payload: string[]; // массив URL изображений
+    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_SUCCESS,
+    payload: string[],
 }
 
 type FetchUnsplashImagesBackgroundFailureAction = {
-    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_FAILURE;
-    payload: string; // error message
+    type: ActionType.FETCH_UNSPLASH_BACKGROUNDS_FAILURE,
+    payload: string,
 }
 
 type RenamePresentationTitleAction = {
@@ -96,8 +96,8 @@ type RemoveObjectAction = {
 type ChangeBackgroundAction = {
     type: ActionType.CHANGE_BACKGROUND,
     payload: {
-        type: 'solid' | 'image' | 'gradient';
-        value: string;
+        type: 'solid' | 'image' | 'gradient',
+        value: string,
     };
 }
 
@@ -112,77 +112,78 @@ type ExportToJsonAction = {
 }
 
 type ChangeSlidePositionAction = {
-    type: ActionType.CHANGE_SLIDE_POSITION;
+    type: ActionType.CHANGE_SLIDE_POSITION,
     payload: {
-        slideIds: string[];
-        targetSlideId: string;
+        slideIds: string[],
+        targetSlideId: string,
     };
 }
 
 type ChangeObjectPositionAction = {
-    type: ActionType.CHANGE_POSITION_OBJECT;
+    type: ActionType.CHANGE_POSITION_OBJECT,
     payload: {
-        slideId: string;
-        objectId: string;
-        x: number;
-        y: number;
+        slideId: string,
+        objectId: string,
+        x: number,
+        y: number,
     };
 }
 
 type ChangeObjectSizeAction = {
-    type: ActionType.CHANGE_OBJECT_SIZE;
+    type: ActionType.CHANGE_OBJECT_SIZE,
     payload: {
-        slideId: string;
-        objectId: string;
-        width: number;
-        height: number;
-        x: number;
-        y: number;
+        slideId: string,
+        objectId: string,
+        width: number,
+        height: number,
+        x: number,
+        y: number,
     };
 }
 
 type UpdateTextContentAction = {
-    type: ActionType.UPDATE_TEXT_CONTENT;
+    type: ActionType.UPDATE_TEXT_CONTENT,
     payload: {
-        slideId: string;
-        objectId: string;
-        value: string;
+        slideId: string,
+        objectId: string,
+        value: string,
     };
 };
 
 type UpdateFontSizeAction = {
-    type: ActionType.UPDATE_FONT_SIZE;
+    type: ActionType.UPDATE_FONT_SIZE,
     payload: {
-        slideId: string;
-        objectId: string;
-        fontSize: number;
+        slideId: string,
+        objectId: string,
+        fontSize: number,
     };
 };
 
 type UpdateFontFamilyAction = {
-    type: ActionType.UPDATE_FONT_FAMILY;
+    type: ActionType.UPDATE_FONT_FAMILY,
     payload: {
-        slideId: string;
-        objectId: string;
-        fontFamily: string;
+        slideId: string,
+        objectId: string,
+        fontFamily: string,
     };
 };
 
 type UpdateFontColorAction = {
-    type: ActionType.UPDATE_FONT_COLOR;
+    type: ActionType.UPDATE_FONT_COLOR,
     payload: {
-        slideId: string;
-        objectId: string;
-        fontColor: string;
+        slideId: string,
+        objectId: string,
+        fontColor: string,
     };
 };
 
 
 type EditorAction = AddSlideAction | RemoveSlideAction | SetSelectionAction | SetEditorAction | AddTextAction | AddImageAction |
     RemoveObjectAction | ChangeBackgroundAction | ImportFromJsonAction | ExportToJsonAction | RenamePresentationTitleAction |
-    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction | UpdateFontSizeAction
-    | UpdateFontFamilyAction | UpdateFontColorAction | FetchUnsplashImagesRequestAction | FetchUnsplashImagesSuccessAction |
-    FetchUnsplashImagesFailureAction | FetchUnsplashImagesBackgroundRequestAction | FetchUnsplashImagesBackgroundSuccessAction | FetchUnsplashImagesBackgroundFailureAction
+    ChangeSlidePositionAction | ChangeObjectPositionAction | ChangeObjectSizeAction | UpdateTextContentAction | UpdateFontSizeAction | 
+    UpdateFontFamilyAction | UpdateFontColorAction | FetchUnsplashImagesRequestAction | FetchUnsplashImagesSuccessAction |
+    FetchUnsplashImagesFailureAction | FetchUnsplashImagesBackgroundRequestAction | FetchUnsplashImagesBackgroundSuccessAction | 
+    FetchUnsplashImagesBackgroundFailureAction
 
 export {
     ActionType,

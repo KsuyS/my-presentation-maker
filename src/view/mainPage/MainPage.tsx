@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom';
 import styles from './MainPage.module.css';
+import { useNavigate } from 'react-router-dom';
 import { defaultEditor } from '../../store/redux/defaultEditor';
 import { useAppActions } from '../../store/Hooks/useAppActions';
 import { importFromJson } from '../../utils/jsonUtils';

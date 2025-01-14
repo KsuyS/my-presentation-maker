@@ -3,7 +3,7 @@ import { useAppActions } from '../Hooks/useAppActions';
 import { useAppSelector } from '../Hooks/useAppSelector';
 
 type UseResizeObjectProps = {
-    slideId: string;
+    slideId: string,
 };
 
 type ResizeHandle = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' |

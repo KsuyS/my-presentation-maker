@@ -1,6 +1,6 @@
-import { EditorType } from "../store/EditorType";
+import { EditorType } from '../store/EditorType';
 import { validate } from './PresentationSchema';
-import { saveToLocalStorage } from "./storage";
+import { saveToLocalStorage } from './storage';
 
 const normalizeSelection = (editor: EditorType): EditorType => {
     const firstSlideId = editor.presentation.slides.length > 0 ? editor.presentation.slides[0].id : null;

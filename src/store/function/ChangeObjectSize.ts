@@ -1,4 +1,4 @@
-import { EditorType } from "../EditorType";
+import { EditorType } from '../EditorType';
 import { SlideObject } from '../PresentationType';
 
 function changeObjectSize(

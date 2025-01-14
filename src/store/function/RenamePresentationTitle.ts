@@ -1,4 +1,4 @@
-import {EditorType} from "../EditorType";
+import {EditorType} from '../EditorType';
 
 function renamePresentationTitle(editor: EditorType, newTitle: string): EditorType {
     console.log('Новое название презентации')

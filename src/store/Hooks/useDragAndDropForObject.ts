@@ -3,7 +3,7 @@ import { useAppActions } from '../Hooks/useAppActions';
 import { useAppSelector } from '../Hooks/useAppSelector';
 
 type UseDragAndDropElementProps = {
-  slideId: string;
+  slideId: string,
 };
 
 function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {

@@ -1,4 +1,4 @@
-import { Presentation } from "./PresentationType.ts";
+import { Presentation } from './PresentationType.ts';
 
 export type SelectionType = {
     selectedSlideIds: string[],

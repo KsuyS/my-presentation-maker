@@ -1,5 +1,5 @@
-import { SelectionType } from "../EditorType";
-import { ActionType } from "./actions";
+import { SelectionType } from '../EditorType';
+import { ActionType } from './actions';
 
 function setSelection(newSelection: SelectionType) {
     return {
