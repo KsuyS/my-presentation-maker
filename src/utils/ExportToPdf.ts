@@ -56,6 +56,11 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
 
     const toBase64 = (url: string): Promise<string> => {
         return new Promise((resolve, reject) => {
+            if (url.startsWith('data:') || url.startsWith('blob:')) {
+                resolve(url);
+                return;
+            }
+
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {

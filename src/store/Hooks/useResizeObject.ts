@@ -131,8 +131,8 @@ function useResizeObject({ slideId }: UseResizeObjectProps) {
             }
         }
 
-        newWidth = Math.max(100, newWidth);
-        newHeight = Math.max(45, newHeight);
+        newWidth = Math.max(35, newWidth);
+        newHeight = Math.max(35, newHeight);
 
         setTemporarySize({ width: newWidth, height: newHeight });
         setTemporaryPosition({ x: newX, y: newY });
