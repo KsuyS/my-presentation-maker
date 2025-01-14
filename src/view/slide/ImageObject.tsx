@@ -1,4 +1,4 @@
-import { ImageContent } from "../../store/PresentationType";
+import { ImageContent, BorderStyle } from "../../store/PresentationType";
 import { CSSProperties } from "react";
 import { useAppActions } from "../../store/Hooks/useAppActions.ts";
 import { SelectionType } from "../../store/EditorType.ts";
@@ -12,37 +12,57 @@ type ImageObjectProps = {
     temporarySize?: { width: number, height: number } | null;
 }
 
-const borderStyles: Record<string, CSSProperties> = {
-    none: {}, // Без рамки
+
+interface BorderStyleDefinition {
+    width?: number;
+    color?: string;
+    borderRadius?: number | string;
+    clipPath?: string;
+}
+
+
+const borderStyles: Record<BorderStyle, BorderStyleDefinition> = {
+    none: {},
     'black-thick': {
-        border: '10px solid black',
+        width: 10,
+        color: 'black',
+        borderRadius: 0,
     },
     'black-thin': {
-        border: '2px solid black',
+        width: 2,
+        color: 'black',
+        borderRadius: 0,
     },
     'white-thick': {
-        border: '10px solid white',
+        width: 10,
+        color: 'white',
+        borderRadius: 0,
     },
     'white-thin': {
-        border: '2px solid white',
+        width: 2,
+        color: 'white',
+        borderRadius: 0,
     },
     'rounded-oval': {
-        border: '3px solid black',
-        borderRadius: '50%', // Овальная форма
+        width: 3,
+        color: 'black',
+        borderRadius: '50%',
     },
     'rounded-rect': {
-        border: '3px solid black',
-        borderRadius: '15px', // Сглаженные углы
-    },
-    'beveled-rect': {
-        border: '3px solid black',
-        clipPath: 'polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%)', // Скошенные углы
+        width: 2,
+        color: 'black',
+        borderRadius: 15,
     },
 };
 
 function ImageObject({ imageObject, scale = 1, selection, readOnly, temporaryPosition, temporarySize }: ImageObjectProps) {
     const { setSelection } = useAppActions();
     const borderStyle = imageObject.borderStyle ?? 'none';
+
+    const borderDefinition = borderStyles[borderStyle];
+
+    const calculatedBorderStyle = borderDefinition?.width ? `${borderDefinition.width * scale}px solid ${borderDefinition.color || 'black'}` : 'none';
+    const calculatedBorderRadiusStyle = typeof borderDefinition?.borderRadius === 'number' ? `${borderDefinition.borderRadius * scale}px` : borderDefinition?.borderRadius || '0';
 
     const imageObjectStyles: CSSProperties = {
         position: 'absolute',
@@ -51,10 +71,11 @@ function ImageObject({ imageObject, scale = 1, selection, readOnly, temporaryPos
         width: `${(temporarySize?.width ?? imageObject.size.width) * scale}px`,
         height: `${(temporarySize?.height ?? imageObject.size.height) * scale}px`,
         zIndex: 3,
-        ...borderStyles[borderStyle],
         border: !readOnly && selection.selectedObjectId === imageObject.id
-            ? "3px solid #545557"
-            : borderStyles[borderStyle]?.border || "none",
+            ? `3px solid #545557`
+            : calculatedBorderStyle,
+        borderRadius: calculatedBorderRadiusStyle,
+        clipPath: borderDefinition?.clipPath || 'none',
     };
 
     function onImageClick(imageObjectId: string) {

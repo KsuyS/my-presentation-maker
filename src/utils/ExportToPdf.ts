@@ -79,6 +79,33 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
         });
     };
 
+    const applyImageStyles = (imageElement: ImageContent, img: HTMLImageElement) => {
+        img.style.width = '100%';
+        img.style.height = '100%';
+
+        if (imageElement.borderStyle && imageElement.borderStyle !== 'none') {
+            const borderStyle = imageElement.borderStyle;
+            let borderWidth = 2;
+            let borderColor = 'black';
+
+            if (borderStyle === 'black-thick' || borderStyle === 'white-thick') {
+                borderWidth = 8;
+            }
+            if (borderStyle.startsWith('white')) {
+                borderColor = 'white';
+            }
+
+            img.style.border = `${borderWidth}px solid ${borderColor}`;
+
+
+            if (borderStyle === 'rounded-oval') {
+                img.style.borderRadius = '50%';
+            } else if (borderStyle === 'rounded-rect') {
+                img.style.borderRadius = '15px';
+            }
+        }
+    };
+
     for (const [index, slide] of editor.presentation.slides.entries()) {
         tempContainer.innerHTML = '';
 
@@ -115,6 +142,7 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
             } else if (element.type === 'image') {
                 const imageElement = element as ImageContent;
                 const img = document.createElement('img');
+                applyImageStyles(imageElement, img);
 
                 try {
                     const base64Data = await toBase64(imageElement.src);
@@ -127,6 +155,7 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
                 img.style.height = '100%';
                 elementDiv.appendChild(img);
             }
+
             slideElement.appendChild(elementDiv);
         }
 

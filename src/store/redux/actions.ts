@@ -240,7 +240,6 @@ type UpdateImageBorderStyle = {
         | 'white-thin'
         | 'rounded-oval'
         | 'rounded-rect'
-        | 'beveled-rect',
     };
 };
 

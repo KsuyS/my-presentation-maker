@@ -164,8 +164,7 @@ const updateImageBorderStyle =
             | 'white-thick'
             | 'white-thin'
             | 'rounded-oval'
-            | 'rounded-rect'
-            | 'beveled-rect',) => ({
+            | 'rounded-rect',) => ({
                 type: ActionType.UPDATE_IMAGE_BORDER_STYLE,
                 payload: {
                     slideId,

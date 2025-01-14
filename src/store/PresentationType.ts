@@ -63,7 +63,6 @@ export type BorderStyle =
     | 'white-thin' // Простая белая рамка
     | 'rounded-oval' // Овал со сглаженными краями
     | 'rounded-rect' // Прямоугольник со сглаженными краями
-    | 'beveled-rect'; // Скошенный прямоугольник
 
 export type ImageContent = BaseSlideObject & {
     type: 'image',

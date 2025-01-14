@@ -27,6 +27,7 @@ import fontWeightIcon from '../../assets/bold.png';
 import fontStyleIcon from '../../assets/italic.png';
 import textDecorationIcon from '../../assets/decoration.png';
 import textCaseIcon from '../../assets/case.png';
+import borderStyleIcon from '../../assets/border-style.png';
 
 import { useAppSelector } from '../../store/Hooks/useAppSelector.ts';
 import { useState, useEffect, useCallback } from 'react';
@@ -119,6 +120,8 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [isDecoration, setisDecoration] = useState(false);
     const [isTextCaseDropdownOpen, setIsTextCaseDropdownOpen] = useState(false);
     const [textCase, setTextCase] = useState<'none' | 'capitalize' | 'uppercase' | 'lowercase'>('none');
+    const [isBorderStyleDropdownOpen, setIsBorderStyleDropdownOpen] = useState(false);
+
 
     const handleTextAlign = (align: 'left' | 'center' | 'right') => {
         if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
@@ -182,6 +185,18 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [gradientRadialShape, setGradientRadialShape] = useState<'circle' | 'ellipse'>('circle');
     const [gradientRadialPosition, setGradientRadialPosition] = useState<{ x: string; y: string; }>({ x: '50%', y: '50%' });
 
+
+    // Стили рамок
+    const borderStyles = [
+        { value: 'none', label: 'Без рамки' },
+        { value: 'black-thick', label: 'Широкая черная рамка' },
+        { value: 'black-thin', label: 'Простая черная рамка' },
+        { value: 'white-thick', label: 'Широкая белая рамка' },
+        { value: 'white-thin', label: 'Простая белая рамка' },
+        { value: 'rounded-oval', label: 'Овальная рамка' },
+        { value: 'rounded-rect', label: 'Прямоугольник со сглаженными краями' },
+    ];
+
     // Обработчики изображений
     const onChangeImgUpload: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         const file = event.target.files?.[0];
@@ -204,14 +219,11 @@ function Toolbar({ navigate }: ToolbarProps) {
         | 'white-thick'
         | 'white-thin'
         | 'rounded-oval'
-        | 'rounded-rect'
-        | 'beveled-rect') => {
+        | 'rounded-rect') => {
         const { selectedSlideIds, selectedObjectId } = selection;
         if (selectedSlideIds.length === 1 && selectedObjectId) {
 
             updateImageBorderStyle(selectedSlideIds[0], selectedObjectId, borderStyle);
-        } else {
-            alert("Пожалуйста, выберите один объект изображения для изменения рамки.");
         }
     };
 
@@ -798,6 +810,36 @@ function Toolbar({ navigate }: ToolbarProps) {
                         >
                             <img src={removeIcon} alt="Удалить изображение" />
                         </button>
+                        <div className={styles.dropdownContainer}>
+                            <button
+                                className={`${styles.toolButton} ${isBorderStyleDropdownOpen ? styles.active : ''}`}
+                                onClick={() => setIsBorderStyleDropdownOpen(!isBorderStyleDropdownOpen)}
+                                title="Стиль рамки"
+                                disabled={!isImageSelected || isEmptyPresentation}
+                            ><img src={borderStyleIcon} alt="Стиль рамки" />
+                            </button>
+
+                            {isBorderStyleDropdownOpen && (
+                                <div className={styles.dropdownMenu}>
+                                    {borderStyles.map((style) => (
+                                        <button
+                                            key={style.value}
+                                            className={`${styles.dropdownItem} ${selection.selectedObject?.type === 'image' &&
+                                                selection.selectedObject?.borderStyle === style.value
+                                                ? styles.active
+                                                : ''
+                                                }`}
+                                            onClick={() => {
+                                                setBorderStyle(style.value as 'none' | 'black-thick' | 'black-thin' | 'white-thick' | 'white-thin' | 'rounded-oval' | 'rounded-rect');
+                                                setIsBorderStyleDropdownOpen(false);
+                                            }}
+                                        >
+                                            {style.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -849,17 +891,9 @@ function Toolbar({ navigate }: ToolbarProps) {
                         </div>
                     </div>
                 )}
-
-                <button onClick={() => setBorderStyle('black-thick')}>Широкая черная рамка</button>
-                <button onClick={() => setBorderStyle('black-thin')}>Простая черная рамка</button>
-                <button onClick={() => setBorderStyle('white-thick')}>Широкая белая рамка</button>
-                <button onClick={() => setBorderStyle('white-thin')}>Простая белая рамка</button>
-                <button onClick={() => setBorderStyle('rounded-oval')}>Овальная рамка</button>
-                <button onClick={() => setBorderStyle('rounded-rect')}>Прямоугольник со сглаженными краями</button>
-                <button onClick={() => setBorderStyle('beveled-rect')}>Скошенный прямоугольник</button>
-
             </div>
         </div>
     );
 }
-export { Toolbar };
+
+export { Toolbar }

@@ -46,7 +46,7 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
     const element = slide.content.find((el) => el.id === draggedElementId);
     if (!element) return;
 
-    const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, SLIDE_WIDTH - element.size.width - 5));
+    const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, SLIDE_WIDTH - element.size.width - 1));
     const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, SLIDE_HEIGHT - element.size.height - 1));
 
     setTemporaryPosition({ x: newX, y: newY });
