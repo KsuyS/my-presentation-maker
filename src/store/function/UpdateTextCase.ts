@@ -4,7 +4,7 @@ function updateTextCase(
     editor: EditorType,
     slideId: string,
     objectId: string,
-    textCase: 'capitalize' | 'uppercase' | 'lowercase'
+    textCase: 'none' | 'capitalize' | 'uppercase' | 'lowercase'
 ): EditorType {
     return {
         ...editor,

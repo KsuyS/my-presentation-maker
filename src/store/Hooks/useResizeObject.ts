@@ -2,6 +2,9 @@ import { useState, useRef } from 'react';
 import { useAppActions } from '../Hooks/useAppActions';
 import { useAppSelector } from '../Hooks/useAppSelector';
 
+const SLIDE_WIDTH = 935;
+const SLIDE_HEIGHT = 525;
+
 type UseResizeObjectProps = {
     slideId: string,
 };
@@ -102,8 +105,34 @@ function useResizeObject({ slideId }: UseResizeObjectProps) {
                 break;
         }
 
-        newWidth = Math.min(newWidth, 935 - newX);
-        newHeight = Math.min(newHeight, 525 - newY);
+        if (newX < 0) {
+            newX = 0;
+            newWidth = initialPosition.current.x + initialSize.current.width;
+        }
+
+        if (newY < 0) {
+            newY = 0;
+            newHeight = initialPosition.current.y + initialSize.current.height;
+        }
+
+        if (newX + newWidth > SLIDE_WIDTH) {
+            if (activeHandle.includes('left')) {
+                newX = SLIDE_WIDTH - newWidth;
+            } else {
+                newWidth = SLIDE_WIDTH - newX;
+            }
+        }
+
+        if (newY + newHeight > SLIDE_HEIGHT) {
+            if (activeHandle.includes('top')) {
+                newY = SLIDE_HEIGHT - newHeight;
+            } else {
+                newHeight = SLIDE_HEIGHT - newY;
+            }
+        }
+
+        newWidth = Math.max(100, newWidth);
+        newHeight = Math.max(45, newHeight);
 
         setTemporarySize({ width: newWidth, height: newHeight });
         setTemporaryPosition({ x: newX, y: newY });

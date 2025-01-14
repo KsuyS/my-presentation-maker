@@ -223,7 +223,7 @@ type UpdateTextCaseAction = {
     payload: {
         slideId: string,
         objectId: string,
-        textCase: 'capitalize' | 'uppercase' | 'lowercase',
+        textCase: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
     };
 };
 

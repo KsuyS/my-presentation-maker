@@ -117,7 +117,7 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [isItalic, setIsItalic] = useState(false);
     const [isDecoration, setisDecoration] = useState(false);
     const [isTextCaseDropdownOpen, setIsTextCaseDropdownOpen] = useState(false);
-    const [textCase, setTextCase] = useState<'capitalize' | 'uppercase' | 'lowercase'>('capitalize');
+    const [textCase, setTextCase] = useState<'none' | 'capitalize' | 'uppercase' | 'lowercase'>('none');
 
     const handleTextAlign = (align: 'left' | 'center' | 'right') => {
         if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
@@ -163,7 +163,7 @@ function Toolbar({ navigate }: ToolbarProps) {
         }
     };
 
-    const handleTextCase = (newTextCase: 'capitalize' | 'uppercase' | 'lowercase') => {
+    const handleTextCase = (newTextCase: 'none' | 'capitalize' | 'uppercase' | 'lowercase') => {
         if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
             editor.selection.selectedSlideIds.forEach(slideId => {
                 updateTextCase(
@@ -684,13 +684,22 @@ function Toolbar({ navigate }: ToolbarProps) {
                             {isTextCaseDropdownOpen && (
                                 <div className={styles.dropdownMenu}>
                                     <button
+                                        className={`${styles.dropdownItem} ${textCase === 'none' ? styles.active : ''}`}
+                                        onClick={() => {
+                                            handleTextCase('none');
+                                            setIsTextCaseDropdownOpen(false);
+                                        }}
+                                    >
+                                        Как есть
+                                    </button>
+                                    <button
                                         className={`${styles.dropdownItem} ${textCase === 'capitalize' ? styles.active : ''}`}
                                         onClick={() => {
                                             handleTextCase('capitalize');
                                             setIsTextCaseDropdownOpen(false);
                                         }}
                                     >
-                                        Как в предложениях
+                                        Начинать С Прописных
                                     </button>
                                     <button
                                         className={`${styles.dropdownItem} ${textCase === 'uppercase' ? styles.active : ''}`}

@@ -8,7 +8,7 @@ function addImage(editor: EditorType, { src }: { src: string }): EditorType {
     }
     const newImageObject: ImageContent = {
         id: generateRandomId(6),
-        position: { x: 400, y: 300 },
+        position: { x: 20, y: 20 },
         size: { width: 200, height: 150 },
         type: 'image',
         src,

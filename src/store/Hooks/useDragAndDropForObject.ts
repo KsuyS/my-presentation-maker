@@ -2,6 +2,9 @@ import { useState, useRef } from 'react';
 import { useAppActions } from '../Hooks/useAppActions';
 import { useAppSelector } from '../Hooks/useAppSelector';
 
+const SLIDE_WIDTH = 935;
+const SLIDE_HEIGHT = 525;
+
 type UseDragAndDropElementProps = {
   slideId: string,
 };
@@ -43,8 +46,8 @@ function useDragAndDropObject({ slideId }: UseDragAndDropElementProps) {
     const element = slide.content.find((el) => el.id === draggedElementId);
     if (!element) return;
 
-    const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, 935 - element.size.width - 5));
-    const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, 525 - element.size.height - 1));
+    const newX = Math.max(0, Math.min(initialPosition.current.x + deltaX, SLIDE_WIDTH - element.size.width - 5));
+    const newY = Math.max(0, Math.min(initialPosition.current.y + deltaY, SLIDE_HEIGHT - element.size.height - 1));
 
     setTemporaryPosition({ x: newX, y: newY });
   }

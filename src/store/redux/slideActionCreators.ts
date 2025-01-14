@@ -147,7 +147,7 @@ const updateTextDecoration = (slideId: string, objectId: string, textDecoration:
     }
 });
 
-const updateTextCase = (slideId: string, objectId: string, textCase: 'capitalize' | 'uppercase' | 'lowercase' ) => ({
+const updateTextCase = (slideId: string, objectId: string, textCase: 'none' | 'capitalize' | 'uppercase' | 'lowercase' ) => ({
     type: ActionType.UPDATE_TEXT_CASE,
     payload: {
         slideId,
