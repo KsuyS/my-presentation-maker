@@ -78,7 +78,7 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
 
         try {
             const canvas = await html2canvas(slideElement, {
-                useCORS: true, // Для поддержки кросс-доменных изображений
+                useCORS: true,
             });
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
             doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);

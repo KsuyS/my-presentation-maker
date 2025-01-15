@@ -39,7 +39,7 @@ const importFromJson = (file: File, setEditor: (editor: EditorType) => void) => 
                 const importedEditor: EditorType = JSON.parse(jsonString);
 
                 if (!validate(importedEditor.presentation)) {
-                    alert("Импортированные данные не соответствуют ожидаемому формату:" + validate.errors)
+                    alert("Импортированные данные не соответствуют ожидаемому формату.")
                     return;
                 }
 
@@ -47,7 +47,7 @@ const importFromJson = (file: File, setEditor: (editor: EditorType) => void) => 
                 setEditor(normalizedEditor);
                 saveToLocalStorage(normalizedEditor);
             } catch (error) {
-                alert("Ошибка при импорте JSON:" + error)
+                alert("Ошибка при импорте JSON.")
             }
         }
     };
