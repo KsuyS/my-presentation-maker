@@ -1,12 +1,7 @@
 import { EditorType } from '../store/EditorType';
 import { jsPDF } from 'jspdf';
 import { TextContent, ImageContent } from '../store/PresentationType';
-import TimesNewRomanBase64 from '../store/Fonts/TimesNewRoman-base64';
 import html2canvas from 'html2canvas';
-import ArialBase64 from '../store/Fonts/Arial-base64';
-import CourierNewBase64 from '../store/Fonts/CourierNew-base64';
-import GeorgiaBase64 from '../store/Fonts/Georgia-base64';
-import VerdanaBase64 from '../store/Fonts/Verdana-base64';
 
 const SLIDE_WIDTH = 935;
 const SLIDE_HEIGHT = 525;
@@ -15,33 +10,8 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
     const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'pt',
-        format: 'a4'
+        format: 'a4',
     });
-
-    doc.addFileToVFS("TimesNewRoman.ttf", TimesNewRomanBase64);
-    doc.addFont("TimesNewRoman.ttf", "Times New Roman", "normal");
-    doc.setFont("Times New Roman", "normal");
-    doc.setFontSize(20);
-
-    doc.addFileToVFS("Arial.ttf", ArialBase64);
-    doc.addFont("Arial.ttf", "Arial", "normal");
-    doc.setFont("Arial", "normal");
-    doc.setFontSize(20);
-
-    doc.addFileToVFS("CourierNew.ttf", CourierNewBase64);
-    doc.addFont("CourierNew.ttf", "Courier New", "normal");
-    doc.setFont("CourierNew", "normal");
-    doc.setFontSize(20);
-
-    doc.addFileToVFS("Georgia.ttf", GeorgiaBase64);
-    doc.addFont("Georgia.ttf", "Georgia", "normal");
-    doc.setFont("Georgia", "normal");
-    doc.setFontSize(20);
-
-    doc.addFileToVFS("Verdana.ttf", VerdanaBase64);
-    doc.addFont("Verdana.ttf", "Verdana", "normal");
-    doc.setFont("Verdana", "normal");
-    doc.setFontSize(20);
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -53,63 +23,6 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
     tempContainer.style.left = '-9999px';
     tempContainer.style.overflow = 'hidden';
     document.body.appendChild(tempContainer);
-
-    const toBase64 = (url: string): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            if (url.startsWith('data:') || url.startsWith('blob:')) {
-                resolve(url);
-                return;
-            }
-
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) {
-                    reject(new Error("Could not get 2D context"));
-                    return
-                }
-                ctx.drawImage(img, 0, 0);
-                const dataURL = canvas.toDataURL('image/jpeg');
-                resolve(dataURL);
-            };
-            img.onerror = (error) => {
-                console.error("Error loading image:", error, url)
-                reject(error)
-            };
-            img.src = url;
-        });
-    };
-
-    const applyImageStyles = (imageElement: ImageContent, img: HTMLImageElement) => {
-        img.style.width = '100%';
-        img.style.height = '100%';
-
-        if (imageElement.borderStyle && imageElement.borderStyle !== 'none') {
-            const borderStyle = imageElement.borderStyle;
-            let borderWidth = 2;
-            let borderColor = 'black';
-
-            if (borderStyle === 'black-thick' || borderStyle === 'white-thick') {
-                borderWidth = 8;
-            }
-            if (borderStyle.startsWith('white')) {
-                borderColor = 'white';
-            }
-
-            img.style.border = `${borderWidth}px solid ${borderColor}`;
-
-
-            if (borderStyle === 'rounded-oval') {
-                img.style.borderRadius = '50%';
-            } else if (borderStyle === 'rounded-rect') {
-                img.style.borderRadius = '15px';
-            }
-        }
-    };
 
     for (const [index, slide] of editor.presentation.slides.entries()) {
         tempContainer.innerHTML = '';
@@ -143,19 +56,16 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
                 elementDiv.style.fontFamily = textElement.fontFamily;
                 elementDiv.style.fontSize = `${textElement.fontSize}px`;
                 elementDiv.style.color = textElement.fontColor;
+                elementDiv.style.fontWeight = textElement.fontWeight;
+                elementDiv.style.fontStyle = textElement.fontStyle;
+                elementDiv.style.textAlign = textElement.textAlign;
+                elementDiv.style.textDecoration = textElement.textDecoration;
+                elementDiv.style.textTransform = textElement.textCase;
                 elementDiv.textContent = textElement.value;
             } else if (element.type === 'image') {
                 const imageElement = element as ImageContent;
                 const img = document.createElement('img');
-                applyImageStyles(imageElement, img);
-
-                try {
-                    const base64Data = await toBase64(imageElement.src);
-                    img.src = base64Data;
-                } catch (error) {
-                    alert("Ошибка преобразования изображения в base64: " + error)
-                }
-
+                img.src = imageElement.src;
                 img.style.width = '100%';
                 img.style.height = '100%';
                 elementDiv.appendChild(img);
@@ -168,16 +78,16 @@ const generatePdfDataUrl = async (editor: EditorType): Promise<string> => {
 
         try {
             const canvas = await html2canvas(slideElement, {
-                useCORS: true,
+                useCORS: true, // Для поддержки кросс-доменных изображений
             });
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
-
             doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+
             if (index < editor.presentation.slides.length - 1) {
                 doc.addPage();
             }
         } catch (error) {
-            alert("Ошибка при преобразовании слайда в изображение: " + error)
+            console.error('Ошибка при создании изображения слайда:', error);
         }
     }
 
