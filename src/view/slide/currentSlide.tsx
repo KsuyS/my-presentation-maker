@@ -81,7 +81,7 @@ function CurrentSlide({
     }
 
     const getBackgroundStyle = () => {
-        let style: CSSProperties = {
+        const style: CSSProperties = {
             width: `${SLIDE_WIDTH * scale}px`,
             height: `${SLIDE_HEIGHT * scale}px`,
             position: 'relative',

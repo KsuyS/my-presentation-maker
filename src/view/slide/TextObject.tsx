@@ -91,7 +91,7 @@ function TextObject({ textObject, scale = 1, selection, readOnly, temporaryPosit
         if (isEditing) {
             setTimeout(() => setCursor(cursorPosition.current), 0);
         }
-    }, [newValue]);
+    }, [newValue, isEditing]);
 
     return (
         <div

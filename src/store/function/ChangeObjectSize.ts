@@ -32,7 +32,6 @@ function changeObjectSize(
     };
 
     const updatedObjects = slide.content.map(ob => ob.id === objectId ? updatedObject : ob);
-    objectId
     const updatedSlide = {
         ...slide,
         content: updatedObjects,
