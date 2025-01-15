@@ -1,6 +1,6 @@
+import * as React from "react";
 import styles from './Toolbar.module.css';
 import { useAppActions } from '../../store/Hooks/useAppActions.ts';
-import * as React from "react";
 import { HistoryContext } from '../../store/Hooks/historyContext.ts';
 import { exportToJson, importFromJson } from "../../utils/jsonUtils";
 import { exportToPdf, generatePdfDataUrl } from '../../utils/ExportToPdf.ts';
@@ -98,6 +98,7 @@ function Toolbar({ navigate }: ToolbarProps) {
         };
     });
 
+    // Состояния для отслеживания селектора
     const isTextSelected = selection.selectedObject?.type === 'text';
     const isImageSelected = selection.selectedObject?.type === 'image';
     const isEmptyPresentation = editor.presentation.slides.length === 0;
@@ -123,7 +124,7 @@ function Toolbar({ navigate }: ToolbarProps) {
     const [textCase, setTextCase] = useState<'none' | 'capitalize' | 'uppercase' | 'lowercase'>('none');
     const [isBorderStyleDropdownOpen, setIsBorderStyleDropdownOpen] = useState(false);
 
-
+    // Обработчики текста
     const handleTextAlign = (align: 'left' | 'center' | 'right') => {
         if (editor.selection.selectedSlideIds.length > 0 && editor.selection.selectedObjectId) {
             editor.selection.selectedSlideIds.forEach(slideId => {
